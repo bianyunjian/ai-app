@@ -1,8 +1,5 @@
 package com.hankutech.ax.appdemo;
 
-import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -15,16 +12,30 @@ import android.widget.MediaController;
 import android.widget.TextView;
 import android.widget.VideoView;
 
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.github.mikephil.charting.charts.BarChart;
+import com.hankutech.ax.appdemo.code.AppStatus;
+import com.hankutech.ax.appdemo.code.AuthType;
+import com.hankutech.ax.appdemo.code.MessageCode;
+import com.hankutech.ax.appdemo.constant.Common;
+import com.hankutech.ax.appdemo.util.ChartUtils;
+
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 
 public class MainActivity extends AppCompatActivity {
 
+    private static final String TAG = "MainActivity";
     private TextView nowTimeTextView;
+    private String videoPath = "android.resource://com.hankutech.ax.appdemo/" + R.raw.garbage01;
+    private VideoView videoView;
+    private TextView appStatusTextView;
+    private BarChart chart;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,21 +44,55 @@ public class MainActivity extends AppCompatActivity {
         if (getSupportActionBar() != null) {
             getSupportActionBar().hide();
         }
-
     }
 
-    private String videoPath = "android.resource://com.hankutech.ax.appdemo/" + R.raw.garbage01;
-    VideoView videoView;
 
     @Override
     protected void onResume() {
         super.onResume();
 
+        bindControl();
+
+        setAppStatusView("运行中");
+        setTimeView();
+        setVideoView();
+        setChartView();
+    }
+
+    private void bindControl() {
+        appStatusTextView = (TextView) findViewById(R.id.app_status);
+        nowTimeTextView = (TextView) findViewById(R.id.nowTime);
         videoView = (VideoView) findViewById(R.id.videoView);
 
+        chart = findViewById(R.id.chart);
+    }
+
+    private void setTimeView() {
+
+        Timer timer = new Timer();
+        TimerTask task = new TimerTask() {
+            @RequiresApi(api = Build.VERSION_CODES.O)
+            @Override
+            public void run() {
+
+                SimpleDateFormat format = new SimpleDateFormat("yyyy年MM月dd日 HH时mm分ss秒");
+                String nowTimeText = format.format(new Date());
+                Message msg = new Message();
+                msg.what = 1;  //消息(一个整型值)
+                msg.obj = nowTimeText;
+                mHandler.sendMessage(msg);
+            }
+        };
+        timer.schedule(task, 0, 1000);
+    }
+
+    private void setVideoView() {
+
         videoView.setVideoURI(Uri.parse(videoPath));
-        MediaController mediaController = new MediaController(this);
-        videoView.setMediaController(mediaController);
+        if (Common.DebugMode) {
+            MediaController mediaController = new MediaController(this);
+            videoView.setMediaController(mediaController);
+        }
         videoView.start();
 
         videoView.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
@@ -78,24 +123,73 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
         });
+    }
+
+    private void setChartView() {
+        ArrayList<String> xValues = new ArrayList<>();
+        xValues.add("干垃圾");
+        xValues.add("湿垃圾");
+        xValues.add("有害垃圾");
+        xValues.add("其他垃圾");
+
+        ArrayList<Integer> yValues = new ArrayList<>();
+        yValues.add(10);
+        yValues.add(20);
+        yValues.add(30);
+        yValues.add(10);
+
+        ChartUtils.initChart(chart, xValues);
+        ChartUtils.notifyDataSetChanged(chart, xValues, yValues);
+    }
+
+    /**
+     * 显示主界面
+     */
+    private void ShowHome() {
+
+    }
+
+    /**
+     * 显示选择身份验证的界面
+     */
+    private void ShowChooseAuthType() {
+
+    }
+
+    /**
+     * 显示等待验证通过的界面
+     */
+    private void ShowWaitAuth(AuthType authType) {
+
+    }
+
+    /**
+     * 显示用户身份的界面
+     */
+    private void ShowAuthUserInfo() {
+
+    }
+
+    /**
+     * 显示垃圾分类检测的界面
+     */
+    private void ShowGarbageDetect() {
+
+    }
+
+    /**
+     * 显示垃圾分类检测的结果界面
+     */
+    private void ShowGarbageDetectResult() {
+
+    }
 
 
-        nowTimeTextView = (TextView) findViewById(R.id.nowTime);
-        Timer timer = new Timer();
-        TimerTask task = new TimerTask() {
-            @RequiresApi(api = Build.VERSION_CODES.O)
-            @Override
-            public void run() {
+    /**
+     * 显示关门界面
+     */
+    private void ShowGateClose() {
 
-                SimpleDateFormat format = new SimpleDateFormat("yyyy年MM月dd日 HH时mm分ss秒");
-                String nowTimeText = format.format(new Date());
-                Message msg = new Message();
-                msg.what = 1;  //消息(一个整型值)
-                msg.obj = nowTimeText;
-                mHandler.sendMessage(msg);
-            }
-        };
-        timer.schedule(task, 0, 1000);
     }
 
     //在主线程里面处理消息并更新UI界面
@@ -103,15 +197,51 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
-            switch (msg.what) {
-                case 1:
+            MessageCode code = MessageCode.valueOf(msg.what);
+            switch (code) {
+                case TIME_UPDATE:
                     String nowTimeText = msg.obj.toString();
                     nowTimeTextView.setText(nowTimeText);
                     break;
+                case APP_STATUS_UPDATE:
+                    String text = msg.obj.toString();
+                    setAppStatusView(text);
+                    break;
+                case HOME:
+                    break;
+                case HOME_SLEEP:
+                    break;
+                case VIDEO_PLAY:
+                    videoView.start();
+                    break;
+                case VIDEO_STOP:
+                    videoView.stopPlayback();
+                    break;
+                case TICKTOCK_START:
+                    break;
+                case TICKTOCK_STOP:
+                    break;
+                case TICKTOCK_UPDATE:
+                    break;
+                case UNKNOWN:
+                    Log.d(TAG, "handleMessage: " + code);
                 default:
                     break;
 
             }
         }
+
+
     };
+
+    private void setAppStatusView(String text) {
+        appStatusTextView.setText(text);
+        appStatusTextView.setTextColor(Color.GREEN);
+        if (text.equals(AppStatus.WAIT)) {
+            appStatusTextView.setTextColor(Color.YELLOW);
+        }
+        if (text.equals(AppStatus.ERROR)) {
+            appStatusTextView.setTextColor(Color.RED);
+        }
+    }
 }

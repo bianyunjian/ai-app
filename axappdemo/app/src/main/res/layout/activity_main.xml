@@ -20,11 +20,11 @@
 
             <ImageView
                 android:id="@+id/logo"
-                android:layout_width="34dp"
-                android:layout_height="39dp"
+                android:layout_width="149dp"
+                android:layout_height="36dp"
                 android:layout_gravity="center_horizontal|center_vertical"
-                android:layout_weight="1"
-                app:srcCompat="@drawable/ic_launcher_foreground" />
+                android:scaleType="centerCrop"
+                android:src="@drawable/ax_logo" />
 
             <TextView
                 android:id="@+id/logoTitle"
@@ -32,8 +32,8 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal|center_vertical"
                 android:layout_weight="1"
-                android:text="艾信垃圾分类投递显示系统"
-                android:textSize="30sp" />
+                android:text="垃圾分类投递显示系统"
+                android:textSize="28sp" />
 
             <TextView
                 android:id="@+id/textView3"
@@ -46,7 +46,7 @@
                 android:textSize="20sp" />
 
             <TextView
-                android:id="@+id/sysStatus"
+                android:id="@+id/app_status"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal|center_vertical"
@@ -68,9 +68,13 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:paddingLeft="2dp"
+            android:paddingTop="2dp"
+            android:paddingRight="2dp"
+            android:paddingBottom="2dp">
 
-            <VideoView
+            <com.hankutech.ax.appdemo.view.CustomVideoView
                 android:id="@+id/videoView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -80,13 +84,94 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="10"
-                android:orientation="vertical">
+                android:orientation="vertical"
 
-                <TextView
-                    android:id="@+id/textView6"
+                >
+
+                <FrameLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="现在可以投递干垃圾" />
+                    android:layout_height="match_parent"
+                    android:layout_margin="5dp"
+                    android:layout_weight="3"
+                    android:background="@drawable/solidborder"
+                    android:padding="5dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center_horizontal"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/txsumamry"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="今日投递统计"
+                            android:textAlignment="center"
+                            android:textSize="20sp" />
+                        <com.github.mikephil.charting.charts.BarChart
+                            android:id="@+id/chart"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent" />
+                    </LinearLayout>
+                </FrameLayout>
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_margin="5dp"
+                    android:layout_weight="2"
+                    android:background="@drawable/solidborder"
+                    android:padding="5dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center_horizontal"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/tx"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="信息展示"
+                            android:textAlignment="center"
+                            android:textSize="20sp" />
+
+                        <TextView
+                            android:id="@+id/textView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="50sp"
+                            android:text="当前时间段投放垃圾类型"
+                            android:textSize="18sp" />
+
+                        <TextView
+                            android:id="@+id/textViewSupportGarbageType"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="40sp"
+                            android:text="干垃圾"
+                            android:textColor="#ff0000"
+                            android:textSize="24sp"
+                            android:textStyle="bold" />
+
+                        <Button
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="30dp"
+                            android:background="#2a5caa"
+                            android:paddingLeft="40dp"
+                            android:paddingTop="20dp"
+                            android:paddingRight="40dp"
+                            android:paddingBottom="20dp"
+                            android:text="开始投递"
+                            android:textColor="#ffffff"
+                            android:textSize="20dp"></Button>
+                    </LinearLayout>
+
+                </FrameLayout>
+
             </LinearLayout>
 
         </LinearLayout>
