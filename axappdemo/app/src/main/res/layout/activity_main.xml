@@ -74,11 +74,12 @@
             android:paddingRight="2dp"
             android:paddingBottom="2dp">
 
-            <com.hankutech.ax.appdemo.view.CustomVideoView
-                android:id="@+id/videoView"
+            <FrameLayout
+                android:id="@+id/main_container"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_weight="4" />
+                android:layout_weight="4"
+                android:background="@drawable/processborder"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -109,6 +110,7 @@
                             android:text="今日投递统计"
                             android:textAlignment="center"
                             android:textSize="20sp" />
+
                         <com.github.mikephil.charting.charts.BarChart
                             android:id="@+id/chart"
                             android:layout_width="match_parent"
@@ -157,6 +159,7 @@
                             android:textStyle="bold" />
 
                         <Button
+                            android:id="@+id/startProcess"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="30dp"

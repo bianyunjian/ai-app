@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".view.VideoFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/button_back_choose_auth_type"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:layout_weight="1"
+                android:text="@string/back_choose_auth_type"
+                android:textSize="18dp" />
+
+            <TextView
+                android:id="@+id/tiktokTimeDesc"
+                android:layout_width="200dp"
+                android:layout_height="80dp"
+                android:layout_weight="9"
+                android:paddingTop="20dp"
+                android:paddingRight="20dp"
+                android:text="倒计时30秒"
+                android:textAlignment="textEnd"
+                android:textColor="#ff0000"
+                android:textSize="20dp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/textViewGuidDescription"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:text="请选择身份验证方式"
+            android:textAlignment="center"
+            android:textColor="#000000"
+            android:textSize="24dp"
+            android:textStyle="bold" />
+
+        <LinearLayout
+            android:id="@+id/layout_choose_auth_type"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:visibility="gone">
+
+            <Button
+                android:id="@+id/button_rfid"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="50dp"
+                android:layout_weight="1"
+                android:enabled="true"
+                android:paddingLeft="20dp"
+                android:paddingTop="50dp"
+                android:paddingRight="20dp"
+                android:paddingBottom="50dp"
+                android:text="RFID刷卡"
+
+                android:textColor="#000000"
+                android:textSize="24dp"
+                android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/button_ai_face"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="50dp"
+                android:layout_weight="1"
+                android:enabled="true"
+
+                android:paddingLeft="20dp"
+                android:paddingTop="50dp"
+                android:paddingRight="20dp"
+                android:paddingBottom="50dp"
+                android:text="人脸识别"
+
+                android:textColor="#000000"
+                android:textSize="24dp"
+                android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/button_qrcode"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="50dp"
+                android:layout_weight="1"
+                android:enabled="true"
+                android:paddingLeft="20dp"
+                android:paddingTop="50dp"
+                android:paddingRight="20dp"
+                android:paddingBottom="50dp"
+                android:text="二维码"
+
+                android:textColor="#000000"
+                android:textSize="24dp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/layout_choose_auth_rfid"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:visibility="gone">
+
+            <ImageView
+                android:id="@+id/imageView_rfid"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:padding="10dp"
+                android:src="@drawable/rfid" />
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:id="@+id/layout_choose_auth_ai_face"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:visibility="gone">
+
+            <ImageView
+                android:id="@+id/imageView_aiface"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+
+                android:padding="10dp"
+                android:src="@drawable/ai_face" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/layout_choose_auth_qrcode"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:visibility="gone">
+
+            <ImageView
+                android:id="@+id/imageView_qrcode"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:padding="10dp"
+                android:src="@drawable/qrcode" />
+        </LinearLayout>
+
+    </LinearLayout>
+</FrameLayout>
