@@ -42,8 +42,9 @@
                 android:layout_gravity="center_horizontal|center_vertical"
                 android:layout_weight="1"
                 android:text="状态: "
-                android:textAlignment="textEnd"
-                android:textSize="20sp" />
+                android:textAlignment="viewEnd"
+                android:textSize="20sp"
+                tools:ignore="RtlCompat" />
 
             <TextView
                 android:id="@+id/app_status"
@@ -79,7 +80,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="4"
-                android:background="@drawable/processborder"/>
+                android:background="@drawable/processborder" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -136,6 +137,7 @@
                             android:id="@+id/tx"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:layout_weight="10"
                             android:text="信息展示"
                             android:textAlignment="center"
                             android:textSize="20sp" />
@@ -144,7 +146,8 @@
                             android:id="@+id/textView"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="50sp"
+
+                            android:layout_weight="5"
                             android:text="当前时间段投放垃圾类型"
                             android:textSize="18sp" />
 
@@ -152,7 +155,7 @@
                             android:id="@+id/textViewSupportGarbageType"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="40sp"
+                            android:layout_weight="10"
                             android:text="干垃圾"
                             android:textColor="#ff0000"
                             android:textSize="24sp"
@@ -162,7 +165,7 @@
                             android:id="@+id/startProcess"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="30dp"
+                            android:layout_weight="5"
                             android:background="#2a5caa"
                             android:paddingLeft="40dp"
                             android:paddingTop="20dp"

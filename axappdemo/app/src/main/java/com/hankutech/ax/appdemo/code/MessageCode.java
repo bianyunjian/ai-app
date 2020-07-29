@@ -4,12 +4,15 @@ public enum MessageCode {
     UNKNOWN(0, "UNKNOWN"),
     HOME(10, "首页_正常状态"),
     HOME_SLEEP(11, "首页_休眠状态"),
+
     TIME_UPDATE(20, "时间更新"),
     APP_STATUS_UPDATE(21, "系统运行状态更新"),
+
     VIDEO_PLAY(30, "视频播放"),
     VIDEO_STOP(31, "视频停止"),
     AUDIO_PLAY(32, "音频播放"),
     AUDIO_STOP(33, "音频停止"),
+
     TICKTOCK_START(40, "倒计时开始"),
     TICKTOCK_STOP(41, "倒计时停止"),
     TICKTOCK_UPDATE(42, "倒计时更新");

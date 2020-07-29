@@ -2,6 +2,7 @@ package com.hankutech.ax.appdemo;
 
 import android.app.Fragment;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.media.AudioManager;
 import android.media.SoundPool;
@@ -23,6 +24,7 @@ import com.hankutech.ax.appdemo.code.AppStatus;
 import com.hankutech.ax.appdemo.code.AudioScene;
 import com.hankutech.ax.appdemo.code.AuthType;
 import com.hankutech.ax.appdemo.code.MessageCode;
+import com.hankutech.ax.appdemo.service.NettySocketService;
 import com.hankutech.ax.appdemo.util.ChartUtils;
 import com.hankutech.ax.appdemo.view.AuthFragment;
 import com.hankutech.ax.appdemo.view.IFragmentOperation;
@@ -36,6 +38,9 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class MainActivity extends AppCompatActivity {
+    static {
+        System.loadLibrary("SmartPlayer");
+    }
 
     private static final String TAG = "MainActivity";
     private TextView nowTimeTextView;
@@ -46,9 +51,12 @@ public class MainActivity extends AppCompatActivity {
 
     //config data
     private Uri videoUri;
+    private String aiFaceRTSPUrl;
+
     private HashMap<AudioScene, Integer> audioMap = new HashMap<>();
     private Button startProcessButton;
     private Fragment currentFragment;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +65,11 @@ public class MainActivity extends AppCompatActivity {
         if (getSupportActionBar() != null) {
             getSupportActionBar().hide();
         }
+
+        //启动NettySocketService
+        Intent intent = new Intent(this, NettySocketService.class);
+        intent.setAction("android.intent.action.RESPOND_VIA_MESSAGE");
+        MainActivity.this.startService(intent);
     }
 
 
@@ -72,11 +85,22 @@ public class MainActivity extends AppCompatActivity {
         setChartView();
 
         showVideoView();
+
     }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Intent intent = new Intent(this, NettySocketService.class);
+        intent.setAction("android.intent.action.RESPOND_VIA_MESSAGE");
+        MainActivity.this.stopService(intent);
+    }
+
 
     private void initConfigData() {
         String videoPath = "android.resource://com.hankutech.ax.appdemo/" + R.raw.garbage01;
         videoUri = Uri.parse(videoPath);
+        this.aiFaceRTSPUrl = "rtsp://admin:NYCQJS@192.168.123.115:554/";
 
         // 第一个参数为同时播放数据流的最大个数，第二数据流类型，第三为声音质量
         soundPool = new SoundPool(1, AudioManager.STREAM_MUSIC, 100);
@@ -171,6 +195,7 @@ public class MainActivity extends AppCompatActivity {
     private void showAuthView() {
 
         AuthFragment authFragment = new AuthFragment();
+        authFragment.setRTSPVideoUrl(this.aiFaceRTSPUrl);
         replaceView(authFragment);
     }
 
