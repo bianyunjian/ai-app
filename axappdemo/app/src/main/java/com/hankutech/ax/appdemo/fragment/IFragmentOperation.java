@@ -1,4 +1,4 @@
-package com.hankutech.ax.appdemo.view;
+package com.hankutech.ax.appdemo.fragment;
 
 import android.os.Handler;
 
@@ -8,5 +8,5 @@ public interface IFragmentOperation {
 
     void release();
 
-    void setHandler(Handler mHandler);
+
 }

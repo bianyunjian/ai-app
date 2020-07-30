@@ -1,10 +1,8 @@
-package com.hankutech.ax.appdemo.view;
+package com.hankutech.ax.appdemo.fragment;
 
 import android.app.Fragment;
 import android.content.Context;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.SurfaceView;
@@ -14,21 +12,29 @@ import android.widget.Button;
 import android.widget.TextView;
 
 
+import com.hankutech.ax.appdemo.ax.code.AuthFlag;
+import com.hankutech.ax.appdemo.ax.protocol.AXRequest;
+import com.hankutech.ax.appdemo.event.AXDataEvent;
+import com.hankutech.ax.appdemo.event.MessageEvent;
 import com.hankutech.ax.appdemo.R;
 
 import com.hankutech.ax.appdemo.code.AudioScene;
 import com.hankutech.ax.appdemo.code.MessageCode;
 import com.hankutech.ax.appdemo.constant.Common;
+import com.hankutech.ax.appdemo.util.LogExt;
 import com.hankutech.ax.appdemo.util.TickTimer;
 import com.daniulive.smartplayer.EventHandeV2;
 import com.daniulive.smartplayer.SmartPlayerJniV2;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 public class AuthFragment extends Fragment implements IFragmentOperation {
 
     private static final String TAG = "AuthFragment";
     private View view;
     private TickTimer tickTimer = new TickTimer();
-    private Handler parentHandler;
     private View layoutRfid;
     private View layoutAiFace;
     private View layoutQrCode;
@@ -41,6 +47,7 @@ public class AuthFragment extends Fragment implements IFragmentOperation {
     private long playerHandle = 0;
     private SmartPlayerJniV2 libPlayer = null;
     private Context myContext;
+    private AuthFlag currentAuthFlag;
 
     public void setRTSPVideoUrl(String rtspUrl) {
         this.rtspUrl = rtspUrl;
@@ -50,7 +57,9 @@ public class AuthFragment extends Fragment implements IFragmentOperation {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         this.view = inflater.inflate(R.layout.fragment_auth, container, false);
+
         return this.view;
+
     }
 
     @Override
@@ -59,9 +68,9 @@ public class AuthFragment extends Fragment implements IFragmentOperation {
 
         playAudio(AudioScene.AUTH_CHOOSE_TYPE);
 
-        tickTimer.start(Common.TikTokSeconds, Common.TikTokInterval, (t) -> {
-            TextView tv = this.view.findViewById(R.id.tiktokTimeDesc);
-            tv.setText(Common.getTikTokDesc(t));
+        tickTimer.start(Common.TickMillis, Common.TickInterval, (t) -> {
+            TextView tv = this.view.findViewById(R.id.authTiktokTimeDesc);
+            tv.setText(Common.getTickDesc(t));
         }, (t) -> {
             stopRTSPVideo();
             backToHome();
@@ -87,6 +96,7 @@ public class AuthFragment extends Fragment implements IFragmentOperation {
             public void onClick(View view) {
                 stopRTSPVideo();
 
+                currentAuthFlag = AuthFlag.FAILURE;
                 layoutChooseAuthType.setVisibility(View.VISIBLE);
                 layoutRfid.setVisibility(View.GONE);
                 layoutAiFace.setVisibility(View.GONE);
@@ -103,6 +113,7 @@ public class AuthFragment extends Fragment implements IFragmentOperation {
             public void onClick(View view) {
                 stopRTSPVideo();
 
+                currentAuthFlag = AuthFlag.RFID;
                 layoutChooseAuthType.setVisibility(View.GONE);
                 layoutRfid.setVisibility(View.VISIBLE);
                 layoutAiFace.setVisibility(View.GONE);
@@ -120,6 +131,7 @@ public class AuthFragment extends Fragment implements IFragmentOperation {
             public void onClick(View view) {
                 playRTSPVideo();
 
+                currentAuthFlag = AuthFlag.AI_FACE;
                 layoutChooseAuthType.setVisibility(View.GONE);
                 layoutRfid.setVisibility(View.GONE);
                 layoutAiFace.setVisibility(View.VISIBLE);
@@ -137,6 +149,7 @@ public class AuthFragment extends Fragment implements IFragmentOperation {
             public void onClick(View view) {
                 stopRTSPVideo();
 
+                currentAuthFlag = AuthFlag.QRCODE;
                 layoutChooseAuthType.setVisibility(View.GONE);
                 layoutRfid.setVisibility(View.GONE);
                 layoutAiFace.setVisibility(View.GONE);
@@ -151,10 +164,8 @@ public class AuthFragment extends Fragment implements IFragmentOperation {
     }
 
     private void playAudio(AudioScene chooseAuthType) {
-        Message msg = new Message();
-        msg.what = MessageCode.AUDIO_PLAY.getValue();
-        msg.obj = chooseAuthType;
-        this.parentHandler.sendMessage(msg);
+
+        EventBus.getDefault().post(new MessageEvent(MessageCode.AUDIO_PLAY, chooseAuthType));
     }
 
     private void InitAndSetConfig4RTSP() {
@@ -236,22 +247,52 @@ public class AuthFragment extends Fragment implements IFragmentOperation {
 
     @Override
     public void init() {
+        EventBus.getDefault().register(this);
     }
 
     public void release() {
-
+        EventBus.getDefault().post(new MessageEvent(MessageCode.AUDIO_STOP, null));
+        EventBus.getDefault().unregister(this);
     }
 
-    @Override
-    public void setHandler(Handler mHandler) {
-        this.parentHandler = mHandler;
-    }
 
     private void backToHome() {
-        if (this.parentHandler != null) {
-            Message msg = new Message();
-            msg.what = MessageCode.HOME.getValue();
-            this.parentHandler.sendMessage(msg);
+        EventBus.getDefault().post(new MessageEvent(MessageCode.HOME, null));
+    }
+
+    /**
+     * ThreadMode设置为MAIN，事件的处理会在UI线程中执行，用TextView来展示收到的事件消息
+     *
+     * @param dataEvent
+     */
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void OnEventMessage(AXDataEvent dataEvent) {
+
+        LogExt.d(TAG, "OnEventMessage: " + dataEvent.toString());
+
+        AXRequest axData = dataEvent.getData();
+        int authResult = axData.getAuthFlag().getValue();
+        if (this.currentAuthFlag != null && authResult == this.currentAuthFlag.getValue()) {
+            LogExt.d(TAG, "授权成功:" + this.currentAuthFlag.getDescription());
+
+            stopRTSPVideo();
+            this.layoutAiFace.setVisibility(View.GONE);
+            this.layoutRfid.setVisibility(View.GONE);
+            this.layoutQrCode.setVisibility(View.GONE);
+            this.layoutChooseAuthType.setVisibility(View.GONE);
+            this.backChooseButton.setVisibility(View.GONE);
+            String personDesc = String.format("欢迎您, 尊敬的%s", axData.getPersonName());
+            this.textViewGuidDescription.setText(personDesc);
+
+            this.tickTimer.cancel();
+            tickTimer.start(3000, Common.TickInterval, (t) -> {
+                TextView tv = this.view.findViewById(R.id.authTiktokTimeDesc);
+                tv.setText(Common.getTickDesc(t));
+            }, (t) -> {
+
+                EventBus.getDefault().post(new MessageEvent(MessageCode.AUTH_PASS, axData.getPersonName()));
+            });
+            playAudio(AudioScene.AUTH_PASS);
         }
     }
 }

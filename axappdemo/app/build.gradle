@@ -76,4 +76,6 @@ dependencies {
 
 
     implementation group: 'io.netty', name: 'netty-all', version: '4.1.31.Final'
+
+    implementation 'org.greenrobot:eventbus:3.0.0'
 }

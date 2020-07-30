@@ -14,6 +14,7 @@ import com.hankutech.ax.appdemo.ax.SocketConst;
 import com.hankutech.ax.appdemo.socket.ByteSocketServerInitializer;
 import com.hankutech.ax.appdemo.socket.NettyServerException;
 import com.hankutech.ax.appdemo.socket.SocketServer;
+import com.hankutech.ax.appdemo.util.LogExt;
 
 public class NettySocketService extends Service {
     private static final String TAG = "SocketService";
@@ -28,7 +29,7 @@ public class NettySocketService extends Service {
 
     @Override
     public void onCreate() {
-        System.out.println("onCreate");
+        LogExt.d(TAG, "onCreate");
         super.onCreate();
 
         startSocketServer();
@@ -36,21 +37,21 @@ public class NettySocketService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        System.out.println("onStartCommand");
+        LogExt.d(TAG, "onStartCommand");
         return super.onStartCommand(intent, flags, startId);
     }
 
 
     @Override
     public void onDestroy() {
-        System.out.println("onDestroy");
+        LogExt.d(TAG, "onDestroy");
         stopSocketServer();
         super.onDestroy();
 
     }
 
     private void stopSocketServer() {
-        System.out.println("stopSocketServer");
+        LogExt.d(TAG, "stopSocketServer");
         if (server != null) {
             server.shutdown();
             this.serverThread.interrupt();
@@ -58,7 +59,7 @@ public class NettySocketService extends Service {
     }
 
     private void startSocketServer() {
-        System.out.println("startSocketServer");
+        LogExt.d(TAG, "startSocketServer");
 
         this.serverThread = new Thread(() -> {
             showIpAndPort();
@@ -83,7 +84,7 @@ public class NettySocketService extends Service {
         WifiInfo wifiInfo = wifiManager.getConnectionInfo();
         int ipAddress = wifiInfo.getIpAddress();
         String ip = intToIp(ipAddress);
-        Log.d(TAG, "IP=" + ip);
+        LogExt.d(TAG, "IP=" + ip);
 
     }
 

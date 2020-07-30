@@ -14,7 +14,7 @@ public enum AudioScene {
 
     GATE_CLOSE(31, "本次投递结束,小艾在这里等待您的再次到来"),
     GATE_NOT_CLOSE(32, "投递完成,请关好门,感谢您的配合"),
-    GATE_NOT_CLOSE_TIMEOUT(33, "系统故障,请处理");
+    GATE_NOT_CLOSE_TIMEOUT(33, "系统故障,请联系管理人员处理");
 
     public static AudioScene valueOf(int value) {
         switch (value) {

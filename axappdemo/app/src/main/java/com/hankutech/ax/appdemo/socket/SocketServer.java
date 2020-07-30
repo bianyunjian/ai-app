@@ -1,5 +1,7 @@
 package com.hankutech.ax.appdemo.socket;
 
+import com.hankutech.ax.appdemo.util.LogExt;
+
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -16,6 +18,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class SocketServer {
 
+    private static final String TAG = "SocketServer";
     /**
      * socket server字典
      * key: 服务端口
@@ -64,7 +67,7 @@ public class SocketServer {
             this.channelFuture = bootstrap.bind(port).sync();
             if (this.channelFuture.isSuccess()) {
 //                log.info("socket服务端：{} 启动成功！", this.port);
-                System.out.println("socket服务端：" + this.port + " 启动成功！");
+                LogExt.d(TAG, "socket服务端：" + this.port + " 启动成功！");
                 // 保存到Map
                 SOCKET_SERVER_MAP.put(this.port, this);
             }
@@ -74,7 +77,7 @@ public class SocketServer {
 
             SOCKET_SERVER_MAP.remove(port);
 //            log.info("socket服务端：{} 已关闭！", port);
-            System.out.println("socket服务端：" + this.port + " 已关闭！");
+            LogExt.d(TAG, "socket服务端：" + this.port + " 已关闭！");
 
         } catch (InterruptedException e) {
             e.printStackTrace();

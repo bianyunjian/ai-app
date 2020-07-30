@@ -76,4 +76,13 @@ public class AXRequest {
     public boolean isValid() {
         return sysRunFlag != SysRunFlag.EMPTY;
     }
+
+    /**
+     * 获取投递的数量
+     *
+     * @return
+     */
+    public int getGarbageDeliveredCount() {
+        return count_DRY + count_BF + count_HAZARDOUS + count_RECYCLABLE + count_WET;
+    }
 }

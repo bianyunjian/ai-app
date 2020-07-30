@@ -9,7 +9,6 @@ import android.media.SoundPool;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 import android.view.View;
@@ -24,11 +23,20 @@ import com.hankutech.ax.appdemo.code.AppStatus;
 import com.hankutech.ax.appdemo.code.AudioScene;
 import com.hankutech.ax.appdemo.code.AuthType;
 import com.hankutech.ax.appdemo.code.MessageCode;
+import com.hankutech.ax.appdemo.constant.Common;
+import com.hankutech.ax.appdemo.event.MessageEvent;
+import com.hankutech.ax.appdemo.fragment.GarbageFragment;
+import com.hankutech.ax.appdemo.fragment.GateFragment;
 import com.hankutech.ax.appdemo.service.NettySocketService;
 import com.hankutech.ax.appdemo.util.ChartUtils;
-import com.hankutech.ax.appdemo.view.AuthFragment;
-import com.hankutech.ax.appdemo.view.IFragmentOperation;
-import com.hankutech.ax.appdemo.view.VideoFragment;
+import com.hankutech.ax.appdemo.fragment.AuthFragment;
+import com.hankutech.ax.appdemo.fragment.IFragmentOperation;
+import com.hankutech.ax.appdemo.fragment.VideoFragment;
+import com.hankutech.ax.appdemo.util.LogExt;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -70,6 +78,9 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(this, NettySocketService.class);
         intent.setAction("android.intent.action.RESPOND_VIA_MESSAGE");
         MainActivity.this.startService(intent);
+
+        //注册订阅事件
+        EventBus.getDefault().register(this);
     }
 
 
@@ -94,13 +105,15 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(this, NettySocketService.class);
         intent.setAction("android.intent.action.RESPOND_VIA_MESSAGE");
         MainActivity.this.stopService(intent);
+        //取消注册订阅事件
+        EventBus.getDefault().unregister(this);
     }
 
 
     private void initConfigData() {
         String videoPath = "android.resource://com.hankutech.ax.appdemo/" + R.raw.garbage01;
         videoUri = Uri.parse(videoPath);
-        this.aiFaceRTSPUrl = "rtsp://admin:NYCQJS@192.168.123.115:554/";
+        this.aiFaceRTSPUrl = Common.AIFace_RTSP_URI;
 
         // 第一个参数为同时播放数据流的最大个数，第二数据流类型，第三为声音质量
         soundPool = new SoundPool(1, AudioManager.STREAM_MUSIC, 100);
@@ -110,6 +123,13 @@ public class MainActivity extends AppCompatActivity {
         audioMap.put(AudioScene.AUTH_AI_FACE, soundPool.load(this, R.raw.auth_ai_face, 1));
         audioMap.put(AudioScene.AUTH_QRCODE, soundPool.load(this, R.raw.auth_qrcode, 1));
         audioMap.put(AudioScene.AUTH_PASS, soundPool.load(this, R.raw.auth_pass, 1));
+        audioMap.put(AudioScene.GARBAGE_DETECT, soundPool.load(this, R.raw.garbage_detect, 1));
+        audioMap.put(AudioScene.GARBAGE_DETECT_FAILURE, soundPool.load(this, R.raw.garbage_detect_failure, 1));
+        audioMap.put(AudioScene.GARBAGE_DETECT_SUCCESS, soundPool.load(this, R.raw.garbage_detect_success, 1));
+        audioMap.put(AudioScene.GATE_CLOSE, soundPool.load(this, R.raw.gate_close, 1));
+        audioMap.put(AudioScene.GATE_NOT_CLOSE, soundPool.load(this, R.raw.gate_not_close, 1));
+        audioMap.put(AudioScene.GATE_NOT_CLOSE_TIMEOUT, soundPool.load(this, R.raw.gate_not_close_timeout, 1));
+
     }
 
     private void bindControl() {
@@ -138,9 +158,9 @@ public class MainActivity extends AppCompatActivity {
                 SimpleDateFormat format = new SimpleDateFormat("yyyy年MM月dd日 HH时mm分ss秒");
                 String nowTimeText = format.format(new Date());
                 Message msg = new Message();
-                msg.what = MessageCode.TIME_UPDATE.getValue();  //消息(一个整型值)
-                msg.obj = nowTimeText;
-                mHandler.sendMessage(msg);
+
+                EventBus.getDefault().post(new MessageEvent(MessageCode.TIME_UPDATE, nowTimeText));
+
             }
         };
         timer.schedule(task, 0, 1000);
@@ -164,9 +184,10 @@ public class MainActivity extends AppCompatActivity {
         ChartUtils.notifyDataSetChanged(chart, xValues, yValues);
     }
 
-    private void playAudio(AudioScene audioScene, boolean loop) {
+    private void playAudio(AudioScene audioScene, int loopCount) {
         stopAudio();
         if (audioMap.containsKey(audioScene)) {
+            LogExt.d(TAG, "playAudio:" + audioScene.getDescription());
             Integer audio = audioMap.get(audioScene);
             AudioManager mgr = (AudioManager) this
                     .getSystemService(Context.AUDIO_SERVICE);
@@ -177,7 +198,7 @@ public class MainActivity extends AppCompatActivity {
             // 获取当前音量的百分比
             float volume = currentVolume / maxVolume;
             // 第一个参数是声效ID,第二个是左声道音量，第三个是右声道音量，第四个是流的优先级，最低为0，第五个是是否循环播放，第六个播放速度(1.0 =正常播放,范围0.5 - 2.0)
-            soundPool.play(audio, volume, volume, 1, loop ? 1 : 0, 1f);
+            soundPool.play(audio, volume, volume, 1, loopCount, 1f);
         }
     }
 
@@ -186,23 +207,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showVideoView() {
-
         VideoFragment videoFragment = new VideoFragment();
         videoFragment.setVideoUri(videoUri);
         replaceView(videoFragment);
     }
 
-    private void showAuthView() {
-
-        AuthFragment authFragment = new AuthFragment();
-        authFragment.setRTSPVideoUrl(this.aiFaceRTSPUrl);
-        replaceView(authFragment);
-    }
 
     private <T extends Fragment> void replaceView(T t) {
 
         this.stopAudio();
-
         if (this.currentFragment != null) {
             if (this.currentFragment instanceof IFragmentOperation) {
                 ((IFragmentOperation) (this.currentFragment)).release();
@@ -212,8 +225,10 @@ public class MainActivity extends AppCompatActivity {
                 .replace(R.id.main_container, t).commit();
         getFragmentManager().beginTransaction().show(t);
         this.currentFragment = t;
-        if (this.currentFragment instanceof IFragmentOperation) {
-            ((IFragmentOperation) (this.currentFragment)).setHandler(this.mHandler);
+        if (t != null) {
+            if (t instanceof IFragmentOperation) {
+                ((IFragmentOperation) (t)).init();
+            }
         }
     }
 
@@ -229,95 +244,37 @@ public class MainActivity extends AppCompatActivity {
      * 显示选择身份验证的界面
      */
     private void ShowChooseAuthType() {
-        showAuthView();
+        AuthFragment authFragment = new AuthFragment();
+        authFragment.setRTSPVideoUrl(this.aiFaceRTSPUrl);
+        replaceView(authFragment);
         this.startProcessButton.setVisibility(View.INVISIBLE);
     }
 
-    /**
-     * 显示等待验证通过的界面
-     */
-    private void ShowWaitAuth(AuthType authType) {
-
-    }
-
-    /**
-     * 显示用户身份的界面
-     */
-    private void ShowAuthUserInfo() {
-
-    }
 
     /**
      * 显示垃圾分类检测的界面
      */
     private void ShowGarbageDetect() {
-
+        GarbageFragment garbageFragment = new GarbageFragment();
+        replaceView(garbageFragment);
+        this.startProcessButton.setVisibility(View.INVISIBLE);
     }
 
     /**
-     * 显示垃圾分类检测的结果界面
+     * 显示关门状态界面
      */
-    private void ShowGarbageDetectResult() {
-
+    private void ShowGateState() {
+        GateFragment gateFragment = new GateFragment();
+        replaceView(gateFragment);
+        this.startProcessButton.setVisibility(View.INVISIBLE);
     }
 
 
     /**
-     * 显示关门界面
+     * 在主线程里面处理消息并更新UI界面
+     *
+     * @param text
      */
-    private void ShowGateClose() {
-
-    }
-
-    //在主线程里面处理消息并更新UI界面
-    private Handler mHandler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-            MessageCode code = MessageCode.valueOf(msg.what);
-            switch (code) {
-                case TIME_UPDATE:
-                    String nowTimeText = msg.obj.toString();
-                    nowTimeTextView.setText(nowTimeText);
-                    break;
-                case APP_STATUS_UPDATE:
-                    String text = msg.obj.toString();
-                    setAppStatusView(text);
-                    break;
-                case HOME:
-                    ShowHome();
-                    break;
-                case HOME_SLEEP:
-                    break;
-                case VIDEO_PLAY:
-                    break;
-                case VIDEO_STOP:
-                    break;
-                case AUDIO_PLAY:
-                    AudioScene audioScene = (AudioScene) (msg.obj);
-                    boolean loop = false;
-                    playAudio(audioScene, loop);
-                    break;
-                case AUDIO_STOP:
-                    stopAudio();
-                    break;
-                case TICKTOCK_START:
-                    break;
-                case TICKTOCK_STOP:
-                    break;
-                case TICKTOCK_UPDATE:
-                    break;
-                case UNKNOWN:
-                    Log.d(TAG, "handleMessage: " + code);
-                default:
-                    break;
-
-            }
-        }
-
-
-    };
-
     private void setAppStatusView(String text) {
         appStatusTextView.setText(text);
         appStatusTextView.setTextColor(Color.GREEN);
@@ -328,4 +285,67 @@ public class MainActivity extends AppCompatActivity {
             appStatusTextView.setTextColor(Color.RED);
         }
     }
+
+    /**
+     * ThreadMode设置为MAIN，事件的处理会在UI线程中执行，用TextView来展示收到的事件消息
+     *
+     * @param messageEvent
+     */
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void OnEventMessage(MessageEvent messageEvent) {
+
+        if (messageEvent.getMsgCode() != MessageCode.TIME_UPDATE) {
+            LogExt.d(TAG, "OnEventMessage: " + messageEvent.toString());
+        }
+
+        MessageCode code = messageEvent.getMsgCode();
+        Object obj = messageEvent.getObject();
+        switch (code) {
+            case TIME_UPDATE:
+                String nowTimeText = obj.toString();
+                nowTimeTextView.setText(nowTimeText);
+                break;
+            case APP_STATUS_UPDATE:
+                String text = obj.toString();
+                setAppStatusView(text);
+                break;
+            case HOME:
+                ShowHome();
+                break;
+            case HOME_SLEEP:
+                //TODO
+                break;
+
+            case AUDIO_PLAY:
+                AudioScene audioScene = (AudioScene) (obj);
+
+                playAudio(audioScene, 0);
+                break;
+            case AUDIO_PLAY_LOOP:
+                AudioScene audioScene_loop = (AudioScene) (obj);
+                playAudio(audioScene_loop, 99);
+                break;
+            case AUDIO_STOP:
+                stopAudio();
+                break;
+
+            case AUTH_PASS:
+                ShowGarbageDetect();
+                break;
+            case GARBAGE_PASS:
+                ShowGateState();
+                break;
+
+            case GATE_PASS:
+                ShowHome();
+                break;
+
+            case UNKNOWN:
+                LogExt.d(TAG, "handleMessage: " + code);
+            default:
+                break;
+
+        }
+    }
+
 }

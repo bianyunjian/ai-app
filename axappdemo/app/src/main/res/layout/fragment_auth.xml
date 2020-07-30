@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".view.VideoFragment">
+    tools:context=".fragment.AuthFragment">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -27,7 +27,7 @@
                 android:textSize="18dp" />
 
             <TextView
-                android:id="@+id/tiktokTimeDesc"
+                android:id="@+id/authTiktokTimeDesc"
                 android:layout_width="200dp"
                 android:layout_height="60dp"
                 android:layout_weight="9"
@@ -62,7 +62,9 @@
                 android:id="@+id/button_rfid"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="50dp"
+                android:layout_gravity="center"
+                android:layout_marginLeft="30dp"
+                android:layout_marginRight="30dp"
                 android:layout_weight="1"
                 android:enabled="true"
                 android:paddingLeft="20dp"
@@ -79,10 +81,11 @@
                 android:id="@+id/button_ai_face"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="50dp"
+                android:layout_gravity="center"
+                android:layout_marginLeft="30dp"
+                android:layout_marginRight="30dp"
                 android:layout_weight="1"
                 android:enabled="true"
-
                 android:paddingLeft="20dp"
                 android:paddingTop="50dp"
                 android:paddingRight="20dp"

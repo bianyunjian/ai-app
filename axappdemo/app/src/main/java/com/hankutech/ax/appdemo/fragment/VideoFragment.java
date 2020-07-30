@@ -1,4 +1,4 @@
-package com.hankutech.ax.appdemo.view;
+package com.hankutech.ax.appdemo.fragment;
 
 import android.graphics.Color;
 import android.media.MediaPlayer;
@@ -9,7 +9,6 @@ import android.os.Bundle;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 
-import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,16 +17,20 @@ import android.widget.MediaController;
 import android.widget.VideoView;
 
 import com.hankutech.ax.appdemo.R;
+import com.hankutech.ax.appdemo.code.MessageCode;
 import com.hankutech.ax.appdemo.constant.Common;
+import com.hankutech.ax.appdemo.event.MessageEvent;
+import com.hankutech.ax.appdemo.util.LogExt;
 
 import android.app.Fragment;
+
+import org.greenrobot.eventbus.EventBus;
 
 public class VideoFragment extends Fragment implements IFragmentOperation {
 
     private Uri videoUri;
     private View view;
     private VideoView videoView;
-    private Handler parentHandler;
 
     @Nullable
     @Override
@@ -45,13 +48,15 @@ public class VideoFragment extends Fragment implements IFragmentOperation {
         if (Common.DebugMode) {
             MediaController mediaController = new MediaController(this.getContext());
             videoView.setMediaController(mediaController);
+
         }
+
         videoView.start();
 
         videoView.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mediaPlayer) {
-                Log.d("videoView", "video播完了");
+                LogExt.d("videoView", "video播完了");
                 videoView.setVideoURI(videoUri);
                 videoView.start();
             }
@@ -60,6 +65,9 @@ public class VideoFragment extends Fragment implements IFragmentOperation {
             @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
             @Override
             public void onPrepared(MediaPlayer mp) {
+                if (Common.VideoMute) {
+                    mp.setVolume(0f, 0f);
+                }
                 videoView.setOnInfoListener(new MediaPlayer.OnInfoListener() {
                     @Override
                     public boolean onInfo(MediaPlayer mp, int what, int extra) {
@@ -90,9 +98,6 @@ public class VideoFragment extends Fragment implements IFragmentOperation {
         this.videoView.stopPlayback();
     }
 
-    @Override
-    public void setHandler(Handler mHandler) {
-        this.parentHandler = mHandler;
-    }
+
 }
 

@@ -1,12 +1,14 @@
 package com.hankutech.ax.appdemo.socket;
 
+import com.hankutech.ax.appdemo.event.AXDataEvent;
 import com.hankutech.ax.appdemo.ax.protocol.AXDataConverter;
 import com.hankutech.ax.appdemo.ax.protocol.AXRequest;
-import com.hankutech.ax.appdemo.ax.protocol.AXResponse;
-import com.hankutech.ax.appdemo.util.StringExtUtil;
+import com.hankutech.ax.appdemo.code.MessageCode;
+import com.hankutech.ax.appdemo.util.LogExt;
+
+import org.greenrobot.eventbus.EventBus;
 
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 
@@ -18,6 +20,8 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
  */
 
 public class ByteMessageHandler extends ChannelInboundHandlerAdapter {
+
+    private static final String TAG = "ByteMessageHandler";
 
     @Override
     public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
@@ -47,16 +51,18 @@ public class ByteMessageHandler extends ChannelInboundHandlerAdapter {
 
             byte[] bytes = new byte[buf.readableBytes()];
             buf.getBytes(0, bytes);
-            System.out.println("接收的原始字节数据：" + formatString(bytes));
+            LogExt.d(TAG, "接收的原始字节数据：" + formatString(bytes));
 
             int[] convertedData = ByteConverter.fromByte(bytes);
-            System.out.println("转换后的数据：" + formatString(convertedData));
+            LogExt.d(TAG, "转换后的数据：" + formatString(convertedData));
 
             AXRequest request = AXDataConverter.parseRequest(convertedData);
             if (request != null && request.isValid()) {
-                System.out.println("解析后的请求数据：" + request.toString());
+                LogExt.d(TAG, "解析后的请求数据：" + request.toString());
+
+                EventBus.getDefault().post(new AXDataEvent(request));
             } else {
-                System.out.println("未能正确解析请求数据：" + request.toString());
+                LogExt.d(TAG, "未能正确解析请求数据：" + request.toString());
             }
 
 //            if (response.isValid() == false) {

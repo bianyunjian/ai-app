@@ -8,14 +8,24 @@ public enum MessageCode {
     TIME_UPDATE(20, "时间更新"),
     APP_STATUS_UPDATE(21, "系统运行状态更新"),
 
-    VIDEO_PLAY(30, "视频播放"),
-    VIDEO_STOP(31, "视频停止"),
+    //    VIDEO_PLAY(30, "视频播放"),
+//    VIDEO_STOP(31, "视频停止"),
     AUDIO_PLAY(32, "音频播放"),
-    AUDIO_STOP(33, "音频停止"),
 
-    TICKTOCK_START(40, "倒计时开始"),
-    TICKTOCK_STOP(41, "倒计时停止"),
-    TICKTOCK_UPDATE(42, "倒计时更新");
+    AUDIO_STOP(33, "音频停止"),
+    AUDIO_PLAY_LOOP(34, "音频循环播放"),
+
+//    TICKTOCK_START(40, "倒计时开始"),
+//    TICKTOCK_STOP(41, "倒计时停止"),
+//    TICKTOCK_UPDATE(42, "倒计时更新"),
+
+    AUTH_PASS(51, "用户身份验证通过"),
+
+    GARBAGE_PASS(61, "垃圾分类验证通过"),
+
+
+    GATE_PASS(71, "投递箱门正常关闭"),
+    ;
 
     public static MessageCode valueOf(int value) {
         switch (value) {
@@ -27,20 +37,23 @@ public enum MessageCode {
                 return TIME_UPDATE;
             case 21:
                 return APP_STATUS_UPDATE;
-            case 30:
-                return VIDEO_PLAY;
-            case 31:
-                return VIDEO_STOP;
+//            case 30:
+//                return VIDEO_PLAY;
+//            case 31:
+//                return VIDEO_STOP;
             case 32:
                 return AUDIO_PLAY;
             case 33:
                 return AUDIO_STOP;
-            case 40:
-                return TICKTOCK_START;
-            case 41:
-                return TICKTOCK_STOP;
-            case 42:
-                return TICKTOCK_UPDATE;
+            case 34:
+                return AUDIO_PLAY_LOOP;
+
+            case 51:
+                return AUTH_PASS;
+            case 61:
+                return GARBAGE_PASS;
+            case 71:
+                return GATE_PASS;
             default:
                 return UNKNOWN;
         }

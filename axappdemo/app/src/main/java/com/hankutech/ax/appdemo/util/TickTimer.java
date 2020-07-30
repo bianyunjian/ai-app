@@ -5,6 +5,9 @@ import android.util.Log;
 
 import java.util.function.Consumer;
 
+import lombok.Data;
+
+
 public class TickTimer {
     private static final String TAG = "TickTimer";
     private long countDownInterval;
@@ -24,7 +27,7 @@ public class TickTimer {
             @Override
             public void onTick(long millisUntilFinished) {
 
-                Log.d(TAG, "seconds remaining: " + millisUntilFinished / 1000);
+                LogExt.d(TAG, "seconds remaining: " + millisUntilFinished / 1000);
                 if (onTickConsumer != null) {
                     onTickConsumer.accept(millisUntilFinished / 1000);
                 }
@@ -32,7 +35,7 @@ public class TickTimer {
 
             @Override
             public void onFinish() {
-                Log.d(TAG, "done!");
+                LogExt.d(TAG, "done!");
                 if (onFinishConsumer != null) {
                     onFinishConsumer.accept(null);
                 }
@@ -47,6 +50,13 @@ public class TickTimer {
 
     public void reset() {
         cancel();
+        start(this.totalMillis, this.countDownInterval, this.onTickConsumer, this.onFinishConsumer);
+    }
+
+    public void resetWithNewMillis(long totalMillis, long countDownInterval) {
+        cancel();
+        this.totalMillis = totalMillis;
+        this.countDownInterval = countDownInterval;
         start(this.totalMillis, this.countDownInterval, this.onTickConsumer, this.onFinishConsumer);
     }
 
