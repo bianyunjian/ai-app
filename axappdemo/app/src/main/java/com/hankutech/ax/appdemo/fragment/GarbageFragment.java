@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.hankutech.ax.appdemo.R;
+import com.hankutech.ax.appdemo.ax.code.GateState;
 import com.hankutech.ax.appdemo.ax.protocol.AXRequest;
 import com.hankutech.ax.appdemo.code.AudioScene;
 import com.hankutech.ax.appdemo.code.MessageCode;
@@ -94,7 +95,7 @@ public class GarbageFragment extends Fragment implements IFragmentOperation {
         AXRequest axData = dataEvent.getData();
         boolean garbageDetectSuccessResult = axData.isGarbageTypeDetectSuccess();
 
-        boolean garbageDelivered = axData.getGarbageDeliveredCount() > 0;
+        boolean gateOpen = axData.getGateState().getValue() == GateState.NOT_CLOSE.getValue();
         if (this.waitGarbageDeliver == false) {
             if (garbageDetectSuccessResult) {
                 LogExt.d(TAG, "垃圾分类检测结果成功");
@@ -128,8 +129,8 @@ public class GarbageFragment extends Fragment implements IFragmentOperation {
                 });
             }
         }
-        if (this.waitGarbageDeliver && garbageDelivered) {
-            LogExt.d(TAG, "垃圾投递动作完成");
+        if (this.waitGarbageDeliver && gateOpen) {
+            LogExt.d(TAG, "门已经打开,可以投递垃圾");
 
             this.tickTimer.cancel();
             //投递动作完成

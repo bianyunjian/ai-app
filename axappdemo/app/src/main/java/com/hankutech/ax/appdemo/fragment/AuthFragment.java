@@ -48,6 +48,7 @@ public class AuthFragment extends Fragment implements IFragmentOperation {
     private SmartPlayerJniV2 libPlayer = null;
     private Context myContext;
     private AuthFlag currentAuthFlag;
+    private boolean authPassed;
 
     public void setRTSPVideoUrl(String rtspUrl) {
         this.rtspUrl = rtspUrl;
@@ -272,7 +273,7 @@ public class AuthFragment extends Fragment implements IFragmentOperation {
 
         AXRequest axData = dataEvent.getData();
         int authResult = axData.getAuthFlag().getValue();
-        if (this.currentAuthFlag != null && authResult == this.currentAuthFlag.getValue()) {
+        if (this.authPassed == false && this.currentAuthFlag != null && authResult == this.currentAuthFlag.getValue()) {
             LogExt.d(TAG, "授权成功:" + this.currentAuthFlag.getDescription());
 
             stopRTSPVideo();
@@ -293,6 +294,7 @@ public class AuthFragment extends Fragment implements IFragmentOperation {
                 EventBus.getDefault().post(new MessageEvent(MessageCode.AUTH_PASS, axData.getPersonName()));
             });
             playAudio(AudioScene.AUTH_PASS);
+            this.authPassed = true;
         }
     }
 }

@@ -31,6 +31,7 @@ public class GateFragment extends Fragment implements IFragmentOperation {
     private View view;
     private TickTimer tickTimer = new TickTimer();
     private TextView textViewGateStateProcessDescription;
+    private boolean gateClosed;
 
 
     @Override
@@ -87,7 +88,7 @@ public class GateFragment extends Fragment implements IFragmentOperation {
         AXRequest axData = dataEvent.getData();
         GateState gateState = axData.getGateState();
 
-        if (gateState.getValue() == GateState.CLOSED.getValue()) {
+        if (this.gateClosed == false && gateState.getValue() == GateState.CLOSED.getValue()) {
             LogExt.d(TAG, "关门到位");
 
             this.textViewGateStateProcessDescription.setText(Desc_Gate_Closed);
@@ -101,6 +102,7 @@ public class GateFragment extends Fragment implements IFragmentOperation {
                 //倒计时结束后,返回首页
                 EventBus.getDefault().post(new MessageEvent(MessageCode.HOME, null));
             });
+            this.gateClosed = true;
 
         } else if (gateState.getValue() == GateState.NOT_CLOSE.getValue()) {
             LogExt.d(TAG, "没关门");

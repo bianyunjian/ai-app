@@ -19,11 +19,15 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.github.mikephil.charting.charts.BarChart;
+import com.hankutech.ax.appdemo.ax.code.AIGarbageResultType;
+import com.hankutech.ax.appdemo.ax.code.SysRunFlag;
+import com.hankutech.ax.appdemo.ax.protocol.AXRequest;
 import com.hankutech.ax.appdemo.code.AppStatus;
 import com.hankutech.ax.appdemo.code.AudioScene;
 import com.hankutech.ax.appdemo.code.AuthType;
 import com.hankutech.ax.appdemo.code.MessageCode;
 import com.hankutech.ax.appdemo.constant.Common;
+import com.hankutech.ax.appdemo.event.AXDataEvent;
 import com.hankutech.ax.appdemo.event.MessageEvent;
 import com.hankutech.ax.appdemo.fragment.GarbageFragment;
 import com.hankutech.ax.appdemo.fragment.GateFragment;
@@ -52,8 +56,9 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
     private TextView nowTimeTextView;
-
     private TextView appStatusTextView;
+    private TextView textViewSupportGarbageType;
+
     private BarChart chart;
     private SoundPool soundPool;
 
@@ -91,7 +96,7 @@ public class MainActivity extends AppCompatActivity {
         initConfigData();
         bindControl();
 
-        setAppStatusView("运行中");
+        setAppStatusView(AppStatus.NORMAL);
         setTimeView();
         setChartView();
 
@@ -133,8 +138,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void bindControl() {
-        appStatusTextView = (TextView) findViewById(R.id.app_status);
+        appStatusTextView = (TextView) findViewById(R.id.app_sysRunStatus);
         nowTimeTextView = (TextView) findViewById(R.id.nowTime);
+        textViewSupportGarbageType = (TextView) findViewById(R.id.textViewSupportGarbageType);
 
         chart = findViewById(R.id.chart);
 
@@ -168,20 +174,30 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void setChartView() {
+        ArrayList<String> xValues = getChartXValues();
+
+        ArrayList<Integer> yValues = getChartYValues();
+
+        ChartUtils.initChart(chart, xValues);
+        ChartUtils.notifyDataSetChanged(chart, xValues, yValues);
+    }
+
+    private ArrayList<Integer> getChartYValues() {
+        ArrayList<Integer> yValues = new ArrayList<>();
+        yValues.add(10);
+        yValues.add(20);
+        yValues.add(30);
+        yValues.add(40);
+        return yValues;
+    }
+
+    private ArrayList<String> getChartXValues() {
         ArrayList<String> xValues = new ArrayList<>();
         xValues.add("干垃圾");
         xValues.add("湿垃圾");
         xValues.add("有害垃圾");
         xValues.add("其他垃圾");
-
-        ArrayList<Integer> yValues = new ArrayList<>();
-        yValues.add(10);
-        yValues.add(20);
-        yValues.add(30);
-        yValues.add(10);
-
-        ChartUtils.initChart(chart, xValues);
-        ChartUtils.notifyDataSetChanged(chart, xValues, yValues);
+        return xValues;
     }
 
     private void playAudio(AudioScene audioScene, int loopCount) {
@@ -273,15 +289,15 @@ public class MainActivity extends AppCompatActivity {
     /**
      * 在主线程里面处理消息并更新UI界面
      *
-     * @param text
+     * @param appStatus
      */
-    private void setAppStatusView(String text) {
-        appStatusTextView.setText(text);
+    private void setAppStatusView(AppStatus appStatus) {
+        appStatusTextView.setText(appStatus.getDescription());
         appStatusTextView.setTextColor(Color.GREEN);
-        if (text.equals(AppStatus.WAIT)) {
+        if (appStatus.getValue() == (AppStatus.WAIT.getValue())) {
             appStatusTextView.setTextColor(Color.YELLOW);
         }
-        if (text.equals(AppStatus.ERROR)) {
+        if (appStatus.getValue() == (AppStatus.ERROR.getValue())) {
             appStatusTextView.setTextColor(Color.RED);
         }
     }
@@ -292,10 +308,10 @@ public class MainActivity extends AppCompatActivity {
      * @param messageEvent
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void OnEventMessage(MessageEvent messageEvent) {
+    public void OnMessageEvent(MessageEvent messageEvent) {
 
         if (messageEvent.getMsgCode() != MessageCode.TIME_UPDATE) {
-            LogExt.d(TAG, "OnEventMessage: " + messageEvent.toString());
+            LogExt.d(TAG, "OnMessageEvent: " + messageEvent.toString());
         }
 
         MessageCode code = messageEvent.getMsgCode();
@@ -306,8 +322,8 @@ public class MainActivity extends AppCompatActivity {
                 nowTimeTextView.setText(nowTimeText);
                 break;
             case APP_STATUS_UPDATE:
-                String text = obj.toString();
-                setAppStatusView(text);
+//                String text = obj.toString();
+//                setAppStatusView(text);
                 break;
             case HOME:
                 ShowHome();
@@ -348,4 +364,35 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+
+    /**
+     * ThreadMode设置为MAIN，事件的处理会在UI线程中执行，用TextView来展示收到的事件消息
+     *
+     * @param dataEvent
+     */
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void OnAXDataEventMessage(AXDataEvent dataEvent) {
+
+        LogExt.d(TAG, "OnAXDataEventMessage: " + dataEvent.toString());
+
+        AXRequest axData = dataEvent.getData();
+        SysRunFlag sysRunFlag = axData.getSysRunFlag();
+        AIGarbageResultType garbageType = axData.getGarbageType();
+        boolean isPersonExist = axData.isPersonExist();
+
+        if (sysRunFlag.getValue() == SysRunFlag.RUN.getValue()) {
+            setAppStatusView(AppStatus.NORMAL);
+        } else {
+            setAppStatusView(AppStatus.ERROR);
+        }
+        this.textViewSupportGarbageType.setText(garbageType.getName());
+        Common.CurrentGarbageType = garbageType;
+
+        ArrayList<Integer> yValues = new ArrayList<>();
+        yValues.add(axData.getCount_DRY());
+        yValues.add(axData.getCount_WET());
+        yValues.add(axData.getCount_HAZARDOUS());
+        yValues.add(axData.getCount_RECYCLABLE() + axData.getCount_BF());
+        ChartUtils.notifyDataSetChanged(chart, getChartXValues(), yValues);
+    }
 }

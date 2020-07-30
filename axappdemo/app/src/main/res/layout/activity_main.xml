@@ -47,7 +47,7 @@
                 tools:ignore="RtlCompat" />
 
             <TextView
-                android:id="@+id/app_status"
+                android:id="@+id/app_sysRunStatus"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal|center_vertical"
@@ -148,7 +148,7 @@
                             android:layout_height="wrap_content"
 
                             android:layout_weight="5"
-                            android:text="当前时间段投放垃圾类型"
+                            android:text="当前时间段投递类型"
                             android:textSize="18sp" />
 
                         <TextView
