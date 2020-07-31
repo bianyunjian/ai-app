@@ -62,7 +62,6 @@ public class NettySocketService extends Service {
         LogExt.d(TAG, "startSocketServer");
 
         this.serverThread = new Thread(() -> {
-            showIpAndPort();
             server = new SocketServer(SocketConst.LISTENING_PORT, new ByteSocketServerInitializer(SocketConst.REQUEST_DATA_LENGTH));
             try {
                 server.start();
@@ -74,24 +73,5 @@ public class NettySocketService extends Service {
 
     }
 
-    private void showIpAndPort() {
-        //get wifi service
-        WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-        //判断wifi是否开启
-        if (!wifiManager.isWifiEnabled()) {
-            wifiManager.setWifiEnabled(true);
-        }
-        WifiInfo wifiInfo = wifiManager.getConnectionInfo();
-        int ipAddress = wifiInfo.getIpAddress();
-        String ip = intToIp(ipAddress);
-        LogExt.d(TAG, "IP=" + ip);
 
-    }
-
-    private String intToIp(int i) {
-        return (i & 0xFF) + "." +
-                ((i >> 8) & 0xFF) + "." +
-                ((i >> 16) & 0xFF) + "." +
-                (i >> 24 & 0xFF);
-    }
 }

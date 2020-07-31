@@ -107,6 +107,8 @@ public class AuthFragment extends Fragment implements IFragmentOperation {
                 playAudio(AudioScene.AUTH_CHOOSE_TYPE);
                 textViewGuidDescription.setText(AudioScene.AUTH_CHOOSE_TYPE.getDescription());
                 tickTimer.reset();
+
+                LogExt.d(TAG, "重新选择身份验证方式");
             }
         });
         this.view.findViewById(R.id.button_rfid).setOnClickListener(new View.OnClickListener() {
@@ -124,6 +126,9 @@ public class AuthFragment extends Fragment implements IFragmentOperation {
                 playAudio(AudioScene.AUTH_RFID);
                 textViewGuidDescription.setText(AudioScene.AUTH_RFID.getDescription());
                 tickTimer.reset();
+
+
+                LogExt.d(TAG, "身份验证方式=RFID");
             }
         });
 
@@ -142,6 +147,7 @@ public class AuthFragment extends Fragment implements IFragmentOperation {
                 playAudio(AudioScene.AUTH_AI_FACE);
                 textViewGuidDescription.setText(AudioScene.AUTH_AI_FACE.getDescription());
                 tickTimer.reset();
+                LogExt.d(TAG, "身份验证方式=AI FACE");
             }
         });
 
@@ -160,8 +166,11 @@ public class AuthFragment extends Fragment implements IFragmentOperation {
                 playAudio(AudioScene.AUTH_QRCODE);
                 textViewGuidDescription.setText(AudioScene.AUTH_QRCODE.getDescription());
                 tickTimer.reset();
+                LogExt.d(TAG, "身份验证方式==QRCODE");
             }
         });
+
+        LogExt.d(TAG, "等待选择身份验证方式");
     }
 
     private void playAudio(AudioScene chooseAuthType) {
@@ -170,7 +179,7 @@ public class AuthFragment extends Fragment implements IFragmentOperation {
     }
 
     private void InitAndSetConfig4RTSP() {
-
+        LogExt.d(TAG, "InitAndSetConfig4RTSP:" + rtspUrl);
         playerHandle = libPlayer.SmartPlayerOpen(myContext);
 
         if (playerHandle == 0) {
@@ -252,6 +261,8 @@ public class AuthFragment extends Fragment implements IFragmentOperation {
     }
 
     public void release() {
+        this.tickTimer.cancel();
+        stopRTSPVideo();
         EventBus.getDefault().post(new MessageEvent(MessageCode.AUDIO_STOP, null));
         EventBus.getDefault().unregister(this);
     }

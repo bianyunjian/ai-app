@@ -60,6 +60,8 @@ public class GarbageFragment extends Fragment implements IFragmentOperation {
 
         textViewGarbageDetectProcessDescription = this.view.findViewById(R.id.garbageDetectProcessDescription);
         this.textViewGarbageDetectProcessDescription.setText(Desc_Default);
+
+        LogExt.d(TAG, "正在检测垃圾分类");
     }
 
     private void playAudio(AudioScene audioScene) {
@@ -73,6 +75,7 @@ public class GarbageFragment extends Fragment implements IFragmentOperation {
     }
 
     public void release() {
+        this.tickTimer.cancel();
         EventBus.getDefault().post(new MessageEvent(MessageCode.AUDIO_STOP, null));
         EventBus.getDefault().unregister(this);
     }

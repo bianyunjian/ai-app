@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/item_popup_textview_ip_desc"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="IP:"
+            android:textColor="@color/black"
+            android:textSize="20dp" />
+
+        <TextView
+            android:id="@+id/item_popup_textview_ip"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:text="192.168.123.456"
+            android:textColor="@color/red"
+            android:textSize="20dp" />
+
+        <Button
+            android:id="@+id/item_popup_btn_choose_logo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:text="选择logo" />
+
+        <Button
+            android:id="@+id/item_popup_btn_choose_video"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:text="选择video" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/item_popup_edittext_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="垃圾分类投递显示系统"
+            android:textSize="12dp" />
+
+        <Button
+            android:id="@+id/item_popup_btn_change_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+
+            android:text="更新标题" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/item_popup_edittext_ai_face_rtsp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="rtsp://admin:NYCQJS@192.168.123.115/"
+            android:textSize="12dp" />
+
+        <Button
+            android:id="@+id/item_popup_btn_change_ai_face_rtsp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:text="更新人脸RTSP" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/item_popup_textview_log"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/black"
+            android:maxLines="500"
+            android:scrollbars="vertical"
+            android:text="waiting logs"
+            android:textColor="@color/white"
+            android:textSize="10dp" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/item_popup_btn_reset"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:text="复位首页" />
+
+        <Button
+            android:id="@+id/item_popup_btn_hide"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+
+            android:text="关闭调试窗口" />
+
+        <Button
+            android:id="@+id/item_popup_btn_exit"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:text="退出应用" />
+    </LinearLayout>
+
+</LinearLayout>

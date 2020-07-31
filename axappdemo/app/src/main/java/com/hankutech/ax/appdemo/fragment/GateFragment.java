@@ -59,6 +59,8 @@ public class GateFragment extends Fragment implements IFragmentOperation {
 
         textViewGateStateProcessDescription = this.view.findViewById(R.id.gateStateProcessDescription);
         this.textViewGateStateProcessDescription.setText(Desc_Gate_Not_Close);
+
+        LogExt.d(TAG, "等待关门");
     }
 
     @Override
@@ -67,6 +69,7 @@ public class GateFragment extends Fragment implements IFragmentOperation {
     }
 
     public void release() {
+        this.tickTimer.cancel();
         EventBus.getDefault().post(new MessageEvent(MessageCode.AUDIO_STOP, null));
         EventBus.getDefault().unregister(this);
     }

@@ -11,7 +11,7 @@ public class Common {
     /**
      * 视频是否静音
      */
-    public static boolean VideoMute = true;
+    public static boolean VideoMute = false;
 
     /**
      * 倒计时间隔
@@ -59,4 +59,6 @@ public class Common {
      */
     public static String AIFace_RTSP_URI = "rtsp://admin:NYCQJS@192.168.123.115/";
 
+
+    public static String LogoTitle = "垃圾分类投递显示系统";
 }

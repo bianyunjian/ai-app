@@ -95,7 +95,9 @@ public class VideoFragment extends Fragment implements IFragmentOperation {
     }
 
     public void release() {
-        this.videoView.stopPlayback();
+        if (this.videoView != null) {
+            this.videoView.stopPlayback();
+        }
     }
 
 

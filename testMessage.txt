@@ -1,0 +1,38 @@
+800110012345一二三00
+08 00 00 01 01 00 00 01 02 03 04 05 d2 bb d2 bb d2 bb 00 00
+
+I/System.out: 接收的原始字节数据：[8,0,0,1,1,0,0,1,2,3,4,5,-46,-69,-46,-69,-46,-69,0,0,]
+I/System.out: 转换后的数据：[8,0,0,1,1,0,0,1,2,3,4,5,210,187,210,187,210,187,0,0,]
+I/System.out: 解析后的请求数据：AXRequest(sysRunFlag=RUN, personExist=false, authFlag=RFID, garbageType=DRY, garbageTypeDetectSuccess=false, gateState=NOT_CLOSE, count_DRY=1, count_WET=2, count_RECYCLABLE=3, count_HAZARDOUS=4, count_BF=5, personName=一一一)
+
+
+苏大强   CB D5 B4 F3 C7 BF
+
+--身份验证
+--RFID DRY 
+08 00 00 01 01 00 00 01 02 03 04 05 CB D5 B4 F3 C7 BF 00 00
+
+--AI_FACE DRY 
+08 00 00 02 01 00 00 01 02 03 04 05 CB D5 B4 F3 C7 BF 00 00
+
+
+--垃圾分类检测
+--AI_FACE DRY 检测成功 
+08 00 00 02 01 01 01 00 00 00 00 00 CB D5 B4 F3 C7 BF 00 00
+--AI_FACE DRY 检测失败 
+08 00 00 02 01 00 00 00 00 00 00 00 CB D5 B4 F3 C7 BF 00 00
+
+--AI_FACE DRY 检测成功 投递数量 干垃圾=3 
+08 00 00 02 01 01 00 03 00 00 00 00 CB D5 B4 F3 C7 BF 00 00
+
+
+--投递关门检测
+--AI_FACE DRY 检测成功 投递数量 干垃圾=3  未关门
+08 00 00 02 01 01 00 03 00 00 00 00 CB D5 B4 F3 C7 BF 00 00
+
+--AI_FACE DRY 检测成功 投递数量 干垃圾=3  关门到位
+08 00 00 02 01 01 01 03 00 00 00 00 CB D5 B4 F3 C7 BF 00 00
+
+--AI_FACE DRY 检测成功 投递数量 干垃圾=3  关门超时报警
+08 00 00 02 01 01 05 03 00 00 00 00 CB D5 B4 F3 C7 BF 00 00
+

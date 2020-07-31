@@ -83,6 +83,7 @@
                 android:background="@drawable/processborder" />
 
             <LinearLayout
+                android:id="@+id/layout_right"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="10"

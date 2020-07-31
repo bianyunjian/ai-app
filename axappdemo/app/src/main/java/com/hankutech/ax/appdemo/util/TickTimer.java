@@ -27,7 +27,7 @@ public class TickTimer {
             @Override
             public void onTick(long millisUntilFinished) {
 
-                LogExt.d(TAG, "seconds remaining: " + millisUntilFinished / 1000);
+                LogExt.d(TAG, "倒计时(秒): " + millisUntilFinished / 1000);
                 if (onTickConsumer != null) {
                     onTickConsumer.accept(millisUntilFinished / 1000);
                 }
