@@ -3,6 +3,7 @@ package com.hankutech.ax.appdemo.socket;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelId;
 
+import java.util.Arrays;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ChannelGroups {
@@ -22,7 +23,7 @@ public class ChannelGroups {
     }
 
     public static boolean contains(ChannelId channelId) {
-        return CHANNEL_MAP.contains(channelId);
+        return CHANNEL_MAP.containsKey(channelId);
     }
 
     public static void broadcast(Object msg, ChannelId... channelIds) {
@@ -36,7 +37,7 @@ public class ChannelGroups {
                 Channel channel = CHANNEL_MAP.get(id);
 
                 if (channel.isWritable()) {
-                    channel.write(msg);
+                    channel.writeAndFlush(msg);
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();

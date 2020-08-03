@@ -15,6 +15,7 @@ import android.widget.TextView;
 import com.hankutech.ax.appdemo.ax.code.AuthFlag;
 import com.hankutech.ax.appdemo.ax.protocol.AXRequest;
 import com.hankutech.ax.appdemo.event.AXDataEvent;
+import com.hankutech.ax.appdemo.event.AuthChooseEvent;
 import com.hankutech.ax.appdemo.event.MessageEvent;
 import com.hankutech.ax.appdemo.R;
 
@@ -129,6 +130,7 @@ public class AuthFragment extends Fragment implements IFragmentOperation {
 
 
                 LogExt.d(TAG, "身份验证方式=RFID");
+                EventBus.getDefault().post(new AuthChooseEvent(AuthFlag.RFID));
             }
         });
 
@@ -148,6 +150,7 @@ public class AuthFragment extends Fragment implements IFragmentOperation {
                 textViewGuidDescription.setText(AudioScene.AUTH_AI_FACE.getDescription());
                 tickTimer.reset();
                 LogExt.d(TAG, "身份验证方式=AI FACE");
+                EventBus.getDefault().post(new AuthChooseEvent(AuthFlag.AI_FACE));
             }
         });
 
@@ -167,6 +170,7 @@ public class AuthFragment extends Fragment implements IFragmentOperation {
                 textViewGuidDescription.setText(AudioScene.AUTH_QRCODE.getDescription());
                 tickTimer.reset();
                 LogExt.d(TAG, "身份验证方式==QRCODE");
+                EventBus.getDefault().post(new AuthChooseEvent(AuthFlag.QRCODE));
             }
         });
 

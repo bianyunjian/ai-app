@@ -29,15 +29,19 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.github.mikephil.charting.charts.BarChart;
+import com.hankutech.ax.appdemo.ax.SocketConst;
 import com.hankutech.ax.appdemo.ax.code.AIGarbageResultType;
 import com.hankutech.ax.appdemo.ax.code.SysRunFlag;
+import com.hankutech.ax.appdemo.ax.protocol.AXDataConverter;
 import com.hankutech.ax.appdemo.ax.protocol.AXRequest;
+import com.hankutech.ax.appdemo.ax.protocol.AXResponse;
 import com.hankutech.ax.appdemo.code.AppStatus;
 import com.hankutech.ax.appdemo.code.AudioScene;
 import com.hankutech.ax.appdemo.code.MessageCode;
 import com.hankutech.ax.appdemo.constant.Common;
 import com.hankutech.ax.appdemo.data.ConfigData;
 import com.hankutech.ax.appdemo.event.AXDataEvent;
+import com.hankutech.ax.appdemo.event.AuthChooseEvent;
 import com.hankutech.ax.appdemo.event.LogEvent;
 import com.hankutech.ax.appdemo.event.MessageEvent;
 import com.hankutech.ax.appdemo.fragment.AuthFragment;
@@ -46,6 +50,8 @@ import com.hankutech.ax.appdemo.fragment.GateFragment;
 import com.hankutech.ax.appdemo.fragment.IFragmentOperation;
 import com.hankutech.ax.appdemo.fragment.VideoFragment;
 import com.hankutech.ax.appdemo.service.NettySocketService;
+import com.hankutech.ax.appdemo.socket.ByteConverter;
+import com.hankutech.ax.appdemo.socket.SocketServer;
 import com.hankutech.ax.appdemo.util.ChartUtils;
 import com.hankutech.ax.appdemo.util.LogExt;
 import com.hankutech.ax.appdemo.util.NetworkUtil;
@@ -61,6 +67,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 
 public class MainActivity extends AppCompatActivity {
     static {
@@ -594,5 +603,21 @@ public class MainActivity extends AppCompatActivity {
                 this.item_popup_textview_log.scrollTo(0, offset - this.item_popup_textview_log.getHeight());
             }
         }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void OnAuthChooseEventMessage(AuthChooseEvent dataEvent) {
+
+        AXResponse response = new AXResponse();
+        response.setSysRunFlag(SysRunFlag.RUN);
+        response.setAuthFlag(dataEvent.getAuthFlag());
+        LogExt.i(TAG, "选择的授权方式数据：" + response.toString());
+
+        int[] respData = AXDataConverter.convertResponse(response);
+        byte[] respByteData = ByteConverter.toByte(respData);
+        ByteBuf responseByteBuf = Unpooled.buffer(respByteData.length);
+        responseByteBuf.writeBytes(respByteData);
+        SocketServer.getServer(SocketConst.LISTENING_PORT).sendData(responseByteBuf);
+
     }
 }

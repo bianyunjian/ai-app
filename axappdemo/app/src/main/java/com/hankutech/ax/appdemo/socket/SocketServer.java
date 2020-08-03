@@ -1,8 +1,17 @@
 package com.hankutech.ax.appdemo.socket;
 
+import com.hankutech.ax.appdemo.ax.code.SysRunFlag;
+import com.hankutech.ax.appdemo.ax.protocol.AXDataConverter;
+import com.hankutech.ax.appdemo.ax.protocol.AXResponse;
+import com.hankutech.ax.appdemo.event.AuthChooseEvent;
 import com.hankutech.ax.appdemo.util.LogExt;
 
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 import io.netty.bootstrap.ServerBootstrap;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
@@ -99,6 +108,7 @@ public class SocketServer {
     public void sendData(Object msg, ChannelId... channelIds) {
         ChannelGroups.broadcast(msg, channelIds);
     }
+
 
     /**
      * 获取{@link SocketServer}指定实例
