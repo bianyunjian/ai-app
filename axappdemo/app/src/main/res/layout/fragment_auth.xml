@@ -66,13 +66,14 @@
                 android:layout_marginLeft="30dp"
                 android:layout_marginRight="30dp"
                 android:layout_weight="1"
+                android:drawableTop="@drawable/rfid"
                 android:enabled="true"
                 android:paddingLeft="20dp"
                 android:paddingTop="50dp"
                 android:paddingRight="20dp"
                 android:paddingBottom="50dp"
-                android:text="RFID刷卡"
 
+                android:text="RFID刷卡"
                 android:textColor="#000000"
                 android:textSize="24dp"
                 android:textStyle="bold" />
@@ -85,13 +86,14 @@
                 android:layout_marginLeft="30dp"
                 android:layout_marginRight="30dp"
                 android:layout_weight="1"
+                android:drawableTop="@drawable/ai_face"
                 android:enabled="true"
                 android:paddingLeft="20dp"
                 android:paddingTop="50dp"
                 android:paddingRight="20dp"
                 android:paddingBottom="50dp"
-                android:text="人脸识别"
 
+                android:text="人脸识别"
                 android:textColor="#000000"
                 android:textSize="24dp"
                 android:textStyle="bold" />

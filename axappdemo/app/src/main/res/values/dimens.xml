@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
+    <dimen name="logoFont">28sp</dimen>
+    <dimen name="headerText">22sp</dimen>
+    <dimen name="tipsText">20sp</dimen>
+    <dimen name="garbageTypeTextSize">28sp</dimen>
 </resources>

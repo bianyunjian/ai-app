@@ -27,7 +27,7 @@ public class GarbageFragment extends Fragment implements IFragmentOperation {
 
     private static final String TAG = "GarbageFragment";
     private static final String Desc_Default = "正在检测垃圾分类...";
-    private static final String Desc_Success = "欢迎您的到来.\n现在是" + Common.CurrentGarbageType.getDescription() + "投放时间.\n请按照垃圾分类要求进行投放.\n感谢您的配合!";
+    private static final String Desc_Success = "现在是" + Common.CurrentGarbageType.getDescription() + "投放时间.\n请按照垃圾分类要求进行投放.\n感谢您的配合!";
     private static final String Desc_Failure = "您本次投放的垃圾不符合垃圾分类要求.\n请按照要求分类好之后再来投放.\n感谢您的配合!";
     private View view;
     private TickTimer tickTimer = new TickTimer();

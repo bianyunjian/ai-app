@@ -33,7 +33,7 @@
                 android:layout_gravity="center_horizontal|center_vertical"
                 android:layout_weight="1"
                 android:text="垃圾分类投递显示系统"
-                android:textSize="28sp" />
+                android:textSize="@dimen/logoFont" />
 
             <TextView
                 android:id="@+id/textView3"
@@ -43,7 +43,7 @@
                 android:layout_weight="1"
                 android:text="状态: "
                 android:textAlignment="viewEnd"
-                android:textSize="20sp"
+                android:textSize="@dimen/headerText"
                 tools:ignore="RtlCompat" />
 
             <TextView
@@ -53,7 +53,7 @@
                 android:layout_gravity="center_horizontal|center_vertical"
                 android:layout_weight="1"
                 android:text="运行中 "
-                android:textSize="20sp" />
+                android:textSize="@dimen/headerText" />
 
             <TextView
                 android:id="@+id/nowTime"
@@ -63,24 +63,20 @@
                 android:layout_weight="1"
                 android:text="2020年07月20日 09时30分20秒"
                 android:textAlignment="center"
-                android:textSize="20sp" />
+                android:textSize="@dimen/headerText" />
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="horizontal"
-            android:paddingLeft="2dp"
-            android:paddingTop="2dp"
-            android:paddingRight="2dp"
-            android:paddingBottom="2dp">
+            android:orientation="horizontal">
 
             <FrameLayout
                 android:id="@+id/main_container"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="4"
-                android:background="@drawable/processborder" />
+                android:background="@drawable/normalborder"/>
 
             <LinearLayout
                 android:id="@+id/layout_right"
@@ -94,7 +90,7 @@
                 <FrameLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_margin="5dp"
+                    android:layout_margin="1dp"
                     android:layout_weight="3"
                     android:background="@drawable/solidborder"
                     android:padding="5dp">
@@ -123,7 +119,7 @@
                 <FrameLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_margin="5dp"
+                    android:layout_margin="1dp"
                     android:layout_weight="2"
                     android:background="@drawable/solidborder"
                     android:padding="5dp">
@@ -138,7 +134,7 @@
                             android:id="@+id/tx"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_weight="10"
+                            android:layout_weight="5"
                             android:text="信息展示"
                             android:textAlignment="center"
                             android:textSize="20sp" />
@@ -150,7 +146,7 @@
 
                             android:layout_weight="5"
                             android:text="当前时间段投递类型"
-                            android:textSize="18sp" />
+                            android:textSize="@dimen/tipsText" />
 
                         <TextView
                             android:id="@+id/textViewSupportGarbageType"
@@ -159,22 +155,30 @@
                             android:layout_weight="10"
                             android:text="干垃圾"
                             android:textColor="#ff0000"
-                            android:textSize="24sp"
+                            android:textSize="@dimen/garbageTypeTextSize"
                             android:textStyle="bold" />
 
-                        <Button
-                            android:id="@+id/startProcess"
+                        <LinearLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_weight="5"
-                            android:background="#2a5caa"
-                            android:paddingLeft="40dp"
-                            android:paddingTop="20dp"
-                            android:paddingRight="40dp"
-                            android:paddingBottom="20dp"
-                            android:text="开始投递"
-                            android:textColor="#ffffff"
-                            android:textSize="20dp"></Button>
+                            android:orientation="horizontal">
+
+                            <Button
+                                android:id="@+id/startProcess"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_vertical"
+                                android:background="#2a5caa"
+                                android:paddingLeft="50dp"
+                                android:paddingTop="30dp"
+                                android:paddingRight="50dp"
+                                android:paddingBottom="30dp"
+                                android:text="开始投递"
+                                android:textColor="#ffffff"
+                                android:textSize="20dp"></Button>
+                        </LinearLayout>
+
                     </LinearLayout>
 
                 </FrameLayout>
