@@ -302,23 +302,30 @@ public class AuthFragment extends Fragment implements IFragmentOperation {
         if (this.authPassed == false && this.currentAuthFlag != null && authResult == this.currentAuthFlag.getValue()) {
             LogExt.d(TAG, "授权成功:" + this.currentAuthFlag.getDescription());
 
-            stopRTSPVideo();
-            this.layoutAiFace.setVisibility(View.GONE);
-            this.layoutRfid.setVisibility(View.GONE);
-            this.layoutQrCode.setVisibility(View.GONE);
-            this.layoutChooseAuthType.setVisibility(View.GONE);
-            this.backChooseButton.setVisibility(View.GONE);
-            String personDesc = String.format("欢迎您, 尊敬的%s", axData.getPersonName());
-            this.textViewGuidDescription.setText(personDesc);
-
             this.tickTimer.cancel();
+
+            //至少显示一下视频画面3秒， 避免消息接收快了后， 人脸视频画面一闪而过。
             tickTimer.start(3000, Common.TickInterval, (t) -> {
                 TextView tv = this.view.findViewById(R.id.authTiktokTimeDesc);
-                tv.setText(Common.getTickDesc(t));
+                tv.setText("画面显示" + Common.getTickDesc(t));
             }, (t) -> {
+                stopRTSPVideo();
+                this.layoutAiFace.setVisibility(View.GONE);
+                this.layoutRfid.setVisibility(View.GONE);
+                this.layoutQrCode.setVisibility(View.GONE);
+                this.layoutChooseAuthType.setVisibility(View.GONE);
+                this.backChooseButton.setVisibility(View.GONE);
+                String personDesc = String.format("欢迎您, 尊敬的%s", axData.getPersonName());
+                this.textViewGuidDescription.setText(personDesc);
 
-                EventBus.getDefault().post(new MessageEvent(MessageCode.AUTH_PASS, axData.getPersonName()));
+                tickTimer.start(3000, Common.TickInterval, (t2) -> {
+                    TextView tv = this.view.findViewById(R.id.authTiktokTimeDesc);
+                    tv.setText("欢迎" + Common.getTickDesc(t2));
+                }, (t2) -> {
+                    EventBus.getDefault().post(new MessageEvent(MessageCode.AUTH_PASS, axData.getPersonName()));
+                });
             });
+
             playAudio(AudioScene.AUTH_PASS);
             this.authPassed = true;
         }

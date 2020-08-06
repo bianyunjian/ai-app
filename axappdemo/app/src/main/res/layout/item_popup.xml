@@ -29,14 +29,12 @@
             android:id="@+id/item_popup_btn_choose_logo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-
             android:text="选择logo" />
 
         <Button
             android:id="@+id/item_popup_btn_choose_video"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-
             android:text="选择video" />
 
     </LinearLayout>
@@ -52,7 +50,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="垃圾分类投递显示系统"
-            android:textSize="12dp" />
+            android:textSize="18dp" />
 
         <Button
             android:id="@+id/item_popup_btn_change_title"
@@ -74,7 +72,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="rtsp://admin:NYCQJS@192.168.123.115/"
-            android:textSize="12dp" />
+            android:textSize="18dp" />
 
         <Button
             android:id="@+id/item_popup_btn_change_ai_face_rtsp"

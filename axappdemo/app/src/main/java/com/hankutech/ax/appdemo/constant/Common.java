@@ -14,6 +14,11 @@ public class Common {
     public static boolean VideoMute = false;
 
     /**
+     * 基础倒计时间隔
+     */
+    public static long BaseInterval = 30 * 1000;
+    public static long DebugRate = 5;
+    /**
      * 倒计时间隔
      */
     public static long TickInterval = 1 * 1000;
@@ -21,7 +26,7 @@ public class Common {
     /**
      * 正常流程的倒计时
      */
-    public static long TickMillis = 120 * 1000; //30
+    public static long TickMillis = (DebugMode ? DebugRate : 1) * BaseInterval; //30
 
     /**
      * 发送垃圾分类检测请求的时间
@@ -31,15 +36,15 @@ public class Common {
     /**
      * 垃圾分类检测的倒计时
      */
-    public static long GarbageWaitDetectMillis = 120 * 1000; //30
+    public static long GarbageWaitDetectMillis = (DebugMode ? DebugRate : 1) * BaseInterval; //30
     /**
      * 垃圾分类检测失败的倒计时
      */
-    public static long GarbageDetectFailureMillis = 120 * 1000; //10
+    public static long GarbageDetectFailureMillis = (DebugMode ? DebugRate : 1) * 10 * 1000; //10
     /**
      * 等待垃圾投递的倒计时
      */
-    public static long GarbageWaitDeliverMillis = 120 * 1000; //60
+    public static long GarbageWaitDeliverMillis = (DebugMode ? DebugRate : 1) * BaseInterval; //60
 
     /**
      * 当前垃圾投递类型
@@ -53,7 +58,7 @@ public class Common {
     /**
      * 等待关门的倒计时
      */
-    public static long GateWaitMillis = 120 * 1000;  //30
+    public static long GateWaitMillis = (DebugMode ? DebugRate : 1) * BaseInterval;  //30
 
     public static String getTickDesc(Long t) {
         return "倒计时 " + t + " 秒";
