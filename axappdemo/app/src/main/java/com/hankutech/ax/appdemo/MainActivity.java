@@ -31,6 +31,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.github.mikephil.charting.charts.BarChart;
 import com.hankutech.ax.appdemo.ax.SocketConst;
 import com.hankutech.ax.appdemo.ax.code.AIGarbageResultType;
+import com.hankutech.ax.appdemo.ax.code.AuthFlag;
 import com.hankutech.ax.appdemo.ax.code.SysRunFlag;
 import com.hankutech.ax.appdemo.ax.protocol.AXDataConverter;
 import com.hankutech.ax.appdemo.ax.protocol.AXRequest;
@@ -39,6 +40,7 @@ import com.hankutech.ax.appdemo.code.AppStatus;
 import com.hankutech.ax.appdemo.code.AudioScene;
 import com.hankutech.ax.appdemo.code.MessageCode;
 import com.hankutech.ax.appdemo.constant.Common;
+import com.hankutech.ax.appdemo.constant.RuntimeContext;
 import com.hankutech.ax.appdemo.data.ConfigData;
 import com.hankutech.ax.appdemo.event.AXDataEvent;
 import com.hankutech.ax.appdemo.event.AuthChooseEvent;
@@ -180,7 +182,7 @@ public class MainActivity extends AppCompatActivity {
             configData.setAiFaceRTSPUrl(Common.AIFace_RTSP_URI);
         }
         if (configData.getVideoUri() == null) {
-            String videoPath = "android.resource://com.hankutech.ax.appdemo/" + R.raw.garbage01;
+            String videoPath = "android.resource://com.hankutech.ax.appdemo/" + R.raw.garbage_demo;
             configData.setVideoUri(Uri.parse(videoPath));
         }
 
@@ -227,7 +229,7 @@ public class MainActivity extends AppCompatActivity {
         logo.setOnClickListener(view -> {
             logoClickCount++;
 //                Toast.makeText(mContext, "you click logo " + logoClickCount, Toast.LENGTH_SHORT).show();
-            if (logoClickCount == 5) {
+            if (logoClickCount > 5) {
                 logoClickCount = 0;
                 if (popWindow == null || popWindow.isShowing() == false) {
                     showPopupWindow();
@@ -235,6 +237,19 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+
+        if (Common.DebugMode) {
+            findViewById(R.id.btnDEBUG).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (popWindow == null || popWindow.isShowing() == false) {
+                        showPopupWindow();
+                    }
+                }
+            });
+        } else {
+            findViewById(R.id.btnDEBUG).setVisibility(View.GONE);
+        }
     }
 
     private void showPopupWindow() {
@@ -445,6 +460,9 @@ public class MainActivity extends AppCompatActivity {
         LogExt.d(TAG, "显示主界面");
         showVideoView();
         this.startProcessButton.setVisibility(View.VISIBLE);
+
+//        sendHomeResetMessage2PLC(); // 不需要了， 数据清零重置操作由PLC自己完成
+        RuntimeContext.CurrentAuthFlag = AuthFlag.FAILURE;
     }
 
     /**
@@ -619,5 +637,22 @@ public class MainActivity extends AppCompatActivity {
         responseByteBuf.writeBytes(respByteData);
         SocketServer.getServer(SocketConst.LISTENING_PORT).sendData(responseByteBuf);
 
+    }
+
+    /**
+     *  // 不需要了， 数据清零重置操作由PLC自己完成
+     * 返回主界面,向PLC发送消息，通知重置数据
+     */
+    public void sendHomeResetMessage2PLC_OB() {
+        AXResponse response = new AXResponse();
+        response.setSysRunFlag(SysRunFlag.RUN);
+        response.setAuthFlag(AuthFlag.FAILURE);
+        LogExt.i(TAG, "返回主界面,重置数据：" + response.toString());
+
+        int[] respData = AXDataConverter.convertResponse(response);
+        byte[] respByteData = ByteConverter.toByte(respData);
+        ByteBuf responseByteBuf = Unpooled.buffer(respByteData.length);
+        responseByteBuf.writeBytes(respByteData);
+        SocketServer.getServer(SocketConst.LISTENING_PORT).sendData(responseByteBuf);
     }
 }

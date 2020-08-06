@@ -23,6 +23,12 @@ public class AXResponse {
 
 
     /**
+     * X4标示 请求PLC开始检测垃圾分类
+     * 1= 开始， 0=未开始
+     */
+    int startGarbageDetectRequestFlag;
+
+    /**
      * get a empty response as default
      *
      * @return
@@ -31,6 +37,8 @@ public class AXResponse {
         AXResponse resp = new AXResponse();
         resp.setSysRunFlag(SysRunFlag.RUN);
         resp.setAuthFlag(AuthFlag.RFID);
+        resp.setStartGarbageDetectRequestFlag(0);
+
         return resp;
     }
 

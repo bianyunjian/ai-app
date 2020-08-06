@@ -1,6 +1,7 @@
 package com.hankutech.ax.appdemo.ax.protocol;
 
 import com.hankutech.ax.appdemo.ax.code.AIGarbageResultType;
+import com.hankutech.ax.appdemo.ax.code.AIGarbageTypeDetectResult;
 import com.hankutech.ax.appdemo.ax.code.AuthFlag;
 import com.hankutech.ax.appdemo.ax.code.GateState;
 import com.hankutech.ax.appdemo.ax.code.SysRunFlag;
@@ -18,6 +19,10 @@ public class AXRequest {
     SysRunFlag sysRunFlag;
 
     /**
+     * 字节X2标示是否出现了异常情况， 默认=0， 异常=1， 出现异常情况，直接重置
+     */
+    boolean sysException;
+    /**
      * X3标示投递站点是否有人
      */
     boolean personExist;
@@ -33,9 +38,9 @@ public class AXRequest {
     AIGarbageResultType garbageType;
 
     /**
-     * X6标示垃圾分类检测结果成功与否
+     * X6标示垃圾分类检测结果成功与否,默认值=0， 成功=1，失败=2
      */
-    boolean garbageTypeDetectSuccess;
+    AIGarbageTypeDetectResult garbageTypeDetectResult;
 
 
     /**

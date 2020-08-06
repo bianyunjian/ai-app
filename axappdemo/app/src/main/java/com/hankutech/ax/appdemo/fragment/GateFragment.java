@@ -89,6 +89,10 @@ public class GateFragment extends Fragment implements IFragmentOperation {
         LogExt.d(TAG, "OnEventMessage: " + dataEvent.toString());
 
         AXRequest axData = dataEvent.getData();
+        if (axData.isSysException()) {
+            EventBus.getDefault().post(new MessageEvent(MessageCode.HOME, axData));
+            return;
+        }
         GateState gateState = axData.getGateState();
 
         if (this.gateClosed == false && gateState.getValue() == GateState.CLOSED.getValue()) {

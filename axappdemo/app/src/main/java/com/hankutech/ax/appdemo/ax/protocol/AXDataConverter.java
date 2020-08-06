@@ -3,6 +3,7 @@ package com.hankutech.ax.appdemo.ax.protocol;
 
 import com.hankutech.ax.appdemo.ax.SocketConst;
 import com.hankutech.ax.appdemo.ax.code.AIGarbageResultType;
+import com.hankutech.ax.appdemo.ax.code.AIGarbageTypeDetectResult;
 import com.hankutech.ax.appdemo.ax.code.AuthFlag;
 import com.hankutech.ax.appdemo.ax.code.GateState;
 import com.hankutech.ax.appdemo.ax.code.SysRunFlag;
@@ -27,6 +28,12 @@ public class AXDataConverter {
         AXRequest axRequest = new AXRequest();
         //  X1标示艾信控制器系统状态，5标示停止，8标示运行
         axRequest.setSysRunFlag(SysRunFlag.valueOf(convertedData[0]));
+
+        //字节X2标示是否出现了异常情况， 默认=0， 异常=1， 出现异常情况，直接重置
+        if (convertedData[1] == 1) {
+            axRequest.setSysException(true);
+        }
+
         //  X3标示投递站点是否有人
         if (convertedData[2] == 1) {
             axRequest.setPersonExist(true);
@@ -40,9 +47,8 @@ public class AXDataConverter {
 
 
         //X6标示垃圾分类检测结果成功与否
-        if (convertedData[5] == 1) {
-            axRequest.setGarbageTypeDetectSuccess(true);
-        }
+        axRequest.setGarbageTypeDetectResult(AIGarbageTypeDetectResult.valueOf(convertedData[5]));
+
 
         //X7标示门是否关好，及关门超时报警
         axRequest.setGateState(GateState.valueOf(convertedData[6]));
@@ -94,10 +100,17 @@ public class AXDataConverter {
         int[] resultArray = new int[SocketConst.RESPONSE_DATA_LENGTH];
 
         // X1标示视频智能算法控制器状态，5标示停止，8标示运行；
-        resultArray[0] = resp.getSysRunFlag().getValue();
+        if (resp.getSysRunFlag() != null) {
+            resultArray[0] = resp.getSysRunFlag().getValue();
+        }
 
         // X3标示选择授权方式
-        resultArray[2] = resp.getAuthFlag().getValue();
+        if (resp.getAuthFlag() != null) {
+            resultArray[2] = resp.getAuthFlag().getValue();
+        }
+
+        // X4标示 请求PLC开始检测垃圾分类
+        resultArray[3] = resp.getStartGarbageDetectRequestFlag();
 
         return resultArray;
     }

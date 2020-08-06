@@ -34,7 +34,7 @@
         <TextView
             android:id="@+id/garbageDetectProcessDescription"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="336dp"
             android:paddingTop="50dp"
             android:text="正在检测垃圾分类..."
             android:textAlignment="center"
@@ -42,6 +42,12 @@
             android:textSize="24dp"
 
             android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/btnSendMessage2PLC"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="发送垃圾检测请求到PLC" />
 
 
     </LinearLayout>

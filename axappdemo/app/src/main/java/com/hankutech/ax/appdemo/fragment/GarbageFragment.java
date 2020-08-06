@@ -9,19 +9,30 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.hankutech.ax.appdemo.R;
+import com.hankutech.ax.appdemo.ax.SocketConst;
+import com.hankutech.ax.appdemo.ax.code.AIGarbageTypeDetectResult;
 import com.hankutech.ax.appdemo.ax.code.GateState;
+import com.hankutech.ax.appdemo.ax.code.SysRunFlag;
+import com.hankutech.ax.appdemo.ax.protocol.AXDataConverter;
 import com.hankutech.ax.appdemo.ax.protocol.AXRequest;
+import com.hankutech.ax.appdemo.ax.protocol.AXResponse;
 import com.hankutech.ax.appdemo.code.AudioScene;
 import com.hankutech.ax.appdemo.code.MessageCode;
 import com.hankutech.ax.appdemo.constant.Common;
+import com.hankutech.ax.appdemo.constant.RuntimeContext;
 import com.hankutech.ax.appdemo.event.AXDataEvent;
 import com.hankutech.ax.appdemo.event.MessageEvent;
+import com.hankutech.ax.appdemo.socket.ByteConverter;
+import com.hankutech.ax.appdemo.socket.SocketServer;
 import com.hankutech.ax.appdemo.util.LogExt;
 import com.hankutech.ax.appdemo.util.TickTimer;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 
 public class GarbageFragment extends Fragment implements IFragmentOperation {
 
@@ -31,8 +42,17 @@ public class GarbageFragment extends Fragment implements IFragmentOperation {
     private static final String Desc_Failure = "您本次投放的垃圾不符合垃圾分类要求.\n请按照要求分类好之后再来投放.\n感谢您的配合!";
     private View view;
     private TickTimer tickTimer = new TickTimer();
+    private TickTimer sendGarbageDetectRequestTickTimer = new TickTimer();
     private TextView textViewGarbageDetectProcessDescription;
+    /**
+     * 是否在等待投递
+     */
     private boolean waitGarbageDeliver;
+
+    /**
+     * 是否已经收到了垃圾检测的结果
+     */
+    private boolean receiveGarbageResult;
 
 
     @Override
@@ -62,6 +82,41 @@ public class GarbageFragment extends Fragment implements IFragmentOperation {
         this.textViewGarbageDetectProcessDescription.setText(Desc_Default);
 
         LogExt.d(TAG, "正在检测垃圾分类");
+
+        if (Common.DebugMode) {
+            this.view.findViewById(R.id.btnSendMessage2PLC).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    sendGarbageDetectMessage2PLC();
+                }
+            });
+        } else {
+            this.view.findViewById(R.id.btnSendMessage2PLC).setVisibility(View.GONE);
+        }
+
+
+        sendGarbageDetectRequestTickTimer.start(Common.SendGarbageDetectRequestMillis, Common.TickInterval, (t) -> {
+            if (this.receiveGarbageResult == false) {
+                sendGarbageDetectMessage2PLC();
+            } else {
+                sendGarbageDetectRequestTickTimer.cancel();
+            }
+        }, (t) -> {
+        });
+    }
+
+    private void sendGarbageDetectMessage2PLC() {
+        AXResponse response = new AXResponse();
+        response.setSysRunFlag(SysRunFlag.RUN);
+        response.setAuthFlag(RuntimeContext.CurrentAuthFlag);
+        response.setStartGarbageDetectRequestFlag(1);
+        LogExt.i(TAG, "发送请求PLC开始检测垃圾分类：" + response.toString());
+
+        int[] respData = AXDataConverter.convertResponse(response);
+        byte[] respByteData = ByteConverter.toByte(respData);
+        ByteBuf responseByteBuf = Unpooled.buffer(respByteData.length);
+        responseByteBuf.writeBytes(respByteData);
+        SocketServer.getServer(SocketConst.LISTENING_PORT).sendData(responseByteBuf);
     }
 
     private void playAudio(AudioScene audioScene) {
@@ -96,11 +151,16 @@ public class GarbageFragment extends Fragment implements IFragmentOperation {
         LogExt.d(TAG, "OnEventMessage: " + dataEvent.toString());
 
         AXRequest axData = dataEvent.getData();
-        boolean garbageDetectSuccessResult = axData.isGarbageTypeDetectSuccess();
+        if (axData.isSysException()) {
+            EventBus.getDefault().post(new MessageEvent(MessageCode.HOME, axData));
+            return;
+        }
+
+        AIGarbageTypeDetectResult garbageDetectResult = axData.getGarbageTypeDetectResult();
 
         boolean gateOpen = axData.getGateState().getValue() == GateState.NOT_CLOSE.getValue();
         if (this.waitGarbageDeliver == false) {
-            if (garbageDetectSuccessResult) {
+            if (garbageDetectResult.getValue() == AIGarbageTypeDetectResult.SUCCESS.getValue()) {
                 LogExt.d(TAG, "垃圾分类检测结果成功");
 
                 playAudio(AudioScene.GARBAGE_DETECT_SUCCESS);
@@ -116,8 +176,9 @@ public class GarbageFragment extends Fragment implements IFragmentOperation {
                     EventBus.getDefault().post(new MessageEvent(MessageCode.GARBAGE_PASS, null));
                 });
                 this.waitGarbageDeliver = true;
+                this.receiveGarbageResult = true;
                 return;
-            } else {
+            } else if (garbageDetectResult.getValue() == AIGarbageTypeDetectResult.FAILURE.getValue()) {
                 LogExt.d(TAG, "垃圾分类检测结果失败");
                 playAudio(AudioScene.GARBAGE_DETECT_FAILURE);
                 this.textViewGarbageDetectProcessDescription.setText(Desc_Failure);
@@ -130,6 +191,7 @@ public class GarbageFragment extends Fragment implements IFragmentOperation {
                     //倒计时结束后,回到主界面
                     EventBus.getDefault().post(new MessageEvent(MessageCode.HOME, null));
                 });
+                this.receiveGarbageResult = true;
             }
         }
         if (this.waitGarbageDeliver && gateOpen) {

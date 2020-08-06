@@ -14,6 +14,7 @@ import android.widget.TextView;
 
 import com.hankutech.ax.appdemo.ax.code.AuthFlag;
 import com.hankutech.ax.appdemo.ax.protocol.AXRequest;
+import com.hankutech.ax.appdemo.constant.RuntimeContext;
 import com.hankutech.ax.appdemo.event.AXDataEvent;
 import com.hankutech.ax.appdemo.event.AuthChooseEvent;
 import com.hankutech.ax.appdemo.event.MessageEvent;
@@ -99,6 +100,7 @@ public class AuthFragment extends Fragment implements IFragmentOperation {
                 stopRTSPVideo();
 
                 currentAuthFlag = AuthFlag.FAILURE;
+                RuntimeContext.CurrentAuthFlag = currentAuthFlag;
                 layoutChooseAuthType.setVisibility(View.VISIBLE);
                 layoutRfid.setVisibility(View.GONE);
                 layoutAiFace.setVisibility(View.GONE);
@@ -118,6 +120,7 @@ public class AuthFragment extends Fragment implements IFragmentOperation {
                 stopRTSPVideo();
 
                 currentAuthFlag = AuthFlag.RFID;
+                RuntimeContext.CurrentAuthFlag = currentAuthFlag;
                 layoutChooseAuthType.setVisibility(View.GONE);
                 layoutRfid.setVisibility(View.VISIBLE);
                 layoutAiFace.setVisibility(View.GONE);
@@ -140,6 +143,7 @@ public class AuthFragment extends Fragment implements IFragmentOperation {
                 playRTSPVideo();
 
                 currentAuthFlag = AuthFlag.AI_FACE;
+                RuntimeContext.CurrentAuthFlag = currentAuthFlag;
                 layoutChooseAuthType.setVisibility(View.GONE);
                 layoutRfid.setVisibility(View.GONE);
                 layoutAiFace.setVisibility(View.VISIBLE);
@@ -160,6 +164,7 @@ public class AuthFragment extends Fragment implements IFragmentOperation {
                 stopRTSPVideo();
 
                 currentAuthFlag = AuthFlag.QRCODE;
+                RuntimeContext.CurrentAuthFlag = currentAuthFlag;
                 layoutChooseAuthType.setVisibility(View.GONE);
                 layoutRfid.setVisibility(View.GONE);
                 layoutAiFace.setVisibility(View.GONE);
@@ -287,6 +292,12 @@ public class AuthFragment extends Fragment implements IFragmentOperation {
         LogExt.d(TAG, "OnEventMessage: " + dataEvent.toString());
 
         AXRequest axData = dataEvent.getData();
+
+        if (axData.isSysException()) {
+            EventBus.getDefault().post(new MessageEvent(MessageCode.HOME, axData));
+            return;
+        }
+
         int authResult = axData.getAuthFlag().getValue();
         if (this.authPassed == false && this.currentAuthFlag != null && authResult == this.currentAuthFlag.getValue()) {
             LogExt.d(TAG, "授权成功:" + this.currentAuthFlag.getDescription());
