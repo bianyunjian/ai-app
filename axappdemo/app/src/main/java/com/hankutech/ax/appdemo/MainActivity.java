@@ -458,11 +458,13 @@ public class MainActivity extends AppCompatActivity {
      */
     private void ShowHome() {
         LogExt.d(TAG, "显示主界面");
+
+        RuntimeContext.CurrentAuthFlag = AuthFlag.FAILURE;
+
         showVideoView();
         this.startProcessButton.setVisibility(View.VISIBLE);
 
 //        sendHomeResetMessage2PLC(); // 不需要了， 数据清零重置操作由PLC自己完成
-        RuntimeContext.CurrentAuthFlag = AuthFlag.FAILURE;
     }
 
     /**
@@ -599,7 +601,7 @@ public class MainActivity extends AppCompatActivity {
             setAppStatusView(AppStatus.ERROR);
         }
         this.textViewSupportGarbageType.setText(garbageType.getName());
-        Common.CurrentGarbageType = garbageType;
+        RuntimeContext.CurrentGarbageType = garbageType;
 
         ArrayList<Integer> yValues = new ArrayList<>();
         yValues.add(axData.getCount_DRY());
@@ -636,11 +638,10 @@ public class MainActivity extends AppCompatActivity {
         ByteBuf responseByteBuf = Unpooled.buffer(respByteData.length);
         responseByteBuf.writeBytes(respByteData);
         SocketServer.getServer(SocketConst.LISTENING_PORT).sendData(responseByteBuf);
-
     }
 
     /**
-     *  // 不需要了， 数据清零重置操作由PLC自己完成
+     * // 不需要了， 数据清零重置操作由PLC自己完成
      * 返回主界面,向PLC发送消息，通知重置数据
      */
     public void sendHomeResetMessage2PLC_OB() {

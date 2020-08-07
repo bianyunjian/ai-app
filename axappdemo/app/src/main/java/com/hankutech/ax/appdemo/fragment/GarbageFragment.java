@@ -38,7 +38,7 @@ public class GarbageFragment extends Fragment implements IFragmentOperation {
 
     private static final String TAG = "GarbageFragment";
     private static final String Desc_Default = "正在检测垃圾分类...";
-    private static final String Desc_Success = "现在是" + Common.CurrentGarbageType.getDescription() + "投放时间.\n请按照垃圾分类要求进行投放.\n感谢您的配合!";
+    private static final String Desc_Success = "现在是" + RuntimeContext.CurrentGarbageType.getDescription() + "投放时间.\n请按照垃圾分类要求进行投放.\n感谢您的配合!";
     private static final String Desc_Failure = "您本次投放的垃圾不符合垃圾分类要求.\n请按照要求分类好之后再来投放.\n感谢您的配合!";
     private View view;
     private TickTimer tickTimer = new TickTimer();
@@ -159,7 +159,7 @@ public class GarbageFragment extends Fragment implements IFragmentOperation {
         AIGarbageTypeDetectResult garbageDetectResult = axData.getGarbageTypeDetectResult();
 
         boolean gateOpen = axData.getGateState().getValue() == GateState.NOT_CLOSE.getValue();
-        if (this.waitGarbageDeliver == false) {
+        if (this.waitGarbageDeliver == false && this.receiveGarbageResult == false) {
             if (garbageDetectResult.getValue() == AIGarbageTypeDetectResult.SUCCESS.getValue()) {
                 LogExt.d(TAG, "垃圾分类检测结果成功");
 

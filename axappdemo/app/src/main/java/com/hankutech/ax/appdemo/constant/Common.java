@@ -6,7 +6,7 @@ public class Common {
     /**
      * 是否Debug模式
      */
-    public static boolean DebugMode = true;
+    public static boolean DebugMode = false;
 
     /**
      * 视频是否静音
@@ -46,10 +46,7 @@ public class Common {
      */
     public static long GarbageWaitDeliverMillis = (DebugMode ? DebugRate : 1) * BaseInterval; //60
 
-    /**
-     * 当前垃圾投递类型
-     */
-    public static AIGarbageResultType CurrentGarbageType = AIGarbageResultType.DRY;
+
 
     /**
      * 关门到位后的倒计时
