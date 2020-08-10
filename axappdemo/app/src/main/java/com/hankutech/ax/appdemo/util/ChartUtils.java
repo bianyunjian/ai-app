@@ -123,7 +123,7 @@ public class ChartUtils {
         // 不显示表格颜色
         chart.setDrawGridBackground(false);
         // 不可以缩放
-        chart.setScaleEnabled(false);
+        chart.setScaleEnabled(true);
         // 不显示y轴右边的值
         chart.getAxisRight().setEnabled(false);
         // 不显示图例
@@ -132,7 +132,7 @@ public class ChartUtils {
         legend.setHorizontalAlignment(Legend.LegendHorizontalAlignment.CENTER);
         legend.setVerticalAlignment(Legend.LegendVerticalAlignment.TOP);
         legend.setTextColor(Color.argb(255, 117, 117, 117));
-        legend.setTextSize(13);
+        legend.setTextSize(12);
 
 
         //x坐标轴设置
@@ -147,6 +147,7 @@ public class ChartUtils {
 //        xAxis.setAxisMinimum(1f);
         xAxis.setTextColor(Color.argb(255, 117, 117, 117));
         xAxis.setTextSize(13);
+        chart.setExtraBottomOffset(10f);
 
         //y轴设置
         YAxis leftAxis = chart.getAxisLeft();

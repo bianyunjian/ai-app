@@ -33,7 +33,7 @@
                 android:layout_gravity="center_horizontal|center_vertical"
                 android:layout_marginTop="3dp"
                 android:layout_weight="1"
-                android:text="垃圾分类投递显示系统"
+                android:text="智能环境污回系统"
                 android:textSize="@dimen/logoFont" />
 
             <TextView
@@ -102,10 +102,10 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
+                        android:layout_marginTop="5dp"
+                        android:layout_marginBottom="5dp"
                         android:gravity="center_horizontal"
-                        android:orientation="vertical"
-                        android:paddingTop="5dp"
-                        android:paddingBottom="10dp">
+                        android:orientation="vertical">
 
                         <TextView
                             android:id="@+id/txsumamry"
