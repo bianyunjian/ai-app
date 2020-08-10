@@ -4,6 +4,7 @@ import android.graphics.Color;
 
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
@@ -11,13 +12,17 @@ import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 import com.github.mikephil.charting.formatter.IValueFormatter;
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 import com.github.mikephil.charting.utils.ViewPortHandler;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ChartUtils {
 
@@ -25,65 +30,83 @@ public class ChartUtils {
     /**
      * 更新图表
      *
-     * @param barChart 图表
-     * @param xValues  x数据
-     * @param yValues  y数据
+     * @param barChart  图表
+     * @param xValues   x数据
+     * @param dataLists y数据
      */
-    public static void notifyDataSetChanged(BarChart barChart, ArrayList<String> xValues, ArrayList<Integer> yValues) {
+    public static void notifyDataSetChanged(BarChart barChart, ArrayList<String> xValues, LinkedHashMap<String, List<Integer>> dataLists) {
         barChart.invalidate();
 
         ArrayList<IBarDataSet> dataSets = new ArrayList<>();
-        boolean newAdd = false;
-        for (int i = 0; i < xValues.size(); i++) {
+        int currentPosition = 0;//用于柱状图颜色集合的index
 
-            ArrayList entries = new ArrayList<>();
-            entries.add(new BarEntry(i, yValues.get(i)));
+        for (Map.Entry<String, List<Integer>> entry : dataLists.entrySet()) {
+            String name = entry.getKey();
+            List<Integer> yValueList = entry.getValue();
 
-            if (barChart.getData() != null && barChart.getData().getDataSetCount() > 0) {
-                BarDataSet dataset = (BarDataSet) barChart.getData().getDataSetByIndex(i);
-                dataset.setValues(entries);
-                barChart.getData().notifyDataChanged();
-                barChart.notifyDataSetChanged();
-            } else {
-                newAdd = true;
-                BarDataSet newDataset = new BarDataSet(entries, "");
+            List<BarEntry> entries = new ArrayList<>();
 
-                newDataset.setColor(getXColor(i));
-
-                dataSets.add(newDataset);
-
-
+            for (int i = 0; i < yValueList.size(); i++) {
+                entries.add(new BarEntry(i, yValueList.get(i)));
             }
+            // 每一个BarDataSet代表一类柱状图
+            BarDataSet barDataSet = new BarDataSet(entries, name);
+            barDataSet.setColor(getXColor(currentPosition));
+            dataSets.add(barDataSet);
+
+            currentPosition++;
         }
 
-        if (newAdd) {
-            BarData data = new BarData(dataSets);
-            data.setValueTextSize(18f);
+        //X轴自定义值
+        barChart.getXAxis().setValueFormatter(new IAxisValueFormatter() {
+            @Override
+            public String getFormattedValue(float value, AxisBase axis) {
+                return xValues.get((int) value % xValues.size());
+            }
+        });
 
 
-            float barWidth = 0.7f;
-            data.setBarWidth(barWidth);
-            barChart.setData(data);
+        BarData data = new BarData(dataSets);
+        data.setValueTextSize(18f);
 
-            barChart.invalidate();
-        }
+/**
+ * float groupSpace = 0.3f;   //柱状图组之间的间距
+ * float barSpace =  0.05f;  //每条柱状图之间的间距  一组两个柱状图
+ * float barWidth = 0.3f;    //每条柱状图的宽度     一组两个柱状图
+ * (barWidth + barSpace) * barAmount + groupSpace = (0.3 + 0.05) * 2 + 0.3 = 1.00
+ * 3个数值 加起来 必须等于 1 即100% 按照百分比来计算 组间距 柱状图间距 柱状图宽度
+ */
+
+//设置组间距占比30% 每条柱状图宽度占比 70% /barAmount  柱状图间距占比 0%
+        float groupSpace = 0.2f; //柱状图组之间的间距
+        float barSpace = 0.05f;
+        float barWidth = 0.3f;
+
+//设置柱状图宽度
+        data.setBarWidth(barWidth);
+//(起始点、柱状图组间距、柱状图之间间距)
+        data.groupBars(-0.35f, groupSpace, barSpace);
+        barChart.setData(data);
+
+        barChart.invalidate();
+
     }
 
     private static int getXColor(int value) {
-        if (value == 0) return Color.RED;
-        if (value == 1) return Color.YELLOW;
+        if (value == 0) return Color.argb(255, 91, 155, 213);
+        if (value == 1) return Color.argb(255, 237, 125, 49);
         if (value == 2) return Color.CYAN;
         if (value == 3) return Color.GREEN;
         return Color.GRAY;
     }
 
-    private static String getXLabel(float value) {
-        if (value == 0) return "干垃圾";
-        if (value == 1) return "湿垃圾";
-        if (value == 2) return "有害垃圾";
-        if (value == 3) return "其他垃圾";
-        return String.valueOf(value);
-    }
+//    private static String getXLabel(float value) {
+//        if (value == 0) return "干垃圾";
+//        if (value == 1) return "湿垃圾";
+//        if (value == 2) return "有害垃圾";
+//        if (value == 3) return "其他垃圾";
+//        return String.valueOf(value);
+//    }
 
     /**
      * 初始化图表
@@ -105,9 +128,12 @@ public class ChartUtils {
         chart.getAxisRight().setEnabled(false);
         // 不显示图例
         Legend legend = chart.getLegend();
-        legend.setEnabled(false);
-        // 向左偏移15dp，抵消y轴向右偏移的30dp
-        chart.setExtraLeftOffset(-15);
+        legend.setEnabled(true);
+        legend.setHorizontalAlignment(Legend.LegendHorizontalAlignment.CENTER);
+        legend.setVerticalAlignment(Legend.LegendVerticalAlignment.TOP);
+        legend.setTextColor(Color.argb(255, 117, 117, 117));
+        legend.setTextSize(13);
+
 
         //x坐标轴设置
         XAxis xAxis = chart.getXAxis();
@@ -119,6 +145,8 @@ public class ChartUtils {
 //        xAxis.setCenterAxisLabels(true);//设置标签居中
         xAxis.setValueFormatter(new IndexAxisValueFormatter(xAxisValue));
 //        xAxis.setAxisMinimum(1f);
+        xAxis.setTextColor(Color.argb(255, 117, 117, 117));
+        xAxis.setTextSize(13);
 
         //y轴设置
         YAxis leftAxis = chart.getAxisLeft();

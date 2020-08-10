@@ -5,8 +5,8 @@
     <dimen name="logoImageHeight">50dp</dimen>
     <dimen name="logoFont">34dp</dimen>
     <dimen name="headerText">30sp</dimen>
-    <dimen name="tipsText">26sp</dimen>
-    <dimen name="garbageTypeTextSize">36sp</dimen>
+    <dimen name="tipsText">24sp</dimen>
+    <dimen name="garbageTypeTextSize">60dp</dimen>
     <dimen name="tickTimeFont">28sp</dimen>
     <dimen name="normalButtonTextFont">24sp</dimen>
     <dimen name="guideText">36dp</dimen>

@@ -66,6 +66,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -379,27 +380,45 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void setChartView() {
-        ArrayList<String> xValues = getChartXValues();
-        ArrayList<Integer> yValues = getChartYValues();
+        ArrayList<String> xValues = getChartXValues(null);
+        LinkedHashMap<String, List<Integer>> yValues = getChartYValues(null);
         ChartUtils.initChart(chart, xValues);
         ChartUtils.notifyDataSetChanged(chart, xValues, yValues);
     }
 
-    private ArrayList<Integer> getChartYValues() {
-        ArrayList<Integer> yValues = new ArrayList<>();
-        yValues.add(10);
-        yValues.add(20);
-        yValues.add(30);
-        yValues.add(40);
+    private LinkedHashMap<String, List<Integer>> getChartYValues(AXRequest axData) {
+        LinkedHashMap<String, List<Integer>> yValues = new LinkedHashMap<>();
+        if (axData == null) {
+            yValues.put("开门次数(次)", new ArrayList<>());
+            yValues.get("开门次数(次)").add(12);
+            yValues.get("开门次数(次)").add(16);
+
+            yValues.put("投递数量(包)", new ArrayList<>());
+            yValues.get("投递数量(包)").add(29);
+            yValues.get("投递数量(包)").add(38);
+
+        } else {
+
+            yValues.put("开门次数(次)", new ArrayList<>());
+            yValues.get("开门次数(次)").add(axData.getCount_DRY());
+            yValues.get("开门次数(次)").add(axData.getCount_HAZARDOUS());
+
+            yValues.put("投递数量(包)", new ArrayList<>());
+            yValues.get("投递数量(包)").add(axData.getCount_WET());
+            yValues.get("投递数量(包)").add(axData.getCount_RECYCLABLE());
+
+        }
         return yValues;
     }
 
-    private ArrayList<String> getChartXValues() {
+    private ArrayList<String> getChartXValues(AXRequest axData) {
         ArrayList<String> xValues = new ArrayList<>();
-        xValues.add("干垃圾");
-        xValues.add("湿垃圾");
-        xValues.add("有害垃圾");
-        xValues.add("其他垃圾");
+        if (axData == null) {
+            xValues.add("厨余垃圾(湿)");
+            xValues.add("其他垃圾(干)");
+        } else {
+
+        }
         return xValues;
     }
 
@@ -603,12 +622,7 @@ public class MainActivity extends AppCompatActivity {
         this.textViewSupportGarbageType.setText(garbageType.getName());
         RuntimeContext.CurrentGarbageType = garbageType;
 
-        ArrayList<Integer> yValues = new ArrayList<>();
-        yValues.add(axData.getCount_DRY());
-        yValues.add(axData.getCount_WET());
-        yValues.add(axData.getCount_HAZARDOUS());
-        yValues.add(axData.getCount_RECYCLABLE() + axData.getCount_BF());
-        ChartUtils.notifyDataSetChanged(chart, getChartXValues(), yValues);
+        ChartUtils.notifyDataSetChanged(chart, getChartXValues(axData), getChartYValues(axData));
     }
 
 
