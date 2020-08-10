@@ -10,7 +10,7 @@ public enum AudioScene {
 
     GARBAGE_DETECT(21, "正在检测垃圾分类..."),
     GARBAGE_DETECT_SUCCESS(22, "请按照垃圾分类要求进行投放,感谢您的配合"),
-    GARBAGE_DETECT_FAILURE(23, "本次投放的垃圾不符合垃圾分类要求.请按照垃圾分类要求进行投放,感谢您的配合"),
+    GARBAGE_DETECT_FAILURE(23, "本次投放的垃圾不符合垃圾分类要求.\r\n请按照垃圾分类要求进行投放,感谢您的配合"),
 
     GATE_CLOSE(31, "本次投递结束,小艾在这里等待您的再次到来"),
     GATE_NOT_CLOSE(32, "亲,您可以开始垃圾投递了,投递后请关好门,感谢您的配合"),
