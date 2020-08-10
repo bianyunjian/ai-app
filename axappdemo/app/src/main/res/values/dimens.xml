@@ -1,7 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="logoFont">28sp</dimen>
-    <dimen name="headerText">22sp</dimen>
-    <dimen name="tipsText">20sp</dimen>
-    <dimen name="garbageTypeTextSize">28sp</dimen>
+    <dimen name="headerHeight">80dp</dimen>
+    <dimen name="logoImageWidth">200dp</dimen>
+    <dimen name="logoImageHeight">50dp</dimen>
+    <dimen name="logoFont">34dp</dimen>
+    <dimen name="headerText">30sp</dimen>
+    <dimen name="tipsText">26sp</dimen>
+    <dimen name="garbageTypeTextSize">36sp</dimen>
+    <dimen name="tickTimeFont">28sp</dimen>
+    <dimen name="normalButtonTextFont">24sp</dimen>
+    <dimen name="guideText">36dp</dimen>
 </resources>

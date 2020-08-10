@@ -45,11 +45,11 @@ public class VideoFragment extends Fragment implements IFragmentOperation {
         super.onResume();
         videoView = (VideoView) this.view.findViewById(R.id.videoView);
         videoView.setVideoURI(videoUri);
-        if (Common.DebugMode) {
+//        if (Common.DebugMode) {
             MediaController mediaController = new MediaController(this.getContext());
             videoView.setMediaController(mediaController);
 
-        }
+//        }
 
         videoView.start();
 

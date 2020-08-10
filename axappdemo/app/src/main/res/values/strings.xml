@@ -1,5 +1,5 @@
 <resources>
     <string name="app_name">SmartPlayerSDKDemo</string>
     <string name="app_label_name">艾信智慧</string>
-    <string name="back_choose_auth_type">重新选择&#060;&#060; </string>
+    <string name="back_choose_auth_type">&#060;&#060;重新选择 </string>
 </resources>

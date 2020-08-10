@@ -37,9 +37,9 @@ import io.netty.buffer.Unpooled;
 public class GarbageFragment extends Fragment implements IFragmentOperation {
 
     private static final String TAG = "GarbageFragment";
-    private static final String Desc_Default = "正在检测垃圾分类...";
+    private static final String Desc_Default = AudioScene.GARBAGE_DETECT.getDescription();
     private static final String Desc_Success = "现在是" + RuntimeContext.CurrentGarbageType.getDescription() + "投放时间.\n请按照垃圾分类要求进行投放.\n感谢您的配合!";
-    private static final String Desc_Failure = "您本次投放的垃圾不符合垃圾分类要求.\n请按照要求分类好之后再来投放.\n感谢您的配合!";
+    private static final String Desc_Failure = AudioScene.GARBAGE_DETECT_FAILURE.getDescription();
     private View view;
     private TickTimer tickTimer = new TickTimer();
     private TickTimer sendGarbageDetectRequestTickTimer = new TickTimer();

@@ -10,5 +10,5 @@
     <color name="blue">#0000ff</color>
     <color name="grayWhite">#d9d6c3</color>
     <color name="orange">#f47920</color>
-
+    <color name="guideTextColor">#000000</color>
 </resources>

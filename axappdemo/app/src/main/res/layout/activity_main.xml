@@ -15,13 +15,13 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="50dp"
+            android:layout_height="@dimen/headerHeight"
             android:orientation="horizontal">
 
             <ImageView
                 android:id="@+id/logo"
-                android:layout_width="149dp"
-                android:layout_height="36dp"
+                android:layout_width="@dimen/logoImageWidth"
+                android:layout_height="@dimen/logoImageHeight"
                 android:layout_gravity="center_horizontal|center_vertical"
                 android:scaleType="centerCrop"
                 android:src="@drawable/ax_logo" />
@@ -31,13 +31,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal|center_vertical"
+                android:layout_marginTop="3dp"
                 android:layout_weight="1"
                 android:text="垃圾分类投递显示系统"
                 android:textSize="@dimen/logoFont" />
 
             <TextView
                 android:id="@+id/textView3"
-                android:layout_width="29dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal|center_vertical"
                 android:layout_weight="1"
@@ -53,11 +54,12 @@
                 android:layout_gravity="center_horizontal|center_vertical"
                 android:layout_weight="1"
                 android:text="运行中 "
+                android:textColor="@color/green"
                 android:textSize="@dimen/headerText" />
 
             <TextView
                 android:id="@+id/nowTime"
-                android:layout_width="291dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal|center_vertical"
                 android:layout_weight="1"
@@ -75,8 +77,11 @@
                 android:id="@+id/main_container"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:layout_margin="1dp"
                 android:layout_weight="4"
-                android:background="@drawable/normalborder"/>
+                android:background="@drawable/main_container_background"
+                android:elevation="2dp"
+                android:padding="1dp" />
 
             <LinearLayout
                 android:id="@+id/layout_right"
@@ -90,10 +95,9 @@
                 <FrameLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_margin="1dp"
+                    android:layout_margin="3dp"
                     android:layout_weight="3"
-                    android:background="@drawable/solidborder"
-                    android:padding="5dp">
+                    android:background="@drawable/block_container_background">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -119,10 +123,13 @@
                 <FrameLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_margin="1dp"
+
+                    android:layout_marginLeft="3dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginRight="3dp"
+                    android:layout_marginBottom="3dp"
                     android:layout_weight="2"
-                    android:background="@drawable/solidborder"
-                    android:padding="5dp">
+                    android:background="@drawable/block_container_background">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -153,6 +160,7 @@
 
                             android:layout_weight="5"
                             android:text="当前时间段投递类型"
+                            android:textColor="@color/guideTextColor"
                             android:textSize="@dimen/tipsText" />
 
                         <TextView
@@ -173,17 +181,14 @@
 
                             <Button
                                 android:id="@+id/startProcess"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
+                                android:layout_width="180dp"
+                                android:layout_height="100dp"
                                 android:layout_gravity="center_vertical"
-                                android:background="#2a5caa"
-                                android:paddingLeft="50dp"
-                                android:paddingTop="30dp"
-                                android:paddingRight="50dp"
-                                android:paddingBottom="30dp"
+                                android:background="@drawable/normal_button_background"
+
                                 android:text="开始投递"
                                 android:textColor="#ffffff"
-                                android:textSize="20dp"></Button>
+                                android:textSize="@dimen/tipsText"></Button>
                         </LinearLayout>
 
                     </LinearLayout>

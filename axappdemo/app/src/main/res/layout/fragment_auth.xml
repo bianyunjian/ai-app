@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+
     tools:context=".fragment.AuthFragment">
 
     <LinearLayout
@@ -14,29 +15,31 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:paddingLeft="10dp"
+            android:paddingTop="10dp"
+            android:paddingRight="10dp">
 
             <Button
                 android:id="@+id/button_back_choose_auth_type"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="0dp"
-                android:layout_weight="1"
+                android:layout_width="200dp"
+                android:layout_height="60dp"
+
+                android:background="#00ae9d"
+
                 android:text="@string/back_choose_auth_type"
-                android:textSize="18dp" />
+                android:textColor="#ffffff"
+                android:textSize="@dimen/normalButtonTextFont" />
 
             <TextView
                 android:id="@+id/authTiktokTimeDesc"
                 android:layout_width="200dp"
                 android:layout_height="60dp"
                 android:layout_weight="9"
-                android:paddingTop="20dp"
-                android:paddingRight="20dp"
                 android:text="倒计时30秒"
                 android:textAlignment="textEnd"
-                android:textColor="#ff0000"
-                android:textSize="20dp"
+                android:textColor="@color/red"
+                android:textSize="@dimen/tickTimeFont"
                 android:textStyle="bold" />
         </LinearLayout>
 
@@ -44,11 +47,11 @@
             android:id="@+id/textViewGuidDescription"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="10sp"
+            android:paddingTop="50dp"
             android:text="请选择身份验证方式"
             android:textAlignment="center"
-            android:textColor="#000000"
-            android:textSize="24dp"
+            android:textColor="@color/guideTextColor"
+            android:textSize="@dimen/guideText"
             android:textStyle="bold" />
 
         <LinearLayout
@@ -56,6 +59,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="horizontal"
+            android:paddingLeft="100dp"
+            android:paddingRight="100dp"
             android:visibility="visible">
 
             <Button
@@ -66,13 +71,14 @@
                 android:layout_marginLeft="30dp"
                 android:layout_marginRight="30dp"
                 android:layout_weight="1"
+                android:background="@drawable/normal_button_background"
                 android:drawableTop="@drawable/rfid"
                 android:enabled="true"
                 android:paddingLeft="20dp"
                 android:paddingTop="50dp"
                 android:paddingRight="20dp"
-                android:paddingBottom="50dp"
 
+                android:paddingBottom="50dp"
                 android:text="RFID刷卡"
                 android:textColor="#000000"
                 android:textSize="24dp"
@@ -86,13 +92,14 @@
                 android:layout_marginLeft="30dp"
                 android:layout_marginRight="30dp"
                 android:layout_weight="1"
+                android:background="@drawable/normal_button_background"
                 android:drawableTop="@drawable/ai_face"
                 android:enabled="true"
                 android:paddingLeft="20dp"
                 android:paddingTop="50dp"
                 android:paddingRight="20dp"
-                android:paddingBottom="50dp"
 
+                android:paddingBottom="50dp"
                 android:text="人脸识别"
                 android:textColor="#000000"
                 android:textSize="24dp"
@@ -104,14 +111,15 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="50dp"
                 android:layout_weight="1"
+                android:background="@drawable/normal_button_background"
                 android:enabled="true"
                 android:paddingLeft="20dp"
                 android:paddingTop="50dp"
                 android:paddingRight="20dp"
                 android:paddingBottom="50dp"
                 android:text="二维码"
-                android:textColor="#000000"
 
+                android:textColor="#000000"
                 android:textSize="24dp"
                 android:textStyle="bold"
                 android:visibility="gone" />
@@ -129,7 +137,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:padding="10dp"
+                android:paddingTop="100dp"
                 android:src="@drawable/rfid" />
         </LinearLayout>
 
@@ -146,6 +154,8 @@
                 android:id="@+id/surfaceView_ai_face_rtsp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginLeft="100dp"
+                android:layout_marginRight="100dp"
                 android:layout_weight="1" />
         </LinearLayout>
 
@@ -161,7 +171,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:padding="10dp"
+                android:padding="100dp"
                 android:src="@drawable/qrcode" />
         </LinearLayout>
 

@@ -25,7 +25,7 @@ import org.greenrobot.eventbus.ThreadMode;
 public class GateFragment extends Fragment implements IFragmentOperation {
 
     private static final String TAG = "GateFragment";
-    private static final String Desc_Gate_Not_Close = "亲,投递完成后, 请关好门!";
+    private static final String Desc_Gate_Not_Close = "亲,您可以开始垃圾投递了,投递后请关好门!";
     private static final String Desc_Gate_Not_Close_Timeout = "系统故障,请联系管理员处理";
     private static final String Desc_Gate_Closed = "本次投递完成.\n亲,感谢您对保护环境的付出.\n小艾,在这里等待您的再次到来.";
     private View view;
