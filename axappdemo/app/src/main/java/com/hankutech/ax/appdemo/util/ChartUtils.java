@@ -61,7 +61,11 @@ public class ChartUtils {
         barChart.getXAxis().setValueFormatter(new IAxisValueFormatter() {
             @Override
             public String getFormattedValue(float value, AxisBase axis) {
-                return xValues.get((int) value % xValues.size());
+                if (xValues != null && xValues.size() > 0) {
+                    return xValues.get((int) value % xValues.size());
+                }
+
+                return "";
             }
         });
 

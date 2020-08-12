@@ -417,7 +417,8 @@ public class MainActivity extends AppCompatActivity {
             xValues.add("厨余垃圾(湿)");
             xValues.add("其他垃圾(干)");
         } else {
-
+            xValues.add("厨余垃圾(湿)");
+            xValues.add("其他垃圾(干)");
         }
         return xValues;
     }
