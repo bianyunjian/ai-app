@@ -1,25 +1,20 @@
 package com.hankutech.ax.appdemo.service;
 
 import android.app.Service;
-import android.content.Context;
 import android.content.Intent;
-import android.net.wifi.WifiInfo;
-import android.net.wifi.WifiManager;
 import android.os.IBinder;
-import android.util.Log;
 
 import androidx.annotation.Nullable;
 
-import com.hankutech.ax.appdemo.ax.SocketConst;
-import com.hankutech.ax.appdemo.socket.ByteSocketServerInitializer;
-import com.hankutech.ax.appdemo.socket.NettyServerException;
-import com.hankutech.ax.appdemo.socket.SocketServer;
+import com.hankutech.ax.appdemo.constant.SocketConst;
+import com.hankutech.ax.appdemo.socket.ByteSocketClientInitializer;
+import com.hankutech.ax.appdemo.socket.SocketClient;
 import com.hankutech.ax.appdemo.util.LogExt;
 
 public class NettySocketService extends Service {
     private static final String TAG = "SocketService";
-    private SocketServer server;
-    private Thread serverThread;
+    private SocketClient socketClient;
+    private Thread clientThread;
 
     @Nullable
     @Override
@@ -52,24 +47,27 @@ public class NettySocketService extends Service {
 
     private void stopSocketServer() {
         LogExt.d(TAG, "stopSocketServer");
-        if (server != null) {
-            server.shutdown();
-            this.serverThread.interrupt();
+        if (socketClient != null) {
+            socketClient.close();
+            this.clientThread.interrupt();
         }
     }
 
     private void startSocketServer() {
         LogExt.d(TAG, "startSocketServer");
 
-        this.serverThread = new Thread(() -> {
-            server = new SocketServer(SocketConst.LISTENING_PORT, new ByteSocketServerInitializer(SocketConst.REQUEST_DATA_LENGTH));
+        this.clientThread = new Thread(() -> {
+            socketClient = new SocketClient(SocketConst.SERVER_LISTENING_IP,
+                    SocketConst.SERVER_LISTENING_PORT,
+                    new ByteSocketClientInitializer(SocketConst.FIXED_LENGTH_FRAME));
             try {
-                server.start();
-            } catch (NettyServerException e) {
+                socketClient.startConnect();
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         });
-        this.serverThread.start();
+        this.clientThread.setName("socketClientThread");
+        this.clientThread.start();
 
     }
 

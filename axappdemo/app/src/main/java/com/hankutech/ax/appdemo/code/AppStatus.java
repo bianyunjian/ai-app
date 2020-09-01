@@ -1,21 +1,23 @@
 package com.hankutech.ax.appdemo.code;
 
 public enum AppStatus {
-    UNKNOWN(0, "UNKNOWN"),
-    NORMAL(1, "运行中"),
-    WAIT(2, "待机"),
-    ERROR(3, "故障");
+
+    NORMAL(1, "开始投递"),
+    BUSY(2, "繁忙中"),
+    MAINTAIN(3, "维护中"),
+    ERROR(4, "系统故障");
+
 
     public static AppStatus valueOf(int value) {
         switch (value) {
             case 1:
                 return NORMAL;
             case 2:
-                return WAIT;
+                return BUSY;
             case 3:
-                return ERROR;
+                return MAINTAIN;
             default:
-                return UNKNOWN;
+                return ERROR;
         }
     }
 

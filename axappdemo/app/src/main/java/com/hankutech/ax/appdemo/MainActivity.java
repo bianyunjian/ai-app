@@ -7,7 +7,6 @@ import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.media.AudioManager;
 import android.media.SoundPool;
@@ -25,25 +24,15 @@ import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.github.mikephil.charting.charts.BarChart;
-import com.hankutech.ax.appdemo.ax.SocketConst;
-import com.hankutech.ax.appdemo.ax.code.AIGarbageResultType;
-import com.hankutech.ax.appdemo.ax.code.AuthFlag;
-import com.hankutech.ax.appdemo.ax.code.SysRunFlag;
-import com.hankutech.ax.appdemo.ax.protocol.AXDataConverter;
-import com.hankutech.ax.appdemo.ax.protocol.AXRequest;
-import com.hankutech.ax.appdemo.ax.protocol.AXResponse;
 import com.hankutech.ax.appdemo.code.AppStatus;
 import com.hankutech.ax.appdemo.code.AudioScene;
 import com.hankutech.ax.appdemo.code.MessageCode;
 import com.hankutech.ax.appdemo.constant.Common;
 import com.hankutech.ax.appdemo.constant.RuntimeContext;
 import com.hankutech.ax.appdemo.data.ConfigData;
-import com.hankutech.ax.appdemo.event.AXDataEvent;
-import com.hankutech.ax.appdemo.event.AuthChooseEvent;
 import com.hankutech.ax.appdemo.event.LogEvent;
 import com.hankutech.ax.appdemo.event.MessageEvent;
 import com.hankutech.ax.appdemo.fragment.AuthFragment;
@@ -52,27 +41,23 @@ import com.hankutech.ax.appdemo.fragment.GateFragment;
 import com.hankutech.ax.appdemo.fragment.IFragmentOperation;
 import com.hankutech.ax.appdemo.fragment.VideoFragment;
 import com.hankutech.ax.appdemo.service.NettySocketService;
-import com.hankutech.ax.appdemo.socket.ByteConverter;
-import com.hankutech.ax.appdemo.socket.SocketServer;
-import com.hankutech.ax.appdemo.util.ChartUtils;
 import com.hankutech.ax.appdemo.util.LogExt;
 import com.hankutech.ax.appdemo.util.NetworkUtil;
+import com.hankutech.ax.appdemo.util.TickTimer;
+import com.hankutech.ax.message.code.AIAuthFlag;
+import com.hankutech.ax.message.code.AIGarbageResultType;
+import com.hankutech.ax.message.protocol.app.AppResponse;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
-
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
 
 public class MainActivity extends AppCompatActivity {
     static {
@@ -100,6 +85,7 @@ public class MainActivity extends AppCompatActivity {
     private ImageView logoImageView;
     private String ip;
 
+    private TickTimer handShakeTickTimer = new TickTimer();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -138,9 +124,16 @@ public class MainActivity extends AppCompatActivity {
 
         setAppStatusView(AppStatus.NORMAL);
         setTimeView();
-        setChartView();
 
         showVideoView();
+
+
+        handShakeTickTimer.start(Long.MAX_VALUE, 5000, (t) -> {
+                    MessageExchange.sendHandShake();
+                },
+                (f) -> {
+                    handShakeTickTimer.reset();
+                });
 
     }
 
@@ -379,50 +372,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    private void setChartView() {
-        ArrayList<String> xValues = getChartXValues(null);
-        LinkedHashMap<String, List<Integer>> yValues = getChartYValues(null);
-        ChartUtils.initChart(chart, xValues);
-        ChartUtils.notifyDataSetChanged(chart, xValues, yValues);
-    }
-
-    private LinkedHashMap<String, List<Integer>> getChartYValues(AXRequest axData) {
-        LinkedHashMap<String, List<Integer>> yValues = new LinkedHashMap<>();
-        if (axData == null) {
-            yValues.put("开门次数(次)", new ArrayList<>());
-            yValues.get("开门次数(次)").add(12);
-            yValues.get("开门次数(次)").add(16);
-
-            yValues.put("投递数量(包)", new ArrayList<>());
-            yValues.get("投递数量(包)").add(29);
-            yValues.get("投递数量(包)").add(38);
-
-        } else {
-
-            yValues.put("开门次数(次)", new ArrayList<>());
-            yValues.get("开门次数(次)").add(axData.getCount_DRY());
-            yValues.get("开门次数(次)").add(axData.getCount_HAZARDOUS());
-
-            yValues.put("投递数量(包)", new ArrayList<>());
-            yValues.get("投递数量(包)").add(axData.getCount_WET());
-            yValues.get("投递数量(包)").add(axData.getCount_RECYCLABLE());
-
-        }
-        return yValues;
-    }
-
-    private ArrayList<String> getChartXValues(AXRequest axData) {
-        ArrayList<String> xValues = new ArrayList<>();
-        if (axData == null) {
-            xValues.add("厨余垃圾(湿)");
-            xValues.add("其他垃圾(干)");
-        } else {
-            xValues.add("厨余垃圾(湿)");
-            xValues.add("其他垃圾(干)");
-        }
-        return xValues;
-    }
-
     private void playAudio(AudioScene audioScene, int loopCount) {
         stopAudio();
         if (configData.getAudioMap().containsKey(audioScene)) {
@@ -479,7 +428,7 @@ public class MainActivity extends AppCompatActivity {
     private void ShowHome() {
         LogExt.d(TAG, "显示主界面");
 
-        RuntimeContext.CurrentAuthFlag = AuthFlag.FAILURE;
+        RuntimeContext.CurrentAuthFlag = AIAuthFlag.FAILURE;
 
         showVideoView();
         this.startProcessButton.setVisibility(View.VISIBLE);
@@ -528,13 +477,6 @@ public class MainActivity extends AppCompatActivity {
     private void setAppStatusView(AppStatus appStatus) {
         LogExt.d(TAG, "更新运行状态：" + appStatus.getValue() + appStatus.getDescription());
         appStatusTextView.setText(appStatus.getDescription());
-        appStatusTextView.setTextColor(Color.GREEN);
-        if (appStatus.getValue() == (AppStatus.WAIT.getValue())) {
-            appStatusTextView.setTextColor(Color.YELLOW);
-        }
-        if (appStatus.getValue() == (AppStatus.ERROR.getValue())) {
-            appStatusTextView.setTextColor(Color.RED);
-        }
     }
 
     /**
@@ -606,24 +548,22 @@ public class MainActivity extends AppCompatActivity {
      * @param dataEvent
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void OnAXDataEventMessage(AXDataEvent dataEvent) {
+    public void OnAXDataEventMessage(AppResponse dataEvent) {
 
         LogExt.d(TAG, "OnAXDataEventMessage: " + dataEvent.toString());
 
-        AXRequest axData = dataEvent.getData();
-        SysRunFlag sysRunFlag = axData.getSysRunFlag();
-        AIGarbageResultType garbageType = axData.getGarbageType();
-        boolean isPersonExist = axData.isPersonExist();
-
-        if (sysRunFlag.getValue() == SysRunFlag.RUN.getValue()) {
-            setAppStatusView(AppStatus.NORMAL);
-        } else {
-            setAppStatusView(AppStatus.ERROR);
+        switch (dataEvent.getMessageType()) {
+            case HAND_SHAKE_RESP:
+                AIGarbageResultType garbageType = AIGarbageResultType.valueOf(dataEvent.getExtData());
+                this.textViewSupportGarbageType.setText(garbageType.getDescription());
+                RuntimeContext.CurrentGarbageType = garbageType;
+                break;
+            case SYS_STATUS_REQ:
+                setAppStatusView(AppStatus.valueOf(dataEvent.getPayload()));
+                break;
+            default:
+                break;
         }
-        this.textViewSupportGarbageType.setText(garbageType.getName());
-        RuntimeContext.CurrentGarbageType = garbageType;
-
-        ChartUtils.notifyDataSetChanged(chart, getChartXValues(axData), getChartYValues(axData));
     }
 
 
@@ -640,35 +580,5 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void OnAuthChooseEventMessage(AuthChooseEvent dataEvent) {
 
-        AXResponse response = new AXResponse();
-        response.setSysRunFlag(SysRunFlag.RUN);
-        response.setAuthFlag(dataEvent.getAuthFlag());
-        LogExt.i(TAG, "选择的授权方式数据：" + response.toString());
-
-        int[] respData = AXDataConverter.convertResponse(response);
-        byte[] respByteData = ByteConverter.toByte(respData);
-        ByteBuf responseByteBuf = Unpooled.buffer(respByteData.length);
-        responseByteBuf.writeBytes(respByteData);
-        SocketServer.getServer(SocketConst.LISTENING_PORT).sendData(responseByteBuf);
-    }
-
-    /**
-     * // 不需要了， 数据清零重置操作由PLC自己完成
-     * 返回主界面,向PLC发送消息，通知重置数据
-     */
-    public void sendHomeResetMessage2PLC_OB() {
-        AXResponse response = new AXResponse();
-        response.setSysRunFlag(SysRunFlag.RUN);
-        response.setAuthFlag(AuthFlag.FAILURE);
-        LogExt.i(TAG, "返回主界面,重置数据：" + response.toString());
-
-        int[] respData = AXDataConverter.convertResponse(response);
-        byte[] respByteData = ByteConverter.toByte(respData);
-        ByteBuf responseByteBuf = Unpooled.buffer(respByteData.length);
-        responseByteBuf.writeBytes(respByteData);
-        SocketServer.getServer(SocketConst.LISTENING_PORT).sendData(responseByteBuf);
-    }
 }

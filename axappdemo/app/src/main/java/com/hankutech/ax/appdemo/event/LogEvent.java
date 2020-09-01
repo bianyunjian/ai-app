@@ -1,7 +1,5 @@
 package com.hankutech.ax.appdemo.event;
 
-import com.hankutech.ax.appdemo.ax.protocol.AXRequest;
-
 import lombok.Data;
 import lombok.ToString;
 

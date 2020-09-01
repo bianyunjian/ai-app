@@ -1,6 +1,11 @@
 package com.hankutech.ax.appdemo.socket;
 
+import com.hankutech.ax.message.protocol.app.AppDataConverter;
+import com.hankutech.ax.message.protocol.app.AppRequest;
+
 import io.netty.bootstrap.Bootstrap;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
@@ -59,6 +64,7 @@ public class SocketClient {
             this.future = bootstrap.connect(this.host, this.port).sync();
             if (this.future.isSuccess()) {
                 System.out.println("服务端：" + this.host + ":" + this.port + " 连接成功！");
+                this.addClient(this.host + ":" + this.port, this);
             }
         } catch (InterruptedException e) {
             throw new NettyClientException(e, SocketError.START_INTERRUPTED);
@@ -84,12 +90,16 @@ public class SocketClient {
     /**
      * 发送数据
      *
-     * @param msg {@link Object}
+     * @param request
      */
-    public void sendData(Object msg) {
-        this.future.channel().writeAndFlush(msg);
-    }
+    public void sendData(AppRequest request) {
 
+        int[] respData = AppDataConverter.convertRequest(request);
+        byte[] respByteData = ByteConverter.toByte(respData);
+        ByteBuf responseByteBuf = Unpooled.buffer(respByteData.length);
+        responseByteBuf.writeBytes(respByteData);
+        this.future.channel().writeAndFlush(responseByteBuf);
+    }
 
     public static void addClient(String key, SocketClient client) {
         SOCKET_CLIENT_MAP.put(key, client);

@@ -8,14 +8,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.hankutech.ax.appdemo.MessageExchange;
 import com.hankutech.ax.appdemo.R;
-import com.hankutech.ax.appdemo.ax.SocketConst;
-import com.hankutech.ax.appdemo.ax.code.AIGarbageTypeDetectResult;
-import com.hankutech.ax.appdemo.ax.code.GateState;
-import com.hankutech.ax.appdemo.ax.code.SysRunFlag;
-import com.hankutech.ax.appdemo.ax.protocol.AXDataConverter;
-import com.hankutech.ax.appdemo.ax.protocol.AXRequest;
-import com.hankutech.ax.appdemo.ax.protocol.AXResponse;
+import com.hankutech.ax.appdemo.constant.SocketConst;
 import com.hankutech.ax.appdemo.code.AudioScene;
 import com.hankutech.ax.appdemo.code.MessageCode;
 import com.hankutech.ax.appdemo.constant.Common;
@@ -23,9 +18,13 @@ import com.hankutech.ax.appdemo.constant.RuntimeContext;
 import com.hankutech.ax.appdemo.event.AXDataEvent;
 import com.hankutech.ax.appdemo.event.MessageEvent;
 import com.hankutech.ax.appdemo.socket.ByteConverter;
-import com.hankutech.ax.appdemo.socket.SocketServer;
+import com.hankutech.ax.appdemo.socket.SocketClient;
 import com.hankutech.ax.appdemo.util.LogExt;
 import com.hankutech.ax.appdemo.util.TickTimer;
+import com.hankutech.ax.message.code.AIGarbageTypeDetectResult;
+import com.hankutech.ax.message.protocol.app.AppMessageType;
+import com.hankutech.ax.message.protocol.app.AppRequest;
+import com.hankutech.ax.message.protocol.app.AppResponse;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -87,7 +86,7 @@ public class GarbageFragment extends Fragment implements IFragmentOperation {
             this.view.findViewById(R.id.btnSendMessage2PLC).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    sendGarbageDetectMessage2PLC();
+                    sendGarbageDetectMessage2CentralServer();
                 }
             });
         } else {
@@ -97,7 +96,7 @@ public class GarbageFragment extends Fragment implements IFragmentOperation {
 
         sendGarbageDetectRequestTickTimer.start(Common.SendGarbageDetectRequestMillis, Common.TickInterval, (t) -> {
             if (this.receiveGarbageResult == false) {
-                sendGarbageDetectMessage2PLC();
+                sendGarbageDetectMessage2CentralServer();
             } else {
                 sendGarbageDetectRequestTickTimer.cancel();
             }
@@ -105,18 +104,8 @@ public class GarbageFragment extends Fragment implements IFragmentOperation {
         });
     }
 
-    private void sendGarbageDetectMessage2PLC() {
-        AXResponse response = new AXResponse();
-        response.setSysRunFlag(SysRunFlag.RUN);
-        response.setAuthFlag(RuntimeContext.CurrentAuthFlag);
-        response.setStartGarbageDetectRequestFlag(1);
-        LogExt.i(TAG, "发送请求PLC开始检测垃圾分类：" + response.toString());
-
-        int[] respData = AXDataConverter.convertResponse(response);
-        byte[] respByteData = ByteConverter.toByte(respData);
-        ByteBuf responseByteBuf = Unpooled.buffer(respByteData.length);
-        responseByteBuf.writeBytes(respByteData);
-        SocketServer.getServer(SocketConst.LISTENING_PORT).sendData(responseByteBuf);
+    private void sendGarbageDetectMessage2CentralServer() {
+        MessageExchange.sendGarbageDetect(RuntimeContext.CurrentGarbageType);
     }
 
     private void playAudio(AudioScene audioScene) {
@@ -146,61 +135,59 @@ public class GarbageFragment extends Fragment implements IFragmentOperation {
      * @param dataEvent
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void OnEventMessage(AXDataEvent dataEvent) {
+    public void OnEventMessage(AppResponse dataEvent) {
 
         LogExt.d(TAG, "OnEventMessage: " + dataEvent.toString());
 
-        AXRequest axData = dataEvent.getData();
-        if (axData.isSysException()) {
-            EventBus.getDefault().post(new MessageEvent(MessageCode.HOME, axData));
-            return;
-        }
+        if (dataEvent.getMessageType() == AppMessageType.GARBAGE_DETECT_RESP) {
 
-        AIGarbageTypeDetectResult garbageDetectResult = axData.getGarbageTypeDetectResult();
 
-        boolean gateOpen = axData.getGateState().getValue() == GateState.NOT_CLOSE.getValue();
-        if (this.waitGarbageDeliver == false && this.receiveGarbageResult == false) {
-            if (garbageDetectResult.getValue() == AIGarbageTypeDetectResult.SUCCESS.getValue()) {
-                LogExt.d(TAG, "垃圾分类检测结果成功");
+            AIGarbageTypeDetectResult garbageDetectResult = AIGarbageTypeDetectResult.valueOf(dataEvent.getPayload());
 
-                playAudio(AudioScene.GARBAGE_DETECT_SUCCESS);
-                this.textViewGarbageDetectProcessDescription.setText(Desc_Success);
-                this.textViewGarbageDetectProcessDescription.setTextColor(Color.BLACK);
 
-                this.tickTimer.cancel();
-                tickTimer.start(Common.GarbageWaitDeliverMillis, Common.TickInterval, (t) -> {
-                    TextView tv = this.view.findViewById(R.id.garbageDetectTiktokTimeDesc);
-                    tv.setText(Common.getTickDesc(t));
-                }, (t) -> {
-                    //倒计时结束后,认为投递动作完成
-                    EventBus.getDefault().post(new MessageEvent(MessageCode.GARBAGE_PASS, null));
-                });
-                this.waitGarbageDeliver = true;
-                this.receiveGarbageResult = true;
-                return;
-            } else if (garbageDetectResult.getValue() == AIGarbageTypeDetectResult.FAILURE.getValue()) {
-                LogExt.d(TAG, "垃圾分类检测结果失败");
-                playAudio(AudioScene.GARBAGE_DETECT_FAILURE);
-                this.textViewGarbageDetectProcessDescription.setText(Desc_Failure);
-                this.textViewGarbageDetectProcessDescription.setTextColor(Color.RED);
-                this.tickTimer.cancel();
-                tickTimer.start(Common.GarbageDetectFailureMillis, Common.TickInterval, (t) -> {
-                    TextView tv = this.view.findViewById(R.id.garbageDetectTiktokTimeDesc);
-                    tv.setText(Common.getTickDesc(t));
-                }, (t) -> {
-                    //倒计时结束后,回到主界面
-                    EventBus.getDefault().post(new MessageEvent(MessageCode.HOME, null));
-                });
-                this.receiveGarbageResult = true;
+            if (this.waitGarbageDeliver == false && this.receiveGarbageResult == false) {
+                if (garbageDetectResult.getValue() == AIGarbageTypeDetectResult.SUCCESS.getValue()) {
+                    LogExt.d(TAG, "垃圾分类检测结果成功");
+
+                    playAudio(AudioScene.GARBAGE_DETECT_SUCCESS);
+                    this.textViewGarbageDetectProcessDescription.setText(Desc_Success);
+                    this.textViewGarbageDetectProcessDescription.setTextColor(Color.BLACK);
+
+                    this.tickTimer.cancel();
+//                    tickTimer.start(Common.GarbageWaitDeliverMillis, Common.TickInterval, (t) -> {
+//                        TextView tv = this.view.findViewById(R.id.garbageDetectTiktokTimeDesc);
+//                        tv.setText(Common.getTickDesc(t));
+//                    }, (t) -> {
+//                        //倒计时结束后,认为投递动作完成
+//                        EventBus.getDefault().post(new MessageEvent(MessageCode.GARBAGE_PASS, null));
+//                    });
+//                    this.waitGarbageDeliver = true;
+                    this.receiveGarbageResult = true;
+                    return;
+                } else if (garbageDetectResult.getValue() == AIGarbageTypeDetectResult.FAILURE.getValue()) {
+                    LogExt.d(TAG, "垃圾分类检测结果失败");
+                    playAudio(AudioScene.GARBAGE_DETECT_FAILURE);
+                    this.textViewGarbageDetectProcessDescription.setText(Desc_Failure);
+                    this.textViewGarbageDetectProcessDescription.setTextColor(Color.RED);
+                    this.tickTimer.cancel();
+                    tickTimer.start(Common.GarbageDetectFailureMillis, Common.TickInterval, (t) -> {
+                        TextView tv = this.view.findViewById(R.id.garbageDetectTiktokTimeDesc);
+                        tv.setText(Common.getTickDesc(t));
+                    }, (t) -> {
+                        //倒计时结束后,回到主界面
+                        EventBus.getDefault().post(new MessageEvent(MessageCode.HOME, null));
+                    });
+                    this.receiveGarbageResult = true;
+                }
             }
-        }
-        if (this.waitGarbageDeliver && gateOpen) {
-            LogExt.d(TAG, "门已经打开,可以投递垃圾");
+            if (this.waitGarbageDeliver) {
+                LogExt.d(TAG, "门已经打开,可以投递垃圾");
 
-            this.tickTimer.cancel();
-            //投递动作完成
-            EventBus.getDefault().post(new MessageEvent(MessageCode.GARBAGE_PASS, null));
+                this.tickTimer.cancel();
+                //投递动作完成
+                EventBus.getDefault().post(new MessageEvent(MessageCode.GARBAGE_PASS, null));
 
+            }
         }
     }
 }

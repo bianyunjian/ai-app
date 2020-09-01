@@ -31,12 +31,12 @@ public class LogExt {
     }
 
     public static void i(String tag, String msg) {
-        Log.i(tag, msg);
+        Log.i(String.format("%s-%s", getNowTimeString(), tag), msg);
         postLogEvent(tag, msg);
     }
 
     public static void e(String tag, String msg) {
-        Log.e(tag, msg);
+        Log.e(String.format("%s-%s", getNowTimeString(), tag), msg);
         postLogEvent(tag, msg);
     }
 }

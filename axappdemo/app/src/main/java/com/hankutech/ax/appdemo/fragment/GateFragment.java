@@ -8,8 +8,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.hankutech.ax.appdemo.R;
-import com.hankutech.ax.appdemo.ax.code.GateState;
-import com.hankutech.ax.appdemo.ax.protocol.AXRequest;
 import com.hankutech.ax.appdemo.code.AudioScene;
 import com.hankutech.ax.appdemo.code.MessageCode;
 import com.hankutech.ax.appdemo.constant.Common;
@@ -17,6 +15,10 @@ import com.hankutech.ax.appdemo.event.AXDataEvent;
 import com.hankutech.ax.appdemo.event.MessageEvent;
 import com.hankutech.ax.appdemo.util.LogExt;
 import com.hankutech.ax.appdemo.util.TickTimer;
+import com.hankutech.ax.message.code.GateState;
+import com.hankutech.ax.message.protocol.app.AppMessageType;
+import com.hankutech.ax.message.protocol.app.AppMessageValue;
+import com.hankutech.ax.message.protocol.app.AppResponse;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -84,39 +86,34 @@ public class GateFragment extends Fragment implements IFragmentOperation {
      * @param dataEvent
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void OnEventMessage(AXDataEvent dataEvent) {
+    public void OnEventMessage(AppResponse dataEvent) {
 
         LogExt.d(TAG, "OnEventMessage: " + dataEvent.toString());
 
-        AXRequest axData = dataEvent.getData();
-        if (axData.isSysException()) {
-            EventBus.getDefault().post(new MessageEvent(MessageCode.HOME, axData));
-            return;
+        if (dataEvent.getMessageType() == AppMessageType.APP_REQUIRE_OPEN_GATE_RESP) {
+            LogExt.d(TAG, "门已打开: " + dataEvent.toString());
         }
-        GateState gateState = axData.getGateState();
+        if (dataEvent.getMessageType() == AppMessageType.GATE_CLOSED_EVENT_REQ) {
 
-        if (this.gateClosed == false && gateState.getValue() == GateState.CLOSED.getValue()) {
-            LogExt.d(TAG, "关门到位");
+            if (dataEvent.getPayload() == AppMessageValue.GATE_CLOSED_EVENT_REQ) {
+                LogExt.d(TAG, "关门到位");
 
-            this.textViewGateStateProcessDescription.setText(Desc_Gate_Closed);
-            playAudio(AudioScene.GATE_CLOSE);
+                this.textViewGateStateProcessDescription.setText(Desc_Gate_Closed);
+                playAudio(AudioScene.GATE_CLOSE);
 
-            this.tickTimer.cancel();
-            tickTimer.start(Common.GateClosedMillis, Common.TickInterval, (t) -> {
-                TextView tv = this.view.findViewById(R.id.gateStateTiktokTimeDesc);
-                tv.setText(Common.getTickDesc(t));
-            }, (t) -> {
-                //倒计时结束后,返回首页
-                EventBus.getDefault().post(new MessageEvent(MessageCode.HOME, null));
-            });
-            this.gateClosed = true;
-
-        } else if (gateState.getValue() == GateState.NOT_CLOSE.getValue()) {
-            LogExt.d(TAG, "没关门");
-        } else if (gateState.getValue() == GateState.NOT_CLOSE_TIMEOUT.getValue()) {
-            LogExt.d(TAG, "关门超时报警");
-            this.textViewGateStateProcessDescription.setText(Desc_Gate_Not_Close_Timeout);
+                this.tickTimer.cancel();
+                tickTimer.start(Common.GateClosedMillis, Common.TickInterval, (t) -> {
+                    TextView tv = this.view.findViewById(R.id.gateStateTiktokTimeDesc);
+                    tv.setText(Common.getTickDesc(t));
+                }, (t) -> {
+                    //倒计时结束后,返回首页
+                    EventBus.getDefault().post(new MessageEvent(MessageCode.HOME, null));
+                });
+                this.gateClosed = true;
+            }
         }
+
+
     }
 }
 

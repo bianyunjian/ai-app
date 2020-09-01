@@ -1,10 +1,10 @@
 package com.hankutech.ax.appdemo.socket;
 
 import com.hankutech.ax.appdemo.event.AXDataEvent;
-import com.hankutech.ax.appdemo.ax.protocol.AXDataConverter;
-import com.hankutech.ax.appdemo.ax.protocol.AXRequest;
-import com.hankutech.ax.appdemo.code.MessageCode;
 import com.hankutech.ax.appdemo.util.LogExt;
+import com.hankutech.ax.message.protocol.MessageSource;
+import com.hankutech.ax.message.protocol.app.AppDataConverter;
+import com.hankutech.ax.message.protocol.app.AppResponse;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -56,25 +56,18 @@ public class ByteMessageHandler extends ChannelInboundHandlerAdapter {
             int[] convertedData = ByteConverter.fromByte(bytes);
             LogExt.d(TAG, "转换后的数据：" + formatString(convertedData));
 
-            AXRequest request = AXDataConverter.parseRequest(convertedData);
-            if (request != null && request.isValid()) {
-                LogExt.d(TAG, "解析后的请求数据：" + request.toString());
-
-                EventBus.getDefault().post(new AXDataEvent(request));
-            } else {
-                LogExt.d(TAG, "未能正确解析请求数据：" + request.toString());
+            AppResponse response = AppDataConverter.parseResponse(convertedData);
+            if (response.getMessageSource() != MessageSource.CENTRAL_SERVER) {
+                LogExt.e(TAG + "消息头不正确，丢弃该消息", response.toString());
+                return;
             }
+            if (response != null && response.isValid()) {
+                LogExt.d(TAG, "解析后的请求数据：" + response.toString());
 
-//            if (response.isValid() == false) {
-//                log.error("未能正确处理请求数据，request={},response={}", request, response);
-//            }
-//            int[] respData = AXDataConverter.convertResponse(response);
-//            byte[] respByteData = ByteConverter.toByte(respData);
-//            log.info("转换后的响应数据：{}", response.toString());
-
-//            ByteBuf responseByteBuf = Unpooled.buffer(respByteData.length);
-//            responseByteBuf.writeBytes(respByteData);
-//            ctx.channel().writeAndFlush(responseByteBuf);
+                EventBus.getDefault().post(response);
+            } else {
+                LogExt.d(TAG, "未能正确解析请求数据：" + response.toString());
+            }
         }
     }
 

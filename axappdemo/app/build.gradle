@@ -78,4 +78,7 @@ dependencies {
     implementation group: 'io.netty', name: 'netty-all', version: '4.1.31.Final'
 
     implementation 'org.greenrobot:eventbus:3.0.0'
+    implementation files('src/main/jniLibs/ax-message-protocal-0.0.1-SNAPSHOT.jar')
+
+
 }
