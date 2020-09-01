@@ -4,7 +4,7 @@ import com.hankutech.ax.appdemo.event.AXDataEvent;
 import com.hankutech.ax.appdemo.util.LogExt;
 import com.hankutech.ax.message.protocol.MessageSource;
 import com.hankutech.ax.message.protocol.app.AppDataConverter;
-import com.hankutech.ax.message.protocol.app.AppResponse;
+import com.hankutech.ax.message.protocol.app.AppMessage;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -56,7 +56,7 @@ public class ByteMessageHandler extends ChannelInboundHandlerAdapter {
             int[] convertedData = ByteConverter.fromByte(bytes);
             LogExt.d(TAG, "转换后的数据：" + formatString(convertedData));
 
-            AppResponse response = AppDataConverter.parseResponse(convertedData);
+            AppMessage response = AppDataConverter.parse(convertedData);
             if (response.getMessageSource() != MessageSource.CENTRAL_SERVER) {
                 LogExt.e(TAG + "消息头不正确，丢弃该消息", response.toString());
                 return;

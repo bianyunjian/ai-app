@@ -26,8 +26,8 @@ import com.hankutech.ax.appdemo.util.TickTimer;
 import com.daniulive.smartplayer.EventHandeV2;
 import com.daniulive.smartplayer.SmartPlayerJniV2;
 import com.hankutech.ax.message.code.AIAuthFlag;
+import com.hankutech.ax.message.protocol.app.AppMessage;
 import com.hankutech.ax.message.protocol.app.AppMessageType;
-import com.hankutech.ax.message.protocol.app.AppResponse;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -288,7 +288,7 @@ public class AuthFragment extends Fragment implements IFragmentOperation {
      * @param dataEvent
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void OnEventMessage(AppResponse dataEvent) {
+    public void OnEventMessage(AppMessage dataEvent) {
 
         LogExt.d(TAG, "OnEventMessage: " + dataEvent.toString());
 

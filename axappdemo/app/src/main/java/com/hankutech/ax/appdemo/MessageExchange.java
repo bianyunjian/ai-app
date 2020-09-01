@@ -10,12 +10,12 @@ import com.hankutech.ax.message.code.AIGarbageResultType;
 import com.hankutech.ax.message.protocol.MessageSource;
 import com.hankutech.ax.message.protocol.app.AppMessageType;
 import com.hankutech.ax.message.protocol.app.AppMessageValue;
-import com.hankutech.ax.message.protocol.app.AppRequest;
+import com.hankutech.ax.message.protocol.app.AppMessage;
 
 public class MessageExchange {
     private static final String TAG = "MessageExchange";
 
-    private static void send(AppRequest request) {
+    private static void send(AppMessage request) {
         SocketClient client = getSocketClient();
         if (client != null) {
             client.sendData(request);
@@ -33,7 +33,7 @@ public class MessageExchange {
 
     public static void sendHandShake() {
 
-        AppRequest request = new AppRequest();
+        AppMessage request = new AppMessage();
         request.setMessageSource(MessageSource.APP);
         request.setAppNumber(Common.APP_NUMBER);
         request.setMessageType(AppMessageType.HAND_SHAKE_REQ);
@@ -45,7 +45,7 @@ public class MessageExchange {
 
     public static void sendAuth(AIAuthFlag aiAuthFlag) {
 
-        AppRequest request = new AppRequest();
+        AppMessage request = new AppMessage();
         request.setMessageSource(MessageSource.APP);
         request.setAppNumber(Common.APP_NUMBER);
         request.setMessageType(AppMessageType.AUTH_REQ);
@@ -57,7 +57,7 @@ public class MessageExchange {
 
     public static void sendGarbageDetect(AIGarbageResultType garbageType) {
 
-        AppRequest request = new AppRequest();
+        AppMessage request = new AppMessage();
         request.setMessageSource(MessageSource.APP);
         request.setAppNumber(Common.APP_NUMBER);
         request.setMessageType(AppMessageType.GARBAGE_DETECT_REQ);
@@ -69,7 +69,7 @@ public class MessageExchange {
 
     public static void sendRequireOpenGate() {
 
-        AppRequest request = new AppRequest();
+        AppMessage request = new AppMessage();
         request.setMessageSource(MessageSource.APP);
         request.setAppNumber(Common.APP_NUMBER);
         request.setMessageType(AppMessageType.APP_REQUIRE_OPEN_GATE_REQ);
@@ -81,7 +81,7 @@ public class MessageExchange {
 
     public static void sendGateClosedEventResp() {
 
-        AppRequest request = new AppRequest();
+        AppMessage request = new AppMessage();
         request.setMessageSource(MessageSource.APP);
         request.setAppNumber(Common.APP_NUMBER);
         request.setMessageType(AppMessageType.GATE_CLOSED_EVENT_RESP);
@@ -94,12 +94,38 @@ public class MessageExchange {
 
     public static void sendSysStatusChangeEventResp() {
 
-        AppRequest request = new AppRequest();
+        AppMessage request = new AppMessage();
         request.setMessageSource(MessageSource.APP);
         request.setAppNumber(Common.APP_NUMBER);
         request.setMessageType(AppMessageType.SYS_STATUS_RESP);
         request.setPayload(AppMessageValue.SYS_STATUS_RESP_SUCCESS);
         LogExt.i(TAG, "发送系统状态事件响应：" + request.toString());
+
+        send(request);
+    }
+
+    /**
+     * 在点击开始投递后， APP向中心算法控制器发送【开始投递】消息
+     */
+    public static void sendStartProcess() {
+        AppMessage request = new AppMessage();
+        request.setMessageSource(MessageSource.APP);
+        request.setAppNumber(Common.APP_NUMBER);
+        request.setMessageType(AppMessageType.APP_START_PROCESS_REQ);
+        LogExt.i(TAG, "发送开始投递请求：" + request.toString());
+
+        send(request);
+    }
+
+    /**
+     * APP使用完成后，APP会向中心算法控制器发送【投递完成】消息
+     */
+    public static void sendFinisheProcess() {
+        AppMessage request = new AppMessage();
+        request.setMessageSource(MessageSource.APP);
+        request.setAppNumber(Common.APP_NUMBER);
+        request.setMessageType(AppMessageType.APP_FINISH_PROCESS_REQ);
+        LogExt.i(TAG, "发送投递完成请求：" + request.toString());
 
         send(request);
     }

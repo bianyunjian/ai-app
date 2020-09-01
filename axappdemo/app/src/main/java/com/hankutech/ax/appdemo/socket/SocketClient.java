@@ -1,7 +1,7 @@
 package com.hankutech.ax.appdemo.socket;
 
 import com.hankutech.ax.message.protocol.app.AppDataConverter;
-import com.hankutech.ax.message.protocol.app.AppRequest;
+import com.hankutech.ax.message.protocol.app.AppMessage;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.ByteBuf;
@@ -92,9 +92,9 @@ public class SocketClient {
      *
      * @param request
      */
-    public void sendData(AppRequest request) {
+    public void sendData(AppMessage request) {
 
-        int[] respData = AppDataConverter.convertRequest(request);
+        int[] respData = AppDataConverter.convert(request);
         byte[] respByteData = ByteConverter.toByte(respData);
         ByteBuf responseByteBuf = Unpooled.buffer(respByteData.length);
         responseByteBuf.writeBytes(respByteData);

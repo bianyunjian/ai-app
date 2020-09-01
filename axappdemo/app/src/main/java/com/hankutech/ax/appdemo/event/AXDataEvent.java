@@ -1,6 +1,6 @@
 package com.hankutech.ax.appdemo.event;
 
-import com.hankutech.ax.message.protocol.app.AppRequest;
+import com.hankutech.ax.message.protocol.app.AppMessage;
 
 import lombok.Data;
 import lombok.ToString;
@@ -12,9 +12,9 @@ import lombok.ToString;
 @ToString
 public class AXDataEvent {
 
-    private AppRequest data;
+    private AppMessage data;
 
-    public AXDataEvent(AppRequest data) {
+    public AXDataEvent(AppMessage data) {
         this.data = data;
     }
 

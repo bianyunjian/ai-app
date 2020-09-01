@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.hankutech.ax.appdemo.MessageExchange;
 import com.hankutech.ax.appdemo.R;
 import com.hankutech.ax.appdemo.code.AudioScene;
 import com.hankutech.ax.appdemo.code.MessageCode;
@@ -16,9 +17,9 @@ import com.hankutech.ax.appdemo.event.MessageEvent;
 import com.hankutech.ax.appdemo.util.LogExt;
 import com.hankutech.ax.appdemo.util.TickTimer;
 import com.hankutech.ax.message.code.GateState;
+import com.hankutech.ax.message.protocol.app.AppMessage;
 import com.hankutech.ax.message.protocol.app.AppMessageType;
 import com.hankutech.ax.message.protocol.app.AppMessageValue;
-import com.hankutech.ax.message.protocol.app.AppResponse;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -86,7 +87,7 @@ public class GateFragment extends Fragment implements IFragmentOperation {
      * @param dataEvent
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void OnEventMessage(AppResponse dataEvent) {
+    public void OnEventMessage(AppMessage dataEvent) {
 
         LogExt.d(TAG, "OnEventMessage: " + dataEvent.toString());
 

@@ -14,7 +14,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.text.method.ScrollingMovementMethod;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,7 +25,6 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.github.mikephil.charting.charts.BarChart;
 import com.hankutech.ax.appdemo.code.AppStatus;
 import com.hankutech.ax.appdemo.code.AudioScene;
 import com.hankutech.ax.appdemo.code.MessageCode;
@@ -46,7 +44,7 @@ import com.hankutech.ax.appdemo.util.NetworkUtil;
 import com.hankutech.ax.appdemo.util.TickTimer;
 import com.hankutech.ax.message.code.AIAuthFlag;
 import com.hankutech.ax.message.code.AIGarbageResultType;
-import com.hankutech.ax.message.protocol.app.AppResponse;
+import com.hankutech.ax.message.protocol.app.AppMessage;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -69,8 +67,6 @@ public class MainActivity extends AppCompatActivity {
     private TextView appStatusTextView;
     private TextView textViewSupportGarbageType;
 
-
-    private BarChart chart;
     private SoundPool soundPool;
 
     //config data
@@ -80,7 +76,7 @@ public class MainActivity extends AppCompatActivity {
     private Fragment currentFragment;
     private Context mContext;
     private PopupWindow popWindow;
-    private TextView item_popup_textview_log;
+    private TextView item_debug_textview_log;
     private TextView logoTitleTextView;
     private ImageView logoImageView;
     private String ip;
@@ -209,8 +205,6 @@ public class MainActivity extends AppCompatActivity {
         nowTimeTextView = (TextView) findViewById(R.id.nowTime);
         textViewSupportGarbageType = (TextView) findViewById(R.id.textViewSupportGarbageType);
 
-        chart = findViewById(R.id.chart);
-
         startProcessButton = (Button) findViewById(R.id.startProcess);
         startProcessButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -231,19 +225,31 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        nowTimeTextView.setOnClickListener(view -> {
+            timeTextViewClickCount++;
+            if (timeTextViewClickCount > 5) {
+                timeTextViewClickCount = 0;
+                View layoutDebug = findViewById(R.id.layout_debug);
+                layoutDebug.setVisibility(View.VISIBLE);
+            }
+        });
 
-        if (Common.DebugMode) {
-            findViewById(R.id.btnDEBUG).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if (popWindow == null || popWindow.isShowing() == false) {
-                        showPopupWindow();
-                    }
-                }
-            });
-        } else {
-            findViewById(R.id.btnDEBUG).setVisibility(View.GONE);
-        }
+        findViewById(R.id.item_debug_btn_reset_home).setOnClickListener(v -> {
+            ShowHome();
+        });
+
+        findViewById(R.id.item_debug_btn_exit_app).setOnClickListener(v -> {
+            killAppProcess();
+        });
+
+        findViewById(R.id.item_debug_btn_hide_debug_layout).setOnClickListener(v -> {
+            View layoutDebug = findViewById(R.id.layout_debug);
+            layoutDebug.setVisibility(View.GONE);
+        });
+
+        item_debug_textview_log = findViewById(R.id.item_debug_textview_log);
+        View layoutDebug = findViewById(R.id.layout_debug);
+        layoutDebug.setVisibility(View.GONE);
     }
 
     private void showPopupWindow() {
@@ -270,7 +276,7 @@ public class MainActivity extends AppCompatActivity {
 
         ((TextView) (view.findViewById(R.id.item_popup_textview_ip))).setText(this.ip);
 
-        view.findViewById(R.id.item_popup_btn_hide).setOnClickListener(v -> popWindow.dismiss());
+
         view.findViewById(R.id.item_popup_btn_choose_logo).setOnClickListener(v -> {
             Intent intent = new Intent(Intent.ACTION_PICK, null);
             intent.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
@@ -305,16 +311,6 @@ public class MainActivity extends AppCompatActivity {
             startActivityForResult(intent, 0x2);
         });
 
-        view.findViewById(R.id.item_popup_btn_reset).setOnClickListener(v -> {
-            ShowHome();
-        });
-
-        view.findViewById(R.id.item_popup_btn_exit).setOnClickListener(v -> {
-            killAppProcess();
-        });
-
-        item_popup_textview_log = view.findViewById(R.id.item_popup_textview_log);
-        item_popup_textview_log.setMovementMethod(ScrollingMovementMethod.getInstance());
     }
 
     @Override
@@ -339,6 +335,7 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
     }
 
+    int timeTextViewClickCount = 0;
     private int logoClickCount = 0;
 
     public void killAppProcess() {
@@ -433,13 +430,18 @@ public class MainActivity extends AppCompatActivity {
         showVideoView();
         this.startProcessButton.setVisibility(View.VISIBLE);
 
-//        sendHomeResetMessage2PLC(); // 不需要了， 数据清零重置操作由PLC自己完成
+//        APP使用完成后，APP会向中心算法控制器发送【投递完成】消息
+        MessageExchange.sendFinisheProcess();
     }
 
     /**
      * 显示选择身份验证的界面
      */
     private void ShowChooseAuthType() {
+
+        //在点击开始投递后， APP向中心算法控制器发送【开始投递】消息
+        MessageExchange.sendStartProcess();
+
         LogExt.d(TAG, "显示选择身份验证的界面");
         AuthFragment authFragment = new AuthFragment();
         authFragment.setRTSPVideoUrl(configData.getAiFaceRTSPUrl());
@@ -503,10 +505,12 @@ public class MainActivity extends AppCompatActivity {
 //                setAppStatusView(text);
                 break;
             case HOME:
+            case GATE_PASS:
                 ShowHome();
+
                 break;
             case HOME_SLEEP:
-                //TODO
+
                 break;
 
             case AUDIO_PLAY:
@@ -529,9 +533,6 @@ public class MainActivity extends AppCompatActivity {
                 ShowGateState();
                 break;
 
-            case GATE_PASS:
-                ShowHome();
-                break;
 
             case UNKNOWN:
                 LogExt.d(TAG, "handleMessage: " + code);
@@ -548,7 +549,7 @@ public class MainActivity extends AppCompatActivity {
      * @param dataEvent
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void OnAXDataEventMessage(AppResponse dataEvent) {
+    public void OnAXDataEventMessage(AppMessage dataEvent) {
 
         LogExt.d(TAG, "OnAXDataEventMessage: " + dataEvent.toString());
 
@@ -570,12 +571,12 @@ public class MainActivity extends AppCompatActivity {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void OnLogEventMessage(LogEvent logEvent) {
 
-        if (this.item_popup_textview_log != null && popWindow.isShowing()) {
-            this.item_popup_textview_log.append("\n");
-            this.item_popup_textview_log.append(logEvent.getData());
-            int offset = this.item_popup_textview_log.getLineCount() * this.item_popup_textview_log.getLineHeight();
-            if (offset > this.item_popup_textview_log.getHeight()) {
-                this.item_popup_textview_log.scrollTo(0, offset - this.item_popup_textview_log.getHeight());
+        if (this.item_debug_textview_log != null && this.item_debug_textview_log.getVisibility() == View.VISIBLE) {
+            this.item_debug_textview_log.append("\n");
+            this.item_debug_textview_log.append(logEvent.getData());
+            int offset = this.item_debug_textview_log.getLineCount() * this.item_debug_textview_log.getLineHeight();
+            if (offset > this.item_debug_textview_log.getHeight()) {
+                this.item_debug_textview_log.scrollTo(0, offset - this.item_debug_textview_log.getHeight());
             }
         }
     }

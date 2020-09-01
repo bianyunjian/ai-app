@@ -78,7 +78,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_margin="1dp"
-                android:layout_weight="4"
+                android:layout_weight="5"
                 android:background="@drawable/main_container_background"
                 android:elevation="2dp"
                 android:padding="1dp" />
@@ -115,10 +115,6 @@
                             android:textAlignment="center"
                             android:textSize="20dp" />
 
-                        <com.github.mikephil.charting.charts.BarChart
-                            android:id="@+id/chart"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent" />
                     </LinearLayout>
                 </FrameLayout>
 
@@ -138,13 +134,6 @@
                         android:layout_height="match_parent"
                         android:gravity="center_horizontal"
                         android:orientation="vertical">
-
-                        <Button
-                            android:id="@+id/btnDEBUG"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="5"
-                            android:text="DEBUG" />
 
                         <TextView
                             android:id="@+id/textView"
@@ -189,6 +178,62 @@
 
                 </FrameLayout>
 
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/layout_debug"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="7"
+                android:orientation="vertical"
+
+                >
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/item_debug_textview_log"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@color/black"
+                        android:maxLines="500"
+                        android:scrollbars="vertical"
+                        android:text="waiting logs"
+                        android:textColor="@color/white"
+                        android:textSize="10dp" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="10"
+                    android:orientation="horizontal">
+
+                    <Button
+                        android:id="@+id/item_debug_btn_reset_home"
+                        android:layout_width="100dp"
+                        android:layout_height="wrap_content"
+                        android:text="复位首页" />
+
+                    <Button
+                        android:id="@+id/item_debug_btn_hide_debug_layout"
+                        android:layout_width="150dp"
+                        android:layout_height="wrap_content"
+
+                        android:text="关闭Debug窗口" />
+
+                    <Button
+                        android:id="@+id/item_debug_btn_exit_app"
+                        android:layout_width="100dp"
+                        android:layout_height="wrap_content"
+                        android:background="#E32323"
+                        android:text="退出应用" />
+                </LinearLayout>
             </LinearLayout>
 
         </LinearLayout>

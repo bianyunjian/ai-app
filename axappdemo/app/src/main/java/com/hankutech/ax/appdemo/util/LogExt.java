@@ -35,6 +35,7 @@ public class LogExt {
         postLogEvent(tag, msg);
     }
 
+
     public static void e(String tag, String msg) {
         Log.e(String.format("%s-%s", getNowTimeString(), tag), msg);
         postLogEvent(tag, msg);
