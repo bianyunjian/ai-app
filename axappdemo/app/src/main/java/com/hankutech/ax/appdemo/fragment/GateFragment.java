@@ -28,6 +28,7 @@ import org.greenrobot.eventbus.ThreadMode;
 public class GateFragment extends Fragment implements IFragmentOperation {
 
     private static final String TAG = "GateFragment";
+    private static final String Desc_Gate_Pending_Open = "亲,正在打开投递口的门!";
     private static final String Desc_Gate_Not_Close = "亲,您可以开始垃圾投递了,投递后请关好门!";
     private static final String Desc_Gate_Not_Close_Timeout = "系统故障,请联系管理员处理";
     private static final String Desc_Gate_Closed = "本次投递完成.\n亲,感谢您对保护环境的付出.\n小艾,在这里等待您的再次到来.";
@@ -35,6 +36,8 @@ public class GateFragment extends Fragment implements IFragmentOperation {
     private TickTimer tickTimer = new TickTimer();
     private TextView textViewGateStateProcessDescription;
     private boolean gateClosed;
+
+    private TickTimer gateMessageTimer = new TickTimer();
 
 
     @Override
@@ -60,10 +63,15 @@ public class GateFragment extends Fragment implements IFragmentOperation {
             this.textViewGateStateProcessDescription.setText(Desc_Gate_Not_Close_Timeout);
         });
 
-        textViewGateStateProcessDescription = this.view.findViewById(R.id.gateStateProcessDescription);
-        this.textViewGateStateProcessDescription.setText(Desc_Gate_Not_Close);
 
-        LogExt.d(TAG, "等待关门");
+        textViewGateStateProcessDescription = this.view.findViewById(R.id.gateStateProcessDescription);
+        this.textViewGateStateProcessDescription.setText(Desc_Gate_Pending_Open);
+        gateMessageTimer.start(Common.GateWaitMillis, Common.MessageLoopInterval, (t) -> {
+            MessageExchange.sendRequireOpenGate();
+        }, (f) -> {
+            LogExt.d(TAG, "在限定时间内未等到开门请求的响应数据");
+        });
+        LogExt.d(TAG, "等待开门");
     }
 
     @Override
@@ -93,7 +101,12 @@ public class GateFragment extends Fragment implements IFragmentOperation {
 
         if (dataEvent.getMessageType() == AppMessageType.APP_REQUIRE_OPEN_GATE_RESP) {
             LogExt.d(TAG, "门已打开: " + dataEvent.toString());
+            gateMessageTimer.cancel();
+
+            textViewGateStateProcessDescription = this.view.findViewById(R.id.gateStateProcessDescription);
+            this.textViewGateStateProcessDescription.setText(Desc_Gate_Not_Close);
         }
+
         if (dataEvent.getMessageType() == AppMessageType.GATE_CLOSED_EVENT_REQ) {
 
             if (dataEvent.getPayload() == AppMessageValue.GATE_CLOSED_EVENT_REQ) {
@@ -113,7 +126,6 @@ public class GateFragment extends Fragment implements IFragmentOperation {
                 this.gateClosed = true;
             }
         }
-
 
     }
 }

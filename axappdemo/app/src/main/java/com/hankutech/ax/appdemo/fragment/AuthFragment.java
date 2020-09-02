@@ -12,6 +12,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 
+import com.hankutech.ax.appdemo.MessageExchange;
 import com.hankutech.ax.appdemo.constant.RuntimeContext;
 import com.hankutech.ax.appdemo.event.AXDataEvent;
 import com.hankutech.ax.appdemo.event.AuthChooseEvent;
@@ -38,6 +39,7 @@ public class AuthFragment extends Fragment implements IFragmentOperation {
     private static final String TAG = "AuthFragment";
     private View view;
     private TickTimer tickTimer = new TickTimer();
+    private TickTimer authMessageLoopTimer = new TickTimer();
     private View layoutRfid;
     private View layoutAiFace;
     private View layoutQrCode;
@@ -111,6 +113,7 @@ public class AuthFragment extends Fragment implements IFragmentOperation {
                 playAudio(AudioScene.AUTH_CHOOSE_TYPE);
                 textViewGuidDescription.setText(AudioScene.AUTH_CHOOSE_TYPE.getDescription());
                 tickTimer.reset();
+                authMessageLoopTimer.cancel();
 
                 LogExt.d(TAG, "重新选择身份验证方式");
             }
@@ -297,6 +300,9 @@ public class AuthFragment extends Fragment implements IFragmentOperation {
             int authResult = dataEvent.getPayload();
             if (this.authPassed == false && this.currentAuthFlag != null && authResult == this.currentAuthFlag.getValue()) {
                 LogExt.d(TAG, "授权成功:" + this.currentAuthFlag.getDescription());
+                if (this.authMessageLoopTimer != null) {
+                    this.authMessageLoopTimer.cancel();
+                }
 
                 this.tickTimer.cancel();
 
@@ -326,6 +332,16 @@ public class AuthFragment extends Fragment implements IFragmentOperation {
                 this.authPassed = true;
             }
         }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void OnAuthChooseEvent(AuthChooseEvent authChooseEvent) {
+        authMessageLoopTimer.start(Common.TickMillis, Common.MessageLoopInterval, (t) -> {
+            MessageExchange.sendAuth(authChooseEvent.getAuthFlag());
+        }, (f) -> {
+            LogExt.d(TAG, "在限定时间内未等到身份验证的响应数据");
+        });
+
     }
 }
 

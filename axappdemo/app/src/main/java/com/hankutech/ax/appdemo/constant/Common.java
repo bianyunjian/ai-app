@@ -1,7 +1,7 @@
 package com.hankutech.ax.appdemo.constant;
 
 public class Common {
-    public static final int APP_NUMBER = 1;
+    public static int APP_NUMBER = 2;
     /**
      * 是否Debug模式
      */
@@ -27,10 +27,6 @@ public class Common {
      */
     public static long TickMillis = (DebugMode ? DebugRate : 1) * BaseInterval; //30
 
-    /**
-     * 发送垃圾分类检测请求的时间
-     */
-    public static long SendGarbageDetectRequestMillis = 10 * 1000;
 
     /**
      * 垃圾分类检测的倒计时
@@ -51,9 +47,10 @@ public class Common {
      */
     public static long GateClosedMillis = 5 * 1000;  //5
     /**
-     * 等待关门的倒计时
+     * 等待门的倒计时
      */
     public static long GateWaitMillis = (DebugMode ? DebugRate : 1) * BaseInterval;  //30
+
 
     public static String getTickDesc(Long t) {
         return "倒计时 " + t + " 秒";
@@ -66,4 +63,9 @@ public class Common {
 
 
     public static String LogoTitle = "垃圾分类投递显示系统";
+
+    /**
+     * 轮询发送消息的时间间隔
+     */
+    public static long MessageLoopInterval = 3 * 1000;
 }

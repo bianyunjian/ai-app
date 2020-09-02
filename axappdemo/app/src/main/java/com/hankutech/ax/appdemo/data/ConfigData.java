@@ -23,6 +23,7 @@ public class ConfigData {
     private String logoTitle;
     private Uri videoUri;
     private String aiFaceRTSPUrl;
+    private Integer appNumber;
 
     private HashMap<AudioScene, Integer> audioMap = new HashMap<>();
 
@@ -36,6 +37,7 @@ public class ConfigData {
         editor.putString("aiFaceRTSPUrl", aiFaceRTSPUrl == null ? "" : aiFaceRTSPUrl);
         editor.putString("videoUri", videoUri == null ? "" : videoUri.toString());
         editor.putString("logoUri", logoUri == null ? "" : logoUri.toString());
+        editor.putString("appNumber", appNumber == null ? "1" : String.valueOf(appNumber));
         editor.commit();
     }
 
@@ -54,5 +56,9 @@ public class ConfigData {
             this.logoUri = Uri.parse(logoUriStr);
         }
 
+        String appNumberStr = sp.getString("appNumber", "1");
+        if (appNumberStr.length() > 0) {
+            this.appNumber = Integer.parseInt(appNumberStr);
+        }
     }
 }

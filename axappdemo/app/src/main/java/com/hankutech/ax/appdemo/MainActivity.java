@@ -7,6 +7,7 @@ import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.media.AudioManager;
 import android.media.SoundPool;
@@ -19,6 +20,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
@@ -31,6 +33,7 @@ import com.hankutech.ax.appdemo.code.MessageCode;
 import com.hankutech.ax.appdemo.constant.Common;
 import com.hankutech.ax.appdemo.constant.RuntimeContext;
 import com.hankutech.ax.appdemo.data.ConfigData;
+import com.hankutech.ax.appdemo.event.AuthChooseEvent;
 import com.hankutech.ax.appdemo.event.LogEvent;
 import com.hankutech.ax.appdemo.event.MessageEvent;
 import com.hankutech.ax.appdemo.fragment.AuthFragment;
@@ -175,6 +178,11 @@ public class MainActivity extends AppCompatActivity {
             String videoPath = "android.resource://com.hankutech.ax.appdemo/" + R.raw.garbage_demo;
             configData.setVideoUri(Uri.parse(videoPath));
         }
+        if (configData.getAppNumber() == null) {
+            configData.setAppNumber(Common.APP_NUMBER);
+        } else {
+            Common.APP_NUMBER = configData.getAppNumber();
+        }
 
         // 第一个参数为同时播放数据流的最大个数，第二数据流类型，第三为声音质量
         soundPool = new SoundPool(1, AudioManager.STREAM_MUSIC, 100);
@@ -276,6 +284,16 @@ public class MainActivity extends AppCompatActivity {
 
         ((TextView) (view.findViewById(R.id.item_popup_textview_ip))).setText(this.ip);
 
+
+        EditText item_popup_edittext_appNumber = view.findViewById(R.id.item_popup_edittext_appNumber);
+        item_popup_edittext_appNumber.setText(String.valueOf(configData.getAppNumber()));
+        view.findViewById(R.id.item_popup_btn_change_appNumber).setOnClickListener(v -> {
+            EditText tv = view.findViewById(R.id.item_popup_edittext_appNumber);
+            int newAppNumber = Integer.parseInt(tv.getText().toString());
+            Common.APP_NUMBER = newAppNumber;
+            configData.setAppNumber(newAppNumber);
+            configData.update(mContext);
+        });
 
         view.findViewById(R.id.item_popup_btn_choose_logo).setOnClickListener(v -> {
             Intent intent = new Intent(Intent.ACTION_PICK, null);
@@ -464,7 +482,7 @@ public class MainActivity extends AppCompatActivity {
      * 显示关门状态界面
      */
     private void ShowGateState() {
-        LogExt.d(TAG, "显示关门状态界面");
+        LogExt.d(TAG, "显示门状态界面");
         GateFragment gateFragment = new GateFragment();
         replaceView(gateFragment);
         this.startProcessButton.setVisibility(View.INVISIBLE);
@@ -479,6 +497,19 @@ public class MainActivity extends AppCompatActivity {
     private void setAppStatusView(AppStatus appStatus) {
         LogExt.d(TAG, "更新运行状态：" + appStatus.getValue() + appStatus.getDescription());
         appStatusTextView.setText(appStatus.getDescription());
+
+        switch (appStatus) {
+            case NORMAL:
+                startProcessButton.setEnabled(true);
+                startProcessButton.setBackgroundColor(Color.rgb(0x00, 0xae, 0x9d));//00ae9d
+                break;
+            case BUSY:
+            case MAINTAIN:
+            case ERROR:
+                startProcessButton.setEnabled(false);
+                startProcessButton.setBackgroundColor(Color.rgb(0xdd, 0xdd, 0xdd));//dddddd
+                break;
+        }
     }
 
     /**
@@ -533,7 +564,6 @@ public class MainActivity extends AppCompatActivity {
                 ShowGateState();
                 break;
 
-
             case UNKNOWN:
                 LogExt.d(TAG, "handleMessage: " + code);
             default:
@@ -580,6 +610,5 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
-
 
 }

@@ -4,44 +4,74 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:layout_marginTop="20dp"
+        android:orientation="vertical">
 
         <TextView
-            android:id="@+id/item_popup_textview_ip_desc"
+            android:id="@+id/item_popup_textview_app_desc"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="IP:"
+            android:text="APP设置:"
             android:textColor="@color/black"
             android:textSize="20dp" />
 
-        <TextView
-            android:id="@+id/item_popup_textview_ip"
-            android:layout_width="200dp"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="192.168.123.456"
-            android:textColor="@color/red"
-            android:textSize="20dp" />
+            android:layout_marginTop="20dp"
+            android:orientation="horizontal">
 
-        <Button
-            android:id="@+id/item_popup_btn_choose_logo"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="选择logo" />
+            <EditText
+                android:id="@+id/item_popup_edittext_appNumber"
+                android:layout_width="300dp"
+                android:layout_height="wrap_content"
+                android:inputType="number"
+                android:text="1"
+                android:textSize="18dp" />
 
-        <Button
-            android:id="@+id/item_popup_btn_choose_video"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="选择video" />
+            <Button
+                android:id="@+id/item_popup_btn_change_appNumber"
+                android:layout_width="200dp"
+                android:layout_height="wrap_content"
+
+
+                android:text="设置AppNumber" />
+
+
+        </LinearLayout>
 
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:orientation="horizontal">
+
+
+        <Button
+            android:id="@+id/item_popup_btn_choose_logo"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:text="选择logo图片" />
+
+        <Button
+            android:id="@+id/item_popup_btn_choose_video"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="100dp"
+            android:text="选择宣传视频" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
         android:orientation="horizontal">
 
         <EditText
@@ -54,16 +84,17 @@
 
         <Button
             android:id="@+id/item_popup_btn_change_title"
-            android:layout_width="wrap_content"
+            android:layout_width="200dp"
             android:layout_height="wrap_content"
 
 
-            android:text="更新标题" />
+            android:text="设置APP标题" />
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
         android:orientation="horizontal">
 
         <EditText
@@ -79,7 +110,31 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
 
-            android:text="更新人脸RTSP" />
+            android:text="设置人脸摄像头的RTSP地址" />
     </LinearLayout>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/item_popup_textview_ip_desc"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="网络信息:"
+            android:textColor="@color/black"
+            android:textSize="20dp" />
+
+        <TextView
+            android:id="@+id/item_popup_textview_ip"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:text="192.168.123.456"
+            android:textColor="@color/red"
+            android:textSize="20dp" />
+
+
+    </LinearLayout>
 </LinearLayout>
