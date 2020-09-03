@@ -45,7 +45,7 @@ public class AuthFragment extends Fragment implements IFragmentOperation {
     private View layoutQrCode;
     private View layoutChooseAuthType;
     private TextView textViewGuidDescription;
-    private Button backChooseButton;
+    private View backChooseButton;
 
     private String rtspUrl;
     private SurfaceView sSurfaceView = null;

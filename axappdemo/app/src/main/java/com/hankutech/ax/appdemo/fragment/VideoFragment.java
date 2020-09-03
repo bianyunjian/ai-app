@@ -46,8 +46,8 @@ public class VideoFragment extends Fragment implements IFragmentOperation {
         videoView = (VideoView) this.view.findViewById(R.id.videoView);
         videoView.setVideoURI(videoUri);
 //        if (Common.DebugMode) {
-            MediaController mediaController = new MediaController(this.getContext());
-            videoView.setMediaController(mediaController);
+        MediaController mediaController = new MediaController(this.getContext());
+        videoView.setMediaController(mediaController);
 
 //        }
 
@@ -88,6 +88,9 @@ public class VideoFragment extends Fragment implements IFragmentOperation {
 
     public void setVideoUri(Uri videoUri) {
         this.videoUri = videoUri;
+        if (this.videoView != null) {
+            this.videoView.stopPlayback();
+        }
     }
 
     @Override

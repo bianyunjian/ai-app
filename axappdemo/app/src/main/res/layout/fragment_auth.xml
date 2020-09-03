@@ -12,42 +12,65 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <LinearLayout
+        <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:paddingLeft="10dp"
-            android:paddingTop="10dp"
-            android:paddingRight="10dp">
+            android:orientation="horizontal">
 
-            <Button
-                android:id="@+id/button_back_choose_auth_type"
-                android:layout_width="200dp"
-                android:layout_height="60dp"
-
-                android:background="#00ae9d"
-
-                android:text="@string/back_choose_auth_type"
-                android:textColor="#ffffff"
-                android:textSize="@dimen/normalButtonTextFont" />
 
             <TextView
-                android:id="@+id/authTiktokTimeDesc"
-                android:layout_width="200dp"
-                android:layout_height="60dp"
-                android:layout_weight="9"
-                android:text="倒计时30秒"
+                android:id="@+id/button_back_choose_auth_type"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_marginTop="10dp"
+                android:fontFamily="@font/msyhbold"
+                android:text="@string/back_choose_auth_type"
                 android:textAlignment="textEnd"
-                android:textColor="@color/red"
-                android:textSize="@dimen/tickTimeFont"
-                android:textStyle="bold" />
-        </LinearLayout>
+                android:textColor="#444444"
+                android:textSize="18sp" />
+
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right"
+                android:background="@drawable/bg_time_tick"
+                android:gravity="right"
+
+                android:orientation="horizontal"
+                android:paddingLeft="26dp"
+                android:paddingTop="10dp"
+                android:paddingRight="26dp"
+                android:paddingBottom="10dp">
+
+                <ImageView
+                    android:id="@+id/imageView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/icon_time_tick" />
+
+                <TextView
+                    android:id="@+id/authTiktokTimeDesc"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dp"
+                    android:fontFamily="@font/msyh"
+                    android:text="30秒后返回主页"
+                    android:textAlignment="textEnd"
+                    android:textColor="#FF3526"
+                    android:textSize="16sp" />
+
+            </LinearLayout>
+
+        </FrameLayout>
 
         <TextView
             android:id="@+id/textViewGuidDescription"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingTop="50dp"
+            android:fontFamily="@font/msyhbold"
+            android:paddingTop="40dp"
             android:text="请选择身份验证方式"
             android:textAlignment="center"
             android:textColor="@color/guideTextColor"
@@ -58,71 +81,69 @@
             android:id="@+id/layout_choose_auth_type"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_marginTop="40dp"
             android:orientation="horizontal"
-            android:paddingLeft="100dp"
-            android:paddingRight="100dp"
             android:visibility="visible">
 
-            <Button
+            <FrameLayout
                 android:id="@+id/button_rfid"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginLeft="30dp"
-                android:layout_marginRight="30dp"
-                android:layout_weight="1"
-                android:background="@drawable/normal_button_background"
-                android:drawableTop="@drawable/rfid"
-                android:enabled="true"
-                android:paddingLeft="20dp"
-                android:paddingTop="50dp"
-                android:paddingRight="20dp"
+                android:background="@drawable/btn_auth_rfid"
+                android:enabled="true">
 
-                android:paddingBottom="50dp"
-                android:text="RFID刷卡"
-                android:textColor="#000000"
-                android:textSize="24dp"
-                android:textStyle="bold" />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom|center_horizontal"
+                    android:layout_marginBottom="36dp"
+                    android:fontFamily="@font/msyhbold"
+                    android:text="刷卡识别"
+                    android:textColor="#FFFFFF"
+                    android:textSize="48sp"></TextView>
 
-            <Button
+            </FrameLayout>
+
+            <FrameLayout
                 android:id="@+id/button_ai_face"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginLeft="30dp"
-                android:layout_marginRight="30dp"
-                android:layout_weight="1"
-                android:background="@drawable/normal_button_background"
-                android:drawableTop="@drawable/ai_face"
-                android:enabled="true"
-                android:paddingLeft="20dp"
-                android:paddingTop="50dp"
-                android:paddingRight="20dp"
+                android:layout_marginLeft="25dp"
+                android:background="@drawable/btn_auth_face"
 
-                android:paddingBottom="50dp"
-                android:text="人脸识别"
-                android:textColor="#000000"
-                android:textSize="24dp"
-                android:textStyle="bold" />
+                android:enabled="true">
 
-            <Button
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom|center_horizontal"
+                    android:layout_marginBottom="36dp"
+                    android:fontFamily="@font/msyhbold"
+                    android:text="人脸识别"
+                    android:textColor="#FFFFFF"
+                    android:textSize="48sp"></TextView>
+
+            </FrameLayout>
+
+            <FrameLayout
                 android:id="@+id/button_qrcode"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="50dp"
-                android:layout_weight="1"
-                android:background="@drawable/normal_button_background"
-                android:enabled="true"
-                android:paddingLeft="20dp"
-                android:paddingTop="50dp"
-                android:paddingRight="20dp"
-                android:paddingBottom="50dp"
-                android:text="二维码"
+                android:layout_marginLeft="25dp"
+                android:background="@drawable/btn_auth_qrcode"
+                android:enabled="true">
 
-                android:textColor="#000000"
-                android:textSize="24dp"
-                android:textStyle="bold"
-                android:visibility="gone" />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom|center_horizontal"
+                    android:layout_marginBottom="36dp"
+                    android:fontFamily="@font/msyhbold"
+                    android:text="二维码投递"
+                    android:textColor="#FFFFFF"
+                    android:textSize="48sp"></TextView>
+
+            </FrameLayout>
         </LinearLayout>
 
         <LinearLayout

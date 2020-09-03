@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:imageText="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+
+    tools:context=".fragment.HomeFragment">
+
+
+    <LinearLayout
+        android:id="@+id/home_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="10"
+            android:orientation="horizontal">
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="10"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom"
+                    android:layout_marginTop="35dp"
+                    android:layout_marginBottom="50dp"
+
+                    android:orientation="vertical"
+                    android:padding="0dp">
+
+                    <FrameLayout
+                        android:id="@+id/videoview_container"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_margin="1dp"
+                        android:elevation="2dp"
+                        android:padding="0dp">
+
+                    </FrameLayout>
+
+
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/textView_day_welcome"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="19dp"
+                    android:fontFamily="@font/msyhbold"
+                    android:text="早上好，"
+                    android:textColor="#4F5F5F"
+                    android:textSize="44sp" />
+
+                <TextView
+                    android:id="@+id/home_textview_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom"
+                    android:background="@drawable/home_title_background"
+
+                    android:fontFamily="@font/msyh"
+                    android:paddingTop="10dp"
+                    android:paddingBottom="10dp"
+                    android:text="欢迎使用深圳博览中心智能污物收集系统"
+                    android:textAlignment="center"
+                    android:textColor="#FFFFFF"
+                    android:textSize="28px" />
+
+            </FrameLayout>
+
+            <LinearLayout
+                android:id="@+id/layout_current_garbagetype"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="24dp"
+                android:layout_marginTop="35dp"
+                android:layout_weight="14"
+                android:background="@drawable/home_garbagetype_wet_background"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/textView_current_garbagetype"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="30dp"
+                    android:fontFamily="@font/msyhbold"
+                    android:text="当前可投递垃圾种类 — 湿垃圾"
+                    android:textAlignment="center"
+                    android:textColor="#FFFFFF"
+                    android:textSize="32dp" />
+
+                <ImageView
+                    android:id="@+id/imageView_current_garbagetype"
+                    android:layout_width="284dp"
+                    android:layout_height="290dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="24dp"
+                    app:srcCompat="@drawable/icon_wet" />
+
+                <Button
+                    android:id="@+id/btn_start_process"
+                    android:layout_width="300dp"
+                    android:layout_height="70dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="30dp"
+                    android:background="@drawable/btn_selector"
+                    android:fontFamily="@font/msyhbold"
+                    android:text="开始投递"
+                    android:textColor="#61c974"
+                    android:textSize="30dp" />
+
+            </LinearLayout>
+        </LinearLayout>
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="20dp"
+            android:layout_weight="20"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:id="@+id/layout_icon_list"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+            </LinearLayout>
+
+        </FrameLayout>
+    </LinearLayout>
+
+</FrameLayout>

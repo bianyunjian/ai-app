@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape xmlns:android="http://schemas.android.com/apk/res/android"
+            android:shape="rectangle">
+            <!--背景色-->
+            <solid android:color="#ff5846" />
+            <!--圆角-->
+            <corners android:radius="10dp" />
+        </shape>
+    </item>
+
+
+    <item>
+        <bitmap xmlns:android="http://schemas.android.com/apk/res/android"
+            android:src="@drawable/bg_hazardous"
+            android:tileMode="disabled" />
+    </item>
+
+
+</layer-list>
+

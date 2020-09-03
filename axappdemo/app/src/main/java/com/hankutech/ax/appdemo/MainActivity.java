@@ -15,15 +15,19 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -39,6 +43,7 @@ import com.hankutech.ax.appdemo.event.MessageEvent;
 import com.hankutech.ax.appdemo.fragment.AuthFragment;
 import com.hankutech.ax.appdemo.fragment.GarbageFragment;
 import com.hankutech.ax.appdemo.fragment.GateFragment;
+import com.hankutech.ax.appdemo.fragment.HomeFragment;
 import com.hankutech.ax.appdemo.fragment.IFragmentOperation;
 import com.hankutech.ax.appdemo.fragment.VideoFragment;
 import com.hankutech.ax.appdemo.service.NettySocketService;
@@ -67,20 +72,17 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
     private TextView nowTimeTextView;
-    private TextView appStatusTextView;
-    private TextView textViewSupportGarbageType;
 
     private SoundPool soundPool;
 
     //config data
     private ConfigData configData = new ConfigData();
 
-    private Button startProcessButton;
     private Fragment currentFragment;
     private Context mContext;
     private PopupWindow popWindow;
     private TextView item_debug_textview_log;
-    private TextView logoTitleTextView;
+
     private ImageView logoImageView;
     private String ip;
 
@@ -89,6 +91,11 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //隐去电池等图标（状态栏部分）
+        this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        //隐去标题栏（程序名）
+        this.requestWindowFeature(Window.FEATURE_NO_TITLE);
+
         setContentView(R.layout.activity_main);
         if (getSupportActionBar() != null) {
             getSupportActionBar().hide();
@@ -104,6 +111,7 @@ public class MainActivity extends AppCompatActivity {
 
         //注册订阅事件
         EventBus.getDefault().register(this);
+
     }
 
     private void checkNetwork() {
@@ -121,11 +129,8 @@ public class MainActivity extends AppCompatActivity {
         initConfigData();
         bindControl();
 
-        setAppStatusView(AppStatus.NORMAL);
         setTimeView();
-
-        showVideoView();
-
+        showHomeView(R.drawable.bg_main_default);
 
         handShakeTickTimer.start(Long.MAX_VALUE, 5000, (t) -> {
                     MessageExchange.sendHandShake();
@@ -133,6 +138,7 @@ public class MainActivity extends AppCompatActivity {
                 (f) -> {
                     handShakeTickTimer.reset();
                 });
+
 
     }
 
@@ -208,18 +214,9 @@ public class MainActivity extends AppCompatActivity {
 
     private void bindControl() {
         logoImageView = (ImageView) (findViewById(R.id.logo));
-        logoTitleTextView = (TextView) findViewById(R.id.logoTitle);
-        appStatusTextView = (TextView) findViewById(R.id.app_sysRunStatus);
-        nowTimeTextView = (TextView) findViewById(R.id.nowTime);
-        textViewSupportGarbageType = (TextView) findViewById(R.id.textViewSupportGarbageType);
 
-        startProcessButton = (Button) findViewById(R.id.startProcess);
-        startProcessButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                ShowChooseAuthType();
-            }
-        });
+        nowTimeTextView = (TextView) findViewById(R.id.nowTime);
+
         ImageView logo = (ImageView) findViewById(R.id.logo);
         logo.setImageURI(configData.getLogoUri());
         logo.setOnClickListener(view -> {
@@ -243,7 +240,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         findViewById(R.id.item_debug_btn_reset_home).setOnClickListener(v -> {
-            ShowHome();
+            Back2HomeAndResetAll();
         });
 
         findViewById(R.id.item_debug_btn_exit_app).setOnClickListener(v -> {
@@ -279,8 +276,21 @@ public class MainActivity extends AppCompatActivity {
         popWindow.setBackgroundDrawable(new ColorDrawable(0xdddddddd));    //设置一个背景
 
         //设置popupWindow显示的位置，参数依次是参照View，x轴的偏移量，y轴的偏移量
-        popWindow.showAtLocation(findViewById(R.id.layout_right), Gravity.END, 0, 0);
+        popWindow.showAtLocation(findViewById(R.id.childView_container), Gravity.END, 0, 0);
 
+
+        // 通过WindowManager获取
+        DisplayMetrics dm = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(dm);
+        int width = dm.widthPixels;
+        int height = dm.heightPixels;
+        float xdpi = dm.xdpi;
+        float ydpi = dm.ydpi;
+        int density = dm.densityDpi;
+        float fdensity = dm.density;
+
+        String dpiText = "width：" + width + ",height:" + height + ",xdpi:" + xdpi + ",ydpi:" + ydpi + ",density:" + density + ",fdensity:" + fdensity;
+        ((TextView) (view.findViewById(R.id.item_popup_textview_dpi))).setText(dpiText);
 
         ((TextView) (view.findViewById(R.id.item_popup_textview_ip))).setText(this.ip);
 
@@ -306,16 +316,20 @@ public class MainActivity extends AppCompatActivity {
         TextView item_popup_edittext_title = view.findViewById(R.id.item_popup_edittext_title);
         item_popup_edittext_title.setText(configData.getLogoTitle());
         view.findViewById(R.id.item_popup_btn_change_title).setOnClickListener(v -> {
+
             TextView tv = view.findViewById(R.id.item_popup_edittext_title);
             String newLogoTitle = tv.getText().toString();
-            logoTitleTextView.setText(newLogoTitle);
             configData.setLogoTitle(newLogoTitle);
             configData.update(mContext);
+            if (this.currentFragment != null && this.currentFragment instanceof HomeFragment) {
+                ((HomeFragment) (this.currentFragment)).updateTitle(configData);
+            }
         });
 
         TextView item_popup_edittext_ai_face_rtsp = view.findViewById(R.id.item_popup_edittext_ai_face_rtsp);
         item_popup_edittext_ai_face_rtsp.setText(configData.getAiFaceRTSPUrl());
         view.findViewById(R.id.item_popup_btn_change_ai_face_rtsp).setOnClickListener(v -> {
+
             TextView tv = view.findViewById(R.id.item_popup_edittext_ai_face_rtsp);
             String newRtsp = tv.getText().toString();
             configData.setAiFaceRTSPUrl(newRtsp);
@@ -323,6 +337,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         view.findViewById(R.id.item_popup_btn_choose_video).setOnClickListener(v -> {
+
             Intent intent = new Intent(Intent.ACTION_PICK, null);
             intent.setDataAndType(MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
                     "video/*");
@@ -345,9 +360,12 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == 0x2 && resultCode == RESULT_OK) {
             if (data != null) {
                 Uri uri = data.getData();
-                showVideoView();
+                showHomeView(R.drawable.bg_main_default);
                 configData.setVideoUri(uri);
                 configData.update(mContext);
+                if (this.currentFragment != null && this.currentFragment instanceof HomeFragment) {
+                    ((HomeFragment) (this.currentFragment)).updateVideoUri(configData);
+                }
             }
         }
         super.onActivityResult(requestCode, resultCode, data);
@@ -376,7 +394,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void run() {
 
-                SimpleDateFormat format = new SimpleDateFormat("yyyy年MM月dd日 HH时mm分ss秒");
+                SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mma");
                 String nowTimeText = format.format(new Date());
 
                 EventBus.getDefault().post(new MessageEvent(MessageCode.TIME_UPDATE, nowTimeText));
@@ -410,11 +428,23 @@ public class MainActivity extends AppCompatActivity {
         soundPool.stop(1);
     }
 
-    private void showVideoView() {
-        LogExt.d(TAG, "显示视频播放组件");
-        VideoFragment videoFragment = new VideoFragment();
-        videoFragment.setVideoUri(configData.getVideoUri());
-        replaceView(videoFragment);
+    private void showHomeView(int bgResId) {
+        LogExt.d(TAG, "显示主界面组件");
+        HomeFragment homeFragment = new HomeFragment();
+        homeFragment.setArguments(configData.getVideoUri(),
+                configData.getLogoTitle(),
+                RuntimeContext.CurrentGarbageType,
+                RuntimeContext.CurrentAppStatus);
+        replaceView(homeFragment);
+        updateMainBackGround(bgResId);
+    }
+
+    private void updateMainBackGround(int bgResId) {
+        if (bgResId <= 0) {
+            findViewById(R.id.layout_main).setBackgroundResource(R.drawable.bg_main_default);
+        } else {
+            findViewById(R.id.layout_main).setBackgroundResource(bgResId);
+        }
     }
 
 
@@ -427,7 +457,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         getFragmentManager().beginTransaction()
-                .replace(R.id.main_container, t).commit();
+                .replace(R.id.childView_container, t).commit();
         getFragmentManager().beginTransaction().show(t);
         this.currentFragment = t;
         if (t != null) {
@@ -440,13 +470,12 @@ public class MainActivity extends AppCompatActivity {
     /**
      * 显示主界面
      */
-    private void ShowHome() {
+    private void Back2HomeAndResetAll() {
         LogExt.d(TAG, "显示主界面");
 
         RuntimeContext.CurrentAuthFlag = AIAuthFlag.FAILURE;
 
-        showVideoView();
-        this.startProcessButton.setVisibility(View.VISIBLE);
+        showHomeView(R.drawable.bg_main_default);
 
 //        APP使用完成后，APP会向中心算法控制器发送【投递完成】消息
         MessageExchange.sendFinisheProcess();
@@ -455,7 +484,7 @@ public class MainActivity extends AppCompatActivity {
     /**
      * 显示选择身份验证的界面
      */
-    private void ShowChooseAuthType() {
+    private void ShowChooseAuthType(int bgResId) {
 
         //在点击开始投递后， APP向中心算法控制器发送【开始投递】消息
         MessageExchange.sendStartProcess();
@@ -464,28 +493,25 @@ public class MainActivity extends AppCompatActivity {
         AuthFragment authFragment = new AuthFragment();
         authFragment.setRTSPVideoUrl(configData.getAiFaceRTSPUrl());
         replaceView(authFragment);
-        this.startProcessButton.setVisibility(View.INVISIBLE);
     }
 
 
     /**
      * 显示垃圾分类检测的界面
      */
-    private void ShowGarbageDetect() {
+    private void ShowGarbageDetect(int bgResId) {
         LogExt.d(TAG, "显示垃圾分类检测的界面");
         GarbageFragment garbageFragment = new GarbageFragment();
         replaceView(garbageFragment);
-        this.startProcessButton.setVisibility(View.INVISIBLE);
     }
 
     /**
      * 显示关门状态界面
      */
-    private void ShowGateState() {
+    private void ShowGateState(int bgResId) {
         LogExt.d(TAG, "显示门状态界面");
         GateFragment gateFragment = new GateFragment();
         replaceView(gateFragment);
-        this.startProcessButton.setVisibility(View.INVISIBLE);
     }
 
 
@@ -496,19 +522,10 @@ public class MainActivity extends AppCompatActivity {
      */
     private void setAppStatusView(AppStatus appStatus) {
         LogExt.d(TAG, "更新运行状态：" + appStatus.getValue() + appStatus.getDescription());
-        appStatusTextView.setText(appStatus.getDescription());
 
-        switch (appStatus) {
-            case NORMAL:
-                startProcessButton.setEnabled(true);
-                startProcessButton.setBackgroundColor(Color.rgb(0x00, 0xae, 0x9d));//00ae9d
-                break;
-            case BUSY:
-            case MAINTAIN:
-            case ERROR:
-                startProcessButton.setEnabled(false);
-                startProcessButton.setBackgroundColor(Color.rgb(0xdd, 0xdd, 0xdd));//dddddd
-                break;
+        RuntimeContext.CurrentAppStatus = appStatus;
+        if (this.currentFragment != null && this.currentFragment instanceof HomeFragment) {
+            ((HomeFragment) (this.currentFragment)).updateAppStatus(appStatus);
         }
     }
 
@@ -530,18 +547,13 @@ public class MainActivity extends AppCompatActivity {
             case TIME_UPDATE:
                 String nowTimeText = obj.toString();
                 nowTimeTextView.setText(nowTimeText);
+                if (this.currentFragment != null && this.currentFragment instanceof HomeFragment) {
+                    ((HomeFragment) (this.currentFragment)).updateDayWelcome(new Date());
+                }
                 break;
             case APP_STATUS_UPDATE:
 //                String text = obj.toString();
 //                setAppStatusView(text);
-                break;
-            case HOME:
-            case GATE_PASS:
-                ShowHome();
-
-                break;
-            case HOME_SLEEP:
-
                 break;
 
             case AUDIO_PLAY:
@@ -556,12 +568,19 @@ public class MainActivity extends AppCompatActivity {
             case AUDIO_STOP:
                 stopAudio();
                 break;
+            case HOME:
+            case GATE_PASS:
+                Back2HomeAndResetAll();
+                break;
+            case PROCESS_START:
 
+                ShowChooseAuthType(R.drawable.bg_main_process);
+                break;
             case AUTH_PASS:
-                ShowGarbageDetect();
+                ShowGarbageDetect(R.drawable.bg_main_process);
                 break;
             case GARBAGE_PASS:
-                ShowGateState();
+                ShowGateState(R.drawable.bg_main_process);
                 break;
 
             case UNKNOWN:
@@ -586,8 +605,11 @@ public class MainActivity extends AppCompatActivity {
         switch (dataEvent.getMessageType()) {
             case HAND_SHAKE_RESP:
                 AIGarbageResultType garbageType = AIGarbageResultType.valueOf(dataEvent.getExtData());
-                this.textViewSupportGarbageType.setText(garbageType.getDescription());
+
                 RuntimeContext.CurrentGarbageType = garbageType;
+                if (this.currentFragment != null && this.currentFragment instanceof HomeFragment) {
+                    ((HomeFragment) (this.currentFragment)).updateGarbageType(RuntimeContext.CurrentGarbageType);
+                }
                 break;
             case SYS_STATUS_REQ:
                 setAppStatusView(AppStatus.valueOf(dataEvent.getPayload()));

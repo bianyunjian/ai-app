@@ -15,10 +15,8 @@ public enum MessageCode {
     AUDIO_STOP(33, "音频停止"),
     AUDIO_PLAY_LOOP(34, "音频循环播放"),
 
-//    TICKTOCK_START(40, "倒计时开始"),
-//    TICKTOCK_STOP(41, "倒计时停止"),
-//    TICKTOCK_UPDATE(42, "倒计时更新"),
 
+    PROCESS_START(40, "开始投递"),
     AUTH_PASS(51, "用户身份验证通过"),
 
     GARBAGE_PASS(61, "垃圾分类验证通过"),
@@ -47,7 +45,8 @@ public enum MessageCode {
                 return AUDIO_STOP;
             case 34:
                 return AUDIO_PLAY_LOOP;
-
+            case 40:
+                return PROCESS_START;
             case 51:
                 return AUTH_PASS;
             case 61:

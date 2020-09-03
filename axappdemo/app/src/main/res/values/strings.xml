@@ -1,5 +1,38 @@
 <resources>
     <string name="app_name">SmartPlayerSDKDemo</string>
     <string name="app_label_name">艾信智慧</string>
-    <string name="back_choose_auth_type">&#060;&#060;重新选择 </string>
+    <string name="back_choose_auth_type">&#060; 重新选择 </string>
+
+    <string name="icon_wet_czly">残枝落叶</string>
+    <string name="icon_wet_ggnz">骨骼内脏</string>
+    <string name="icon_wet_cgcy">菜梗菜叶</string>
+    <string name="icon_wet_ggp">瓜果皮</string>
+    <string name="icon_wet_cyzz">茶叶渣子</string>
+    <string name="icon_wet_sfsc">剩菜剩饭</string>
+    <string name="empty"></string>
+
+
+    <string name="icon_dry_ycxcj">一次性餐具</string>
+    <string name="icon_dry_wrzz">污染纸张</string>
+    <string name="icon_dry_hthc">灰土灰尘</string>
+    <string name="icon_dry_yt">烟头</string>
+    <string name="icon_dry_pjtcp">破旧陶瓷品</string>
+    <string name="icon_dry_cwfb">宠物粪便</string>
+
+
+    <string name="icon_recyclable_sl">塑料</string>
+    <string name="icon_recyclable_bl">玻璃</string>
+    <string name="icon_recyclable_zl">纸类</string>
+    <string name="icon_recyclable_yzb">硬纸板</string>
+    <string name="icon_recyclable_js">金属</string>
+    <string name="icon_recyclable_slbz">塑料包装</string>
+
+
+    <string name="icon_ha_dc">电池</string>
+    <string name="icon_ha_yq">油漆</string>
+    <string name="icon_ha_xdyp">消毒用品</string>
+    <string name="icon_ha_yp">药品</string>
+    <string name="icon_ha_scj">杀虫剂</string>
+    <string name="icon_ha_dg">灯管</string>
+
 </resources>

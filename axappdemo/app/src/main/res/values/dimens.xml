@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="headerHeight">80dp</dimen>
-    <dimen name="logoImageWidth">200dp</dimen>
-    <dimen name="logoImageHeight">50dp</dimen>
+    <dimen name="logoImageWidth">160dp</dimen>
+    <dimen name="logoImageHeight">30dp</dimen>
     <dimen name="logoFont">34dp</dimen>
-    <dimen name="headerText">30sp</dimen>
+    <dimen name="headerText">18sp</dimen>
     <dimen name="tipsText">24sp</dimen>
     <dimen name="garbageTypeTextSize">60dp</dimen>
     <dimen name="tickTimeFont">28sp</dimen>

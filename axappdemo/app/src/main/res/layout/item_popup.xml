@@ -135,6 +135,21 @@
             android:textColor="@color/red"
             android:textSize="20dp" />
 
+        <TextView
+            android:id="@+id/item_popup_textview_dpi_desc"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="显示信息:"
+            android:textColor="@color/black"
+            android:textSize="20dp" />
+
+        <TextView
+            android:id="@+id/item_popup_textview_dpi"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:text="xx"
+            android:textSize="20dp" />
+
 
     </LinearLayout>
 </LinearLayout>

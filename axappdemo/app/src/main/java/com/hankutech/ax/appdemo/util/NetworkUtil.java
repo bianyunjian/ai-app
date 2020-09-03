@@ -1,7 +1,11 @@
 package com.hankutech.ax.appdemo.util;
 
+import android.app.usage.NetworkStatsManager;
 import android.content.Context;
 import android.net.ConnectivityManager;
+import android.net.LinkAddress;
+import android.net.LinkProperties;
+import android.net.Network;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
@@ -42,6 +46,20 @@ public class NetworkUtil {
                 //调用方法将int转换为地址字符串
                 String ipAddress = intIP2StringIP(wifiInfo.getIpAddress());//得到IPV4地址
                 return ipAddress;
+            } else if (info.getType() == ConnectivityManager.TYPE_ETHERNET) {//当前使用有线网络
+                ConnectivityManager mConnectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+                Network network = null;
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+                    network = mConnectivityManager.getActiveNetwork();
+                    LinkProperties linkProperties = mConnectivityManager.getLinkProperties(network);
+                    for (LinkAddress linkAddress : linkProperties.getLinkAddresses()) {
+                        InetAddress address = linkAddress.getAddress();
+                        if (address instanceof Inet4Address) {
+                            return address.getHostAddress();
+                        }
+                    }
+                }
+                return "0.0.0.0";
             }
         } else {
             //当前无网络连接,请在设置中打开网络
