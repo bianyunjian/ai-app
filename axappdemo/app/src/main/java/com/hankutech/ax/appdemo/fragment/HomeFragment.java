@@ -141,7 +141,9 @@ public class HomeFragment extends Fragment implements IFragmentOperation {
 
 //        setIconList
         LinearLayout layout_icon_list = (LinearLayout) (this.view.findViewById(R.id.layout_icon_list));
+        layout_icon_list.removeAllViews();
         layout_icon_list.setBackgroundColor(getIconListBackgroundColor(garbageType));
+
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         layoutParams.gravity = Gravity.CENTER_HORIZONTAL | Gravity.CENTER_VERTICAL;
         layoutParams.leftMargin = 30;
