@@ -222,7 +222,7 @@ public class MainActivity extends AppCompatActivity {
         logo.setOnClickListener(view -> {
             logoClickCount++;
 //                Toast.makeText(mContext, "you click logo " + logoClickCount, Toast.LENGTH_SHORT).show();
-            if (logoClickCount > 5) {
+            if (logoClickCount > 3) {
                 logoClickCount = 0;
                 if (popWindow == null || popWindow.isShowing() == false) {
                     showPopupWindow();
@@ -232,7 +232,7 @@ public class MainActivity extends AppCompatActivity {
 
         nowTimeTextView.setOnClickListener(view -> {
             timeTextViewClickCount++;
-            if (timeTextViewClickCount > 5) {
+            if (timeTextViewClickCount > 3) {
                 timeTextViewClickCount = 0;
                 View layoutDebug = findViewById(R.id.layout_debug);
                 layoutDebug.setVisibility(View.VISIBLE);

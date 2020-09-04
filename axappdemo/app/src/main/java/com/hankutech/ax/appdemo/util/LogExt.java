@@ -13,9 +13,9 @@ import java.util.Date;
 public class LogExt {
 
     public static void d(String tag, String msg) {
-        if (Common.DebugMode) {
-            Log.d(tag, msg);
-        }
+
+        Log.d(tag, msg);
+
         postLogEvent(tag, msg);
     }
 
