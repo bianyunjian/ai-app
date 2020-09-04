@@ -4,7 +4,7 @@ public enum AudioScene {
     UNKNOWN(0, "UNKNOWN"),
     AUTH_CHOOSE_TYPE(11, "欢迎使用艾信智慧投递系统,请选择身份验证方式"),
     AUTH_RFID(12, "请在左侧如图位置刷卡"),
-    AUTH_AI_FACE(13, "请将面部正对摄像头,即将开始识别您的身份"),
+    AUTH_AI_FACE(13, "请将面部正对摄像头"),
     AUTH_QRCODE(14, "请使用手机微信扫描屏幕下方的二维码"),
     AUTH_PASS(15, "欢迎您"),
 

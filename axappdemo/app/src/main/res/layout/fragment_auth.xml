@@ -88,7 +88,7 @@
             android:layout_height="match_parent"
             android:layout_marginTop="50dp"
             android:orientation="horizontal"
-            android:visibility="visible">
+            android:visibility="gone">
 
             <FrameLayout
                 android:id="@+id/button_rfid"
@@ -105,7 +105,7 @@
                     android:fontFamily="@font/msyhbold"
                     android:text="刷卡识别"
                     android:textColor="#FFFFFF"
-                    android:textSize="63sp"></TextView>
+                    android:textSize="63sp" />
 
             </FrameLayout>
 
@@ -126,7 +126,7 @@
                     android:fontFamily="@font/msyhbold"
                     android:text="人脸识别"
                     android:textColor="#FFFFFF"
-                    android:textSize="63sp"></TextView>
+                    android:textSize="63sp" />
 
             </FrameLayout>
 
@@ -146,44 +146,57 @@
                     android:fontFamily="@font/msyhbold"
                     android:text="二维码投递"
                     android:textColor="#FFFFFF"
-                    android:textSize="63sp"></TextView>
+                    android:textSize="63sp" />
 
             </FrameLayout>
         </LinearLayout>
 
+        <!-- RFID检测组件 -->
         <LinearLayout
             android:id="@+id/layout_choose_auth_rfid"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="horizontal"
-            android:visibility="gone">
+            android:visibility="visible">
 
             <ImageView
                 android:id="@+id/imageView_rfid"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="745dp"
+                android:layout_height="480dp"
                 android:layout_weight="1"
-                android:paddingTop="100dp"
+                android:adjustViewBounds="true"
+                android:paddingTop="40dp"
+                android:scaleType="fitCenter"
                 android:src="@drawable/rfid" />
+
         </LinearLayout>
 
-
-        <LinearLayout
+        <!-- 人脸检测组件 -->
+        <FrameLayout
             android:id="@+id/layout_choose_auth_ai_face"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:layout_marginTop="40dp"
             android:orientation="horizontal"
             android:visibility="gone">
 
-            <SurfaceView
+            <com.hankutech.ax.appdemo.view.CustomSurfaceView
                 android:id="@+id/surfaceView_ai_face_rtsp"
+                android:layout_width="745dp"
+                android:layout_height="480dp"
+                >
+
+            </com.hankutech.ax.appdemo.view.CustomSurfaceView>
+
+            <FrameLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="100dp"
-                android:layout_marginRight="100dp"
-                android:layout_weight="1" />
-        </LinearLayout>
+                android:layout_gravity="center_horizontal|center_vertical"
+                android:background="@drawable/face_broad">
+
+            </FrameLayout>
+        </FrameLayout>
 
         <LinearLayout
             android:id="@+id/layout_choose_auth_qrcode"
