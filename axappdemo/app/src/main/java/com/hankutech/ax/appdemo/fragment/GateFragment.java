@@ -57,7 +57,7 @@ public class GateFragment extends Fragment implements IFragmentOperation {
 
         tickTimer.start(Common.GateWaitMillis, Common.TickInterval, (t) -> {
             TextView tv = this.view.findViewById(R.id.gateStateTiktokTimeDesc);
-            tv.setText(Common.getTickDesc(t));
+            tv.setText(Common.getTimeTickDesc(t));
         }, (t) -> {
             playAudio(AudioScene.GATE_NOT_CLOSE_TIMEOUT);
             this.textViewGateStateProcessDescription.setText(Desc_Gate_Not_Close_Timeout);
@@ -118,7 +118,7 @@ public class GateFragment extends Fragment implements IFragmentOperation {
                 this.tickTimer.cancel();
                 tickTimer.start(Common.GateClosedMillis, Common.TickInterval, (t) -> {
                     TextView tv = this.view.findViewById(R.id.gateStateTiktokTimeDesc);
-                    tv.setText(Common.getTickDesc(t));
+                    tv.setText(Common.getTimeTickDesc(t));
                 }, (t) -> {
                     //倒计时结束后,返回首页
                     EventBus.getDefault().post(new MessageEvent(MessageCode.HOME, null));

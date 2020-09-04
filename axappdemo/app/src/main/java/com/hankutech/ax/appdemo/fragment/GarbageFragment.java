@@ -67,7 +67,7 @@ public class GarbageFragment extends Fragment implements IFragmentOperation {
 
         tickTimer.start(Common.GarbageWaitDetectMillis, Common.TickInterval, (t) -> {
             TextView tv = this.view.findViewById(R.id.garbageDetectTiktokTimeDesc);
-            tv.setText(Common.getTickDesc(t));
+            tv.setText(Common.getTimeTickDesc(t));
         }, (t) -> {
             backToHome();
         });
@@ -164,7 +164,7 @@ public class GarbageFragment extends Fragment implements IFragmentOperation {
                     this.tickTimer.cancel();
                     tickTimer.start(Common.GarbageDetectFailureMillis, Common.TickInterval, (t) -> {
                         TextView tv = this.view.findViewById(R.id.garbageDetectTiktokTimeDesc);
-                        tv.setText(Common.getTickDesc(t));
+                        tv.setText(Common.getTimeTickDesc(t));
                     }, (t) -> {
                         //倒计时结束后,回到主界面
                         EventBus.getDefault().post(new MessageEvent(MessageCode.HOME, null));

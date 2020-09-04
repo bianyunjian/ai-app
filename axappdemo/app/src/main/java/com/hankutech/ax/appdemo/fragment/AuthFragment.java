@@ -79,7 +79,7 @@ public class AuthFragment extends Fragment implements IFragmentOperation {
 
         tickTimer.start(Common.TickMillis, Common.TickInterval, (t) -> {
             TextView tv = this.view.findViewById(R.id.authTiktokTimeDesc);
-            tv.setText(Common.getTickDesc(t));
+            tv.setText(Common.getTimeTickDesc(t));
         }, (t) -> {
             stopRTSPVideo();
             backToHome();
@@ -323,8 +323,6 @@ public class AuthFragment extends Fragment implements IFragmentOperation {
 
                 //至少显示一下视频画面3秒， 避免消息接收快了后， 人脸视频画面一闪而过。
                 tickTimer.start(3000, Common.TickInterval, (t) -> {
-                    TextView tv = this.view.findViewById(R.id.authTiktokTimeDesc);
-                    tv.setText("画面显示" + Common.getTickDesc(t));
                 }, (t) -> {
                     stopRTSPVideo();
                     this.layoutAiFace.setVisibility(View.GONE);
@@ -337,7 +335,7 @@ public class AuthFragment extends Fragment implements IFragmentOperation {
 
                     tickTimer.start(3000, Common.TickInterval, (t2) -> {
                         TextView tv = this.view.findViewById(R.id.authTiktokTimeDesc);
-                        tv.setText("欢迎" + Common.getTickDesc(t2));
+                        tv.setText("倒计时" + t2 + "S");
                     }, (t2) -> {
                         EventBus.getDefault().post(new MessageEvent(MessageCode.AUTH_PASS, "用户"));
                     });

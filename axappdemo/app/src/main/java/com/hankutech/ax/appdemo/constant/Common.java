@@ -5,7 +5,7 @@ public class Common {
     /**
      * 是否Debug模式
      */
-    public static boolean DebugMode = true;
+    public static boolean DebugMode = false;
 
     /**
      * 视频是否静音
@@ -52,9 +52,13 @@ public class Common {
     public static long GateWaitMillis = (DebugMode ? DebugRate : 1) * BaseInterval;  //30
 
 
-    public static String getTickDesc(Long t) {
-        return "倒计时 " + t + " 秒";
+    public static String getTimeTickDesc(Long t) {
+        return t + "S后返回主页 ";
     }
+
+//    public static String getTimeTickDesc(Long t) {
+//        return "倒计时 " + t + " 秒";
+//    }
 
     /**
      * 人脸摄像头rtsp地址

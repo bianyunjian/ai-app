@@ -27,19 +27,14 @@
                 android:src="@drawable/icon_back_home"
                 android:visibility="visible" />
 
-            <TextView
+            <ImageView
                 android:id="@+id/button_back_choose_auth_type"
-                android:layout_width="wrap_content"
+                android:layout_width="50dp"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="5dp"
-                android:layout_marginTop="10dp"
-                android:fontFamily="@font/msyhbold"
-                android:text="@string/back_choose_auth_type"
-                android:textAlignment="textEnd"
-                android:textColor="#444444"
-                android:textSize="18sp"
+                android:layout_marginTop="1dp"
+                android:src="@drawable/icon_back_home"
                 android:visibility="gone" />
-
 
             <LinearLayout
                 android:layout_width="wrap_content"
