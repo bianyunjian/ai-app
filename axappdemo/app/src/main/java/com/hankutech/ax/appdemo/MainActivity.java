@@ -493,6 +493,7 @@ public class MainActivity extends AppCompatActivity {
         AuthFragment authFragment = new AuthFragment();
         authFragment.setRTSPVideoUrl(configData.getAiFaceRTSPUrl());
         replaceView(authFragment);
+        updateMainBackGround(bgResId);
     }
 
 
@@ -503,6 +504,7 @@ public class MainActivity extends AppCompatActivity {
         LogExt.d(TAG, "显示垃圾分类检测的界面");
         GarbageFragment garbageFragment = new GarbageFragment();
         replaceView(garbageFragment);
+        updateMainBackGround(bgResId);
     }
 
     /**
@@ -512,6 +514,7 @@ public class MainActivity extends AppCompatActivity {
         LogExt.d(TAG, "显示门状态界面");
         GateFragment gateFragment = new GateFragment();
         replaceView(gateFragment);
+        updateMainBackGround(bgResId);
     }
 
 

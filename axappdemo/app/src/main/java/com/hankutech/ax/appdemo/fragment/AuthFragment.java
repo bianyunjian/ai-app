@@ -3,6 +3,7 @@ package com.hankutech.ax.appdemo.fragment;
 import android.app.Fragment;
 import android.content.Context;
 import android.os.Bundle;
+import android.util.EventLog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.SurfaceView;
@@ -10,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 import com.hankutech.ax.appdemo.MessageExchange;
@@ -54,6 +56,7 @@ public class AuthFragment extends Fragment implements IFragmentOperation {
     private Context myContext;
     private AIAuthFlag currentAuthFlag;
     private boolean authPassed;
+    private View backHomeButton;
 
     public void setRTSPVideoUrl(String rtspUrl) {
         this.rtspUrl = rtspUrl;
@@ -97,7 +100,13 @@ public class AuthFragment extends Fragment implements IFragmentOperation {
         backChooseButton = this.view.findViewById(R.id.button_back_choose_auth_type);
         backChooseButton.setVisibility(View.INVISIBLE);
 
-        this.view.findViewById(R.id.button_back_choose_auth_type).setOnClickListener(new View.OnClickListener() {
+        backHomeButton = this.view.findViewById(R.id.button_back_choose_auth_type_back_home);
+        backHomeButton.setVisibility(View.VISIBLE);
+        backHomeButton.setOnClickListener((t) -> {
+            EventBus.getDefault().post(new MessageEvent(MessageCode.HOME, null));
+        });
+
+        backChooseButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 stopRTSPVideo();
@@ -109,6 +118,7 @@ public class AuthFragment extends Fragment implements IFragmentOperation {
                 layoutAiFace.setVisibility(View.GONE);
                 layoutQrCode.setVisibility(View.GONE);
                 backChooseButton.setVisibility(View.INVISIBLE);
+                backHomeButton.setVisibility(View.VISIBLE);
 
                 playAudio(AudioScene.AUTH_CHOOSE_TYPE);
                 textViewGuidDescription.setText(AudioScene.AUTH_CHOOSE_TYPE.getDescription());
@@ -130,7 +140,7 @@ public class AuthFragment extends Fragment implements IFragmentOperation {
                 layoutAiFace.setVisibility(View.GONE);
                 layoutQrCode.setVisibility(View.GONE);
                 backChooseButton.setVisibility(View.VISIBLE);
-
+                backHomeButton.setVisibility(View.INVISIBLE);
                 playAudio(AudioScene.AUTH_RFID);
                 textViewGuidDescription.setText(AudioScene.AUTH_RFID.getDescription());
                 tickTimer.reset();
@@ -153,6 +163,7 @@ public class AuthFragment extends Fragment implements IFragmentOperation {
                 layoutAiFace.setVisibility(View.VISIBLE);
                 layoutQrCode.setVisibility(View.GONE);
                 backChooseButton.setVisibility(View.VISIBLE);
+                backHomeButton.setVisibility(View.INVISIBLE);
 
                 playAudio(AudioScene.AUTH_AI_FACE);
                 textViewGuidDescription.setText(AudioScene.AUTH_AI_FACE.getDescription());
@@ -162,26 +173,30 @@ public class AuthFragment extends Fragment implements IFragmentOperation {
             }
         });
 
-        this.view.findViewById(R.id.button_qrcode).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                stopRTSPVideo();
-
-                currentAuthFlag = AIAuthFlag.QRCODE;
-                RuntimeContext.CurrentAuthFlag = currentAuthFlag;
-                layoutChooseAuthType.setVisibility(View.GONE);
-                layoutRfid.setVisibility(View.GONE);
-                layoutAiFace.setVisibility(View.GONE);
-                layoutQrCode.setVisibility(View.VISIBLE);
-                backChooseButton.setVisibility(View.VISIBLE);
-
-                playAudio(AudioScene.AUTH_QRCODE);
-                textViewGuidDescription.setText(AudioScene.AUTH_QRCODE.getDescription());
-                tickTimer.reset();
-                LogExt.d(TAG, "身份验证方式==QRCODE");
-                EventBus.getDefault().post(new AuthChooseEvent(AIAuthFlag.QRCODE));
-            }
+        this.view.findViewById(R.id.button_qrcode).setOnClickListener((t) -> {
+            Toast.makeText(view.getContext(), "正在开发中，敬请期待", Toast.LENGTH_LONG).show();
         });
+//        this.view.findViewById(R.id.button_qrcode).setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                stopRTSPVideo();
+//
+//                currentAuthFlag = AIAuthFlag.QRCODE;
+//                RuntimeContext.CurrentAuthFlag = currentAuthFlag;
+//                layoutChooseAuthType.setVisibility(View.GONE);
+//                layoutRfid.setVisibility(View.GONE);
+//                layoutAiFace.setVisibility(View.GONE);
+//                layoutQrCode.setVisibility(View.VISIBLE);
+//                backChooseButton.setVisibility(View.VISIBLE);
+//                backHomeButton.setVisibility(View.INVISIBLE);
+//
+//                playAudio(AudioScene.AUTH_QRCODE);
+//                textViewGuidDescription.setText(AudioScene.AUTH_QRCODE.getDescription());
+//                tickTimer.reset();
+//                LogExt.d(TAG, "身份验证方式==QRCODE");
+//                EventBus.getDefault().post(new AuthChooseEvent(AIAuthFlag.QRCODE));
+//            }
+//        });
 
         LogExt.d(TAG, "等待选择身份验证方式");
     }
