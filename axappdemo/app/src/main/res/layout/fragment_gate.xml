@@ -66,7 +66,7 @@
                 android:layout_width="360dp"
                 android:layout_height="345dp"
                 android:layout_gravity="center_vertical"
-                android:src="@drawable/icon_gate_1"></ImageView>
+               ></ImageView>
 
             <TextView
                 android:id="@+id/gateStateProcessDescription"

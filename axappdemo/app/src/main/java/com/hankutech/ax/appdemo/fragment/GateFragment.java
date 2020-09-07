@@ -8,6 +8,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.github.penfeizhou.animation.apng.APNGDrawable;
+import com.github.penfeizhou.animation.loader.AssetStreamLoader;
 import com.hankutech.ax.appdemo.MessageExchange;
 import com.hankutech.ax.appdemo.R;
 import com.hankutech.ax.appdemo.code.AudioScene;
@@ -67,7 +69,9 @@ public class GateFragment extends Fragment implements IFragmentOperation {
         });
 
         imageView = this.view.findViewById(R.id.img_gateState_icon);
-        imageView.setImageResource(R.drawable.icon_gate_1);
+        AssetStreamLoader assetLoader = new AssetStreamLoader(getContext(), "icon_tf_01.apng");
+        APNGDrawable apngDrawable = new APNGDrawable(assetLoader);
+        imageView.setImageDrawable(apngDrawable);
 
         textViewGateStateProcessDescription = this.view.findViewById(R.id.gateStateProcessDescription);
         this.textViewGateStateProcessDescription.setText(Desc_Gate_Pending_Open);
@@ -124,7 +128,9 @@ public class GateFragment extends Fragment implements IFragmentOperation {
                 }
                 String desc = "投递完成\n您本次荣获" + score + "分\n感谢您为环境保护的付出";
                 this.textViewGateStateProcessDescription.setText(desc);
-                this.imageView.setImageResource(R.drawable.icon_gate_2);
+                AssetStreamLoader assetLoader = new AssetStreamLoader(getContext(), "icon_tf_02.apng");
+                APNGDrawable apngDrawable = new APNGDrawable(assetLoader);
+                imageView.setImageDrawable(apngDrawable);
                 playAudio(AudioScene.GATE_CLOSE);
 
                 this.tickTimer.cancel();

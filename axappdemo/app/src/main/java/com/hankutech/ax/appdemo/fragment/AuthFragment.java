@@ -13,10 +13,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewOutlineProvider;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 
+import com.github.penfeizhou.animation.apng.APNGDrawable;
+import com.github.penfeizhou.animation.loader.AssetStreamLoader;
 import com.hankutech.ax.appdemo.MessageExchange;
 import com.hankutech.ax.appdemo.constant.RuntimeContext;
 import com.hankutech.ax.appdemo.event.AXDataEvent;
@@ -382,6 +385,10 @@ public class AuthFragment extends Fragment implements IFragmentOperation {
             this.backChooseButton.setVisibility(View.GONE);
             this.textViewGuidDescription.setVisibility(View.GONE);
 
+            AssetStreamLoader assetLoader = new AssetStreamLoader(getContext(), "icon_auth_failure.apng");
+            APNGDrawable apngDrawable = new APNGDrawable(assetLoader);
+            ImageView imageView = this.view.findViewById(R.id.error_auth_fail_img);
+            imageView.setImageDrawable(apngDrawable);
             this.layoutAuthError.setVisibility(View.VISIBLE);
         }, (t2) -> {
             backToHome();
