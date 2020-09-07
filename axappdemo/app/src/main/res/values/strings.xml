@@ -36,4 +36,6 @@
     <string name="icon_ha_scj">杀虫剂</string>
     <string name="icon_ha_dg">灯管</string>
 
+    <string name="error_auth_fail">用户您好\n身份验证没有通过\n请联系管理员</string>
+
 </resources>

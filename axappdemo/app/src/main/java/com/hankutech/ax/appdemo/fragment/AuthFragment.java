@@ -2,6 +2,8 @@ package com.hankutech.ax.appdemo.fragment;
 
 import android.app.Fragment;
 import android.content.Context;
+import android.graphics.Outline;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.util.EventLog;
 import android.util.Log;
@@ -9,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewOutlineProvider;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -48,6 +51,7 @@ public class AuthFragment extends Fragment implements IFragmentOperation {
     private View layoutChooseAuthType;
     private TextView textViewGuidDescription;
     private View backChooseButton;
+    private View layoutAuthError;
 
     private String rtspUrl;
     private SurfaceView sSurfaceView = null;
@@ -82,7 +86,12 @@ public class AuthFragment extends Fragment implements IFragmentOperation {
             tv.setText(Common.getTimeTickDesc(t));
         }, (t) -> {
             stopRTSPVideo();
-            backToHome();
+
+            if (!authPassed) {
+                handleAuthFail();
+            }
+
+//            backToHome();
         });
 
         this.libPlayer = new SmartPlayerJniV2();
@@ -99,6 +108,9 @@ public class AuthFragment extends Fragment implements IFragmentOperation {
         layoutChooseAuthType.setVisibility(View.VISIBLE);
         backChooseButton = this.view.findViewById(R.id.button_back_choose_auth_type);
         backChooseButton.setVisibility(View.INVISIBLE);
+
+        layoutAuthError = this.view.findViewById(R.id.layout_auth_error);
+        layoutAuthError.setVisibility(View.INVISIBLE);
 
         backHomeButton = this.view.findViewById(R.id.button_back_choose_auth_type_back_home);
         backHomeButton.setVisibility(View.VISIBLE);
@@ -356,5 +368,26 @@ public class AuthFragment extends Fragment implements IFragmentOperation {
         });
 
     }
+
+
+    private void handleAuthFail() {
+        tickTimer.start(3000, Common.TickInterval, (t2) -> {
+            TextView tv = this.view.findViewById(R.id.authTiktokTimeDesc);
+            tv.setText("倒计时" + t2 + "S");
+
+            this.layoutAiFace.setVisibility(View.GONE);
+            this.layoutRfid.setVisibility(View.GONE);
+            this.layoutQrCode.setVisibility(View.GONE);
+            this.layoutChooseAuthType.setVisibility(View.GONE);
+            this.backChooseButton.setVisibility(View.GONE);
+            this.textViewGuidDescription.setVisibility(View.GONE);
+
+            this.layoutAuthError.setVisibility(View.VISIBLE);
+        }, (t2) -> {
+            backToHome();
+        });
+    }
+
+
 }
 

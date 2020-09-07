@@ -157,7 +157,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="horizontal"
-            android:visibility="visible">
+            android:visibility="gone">
 
             <ImageView
                 android:id="@+id/imageView_rfid"
@@ -181,13 +181,20 @@
             android:orientation="horizontal"
             android:visibility="gone">
 
-            <com.hankutech.ax.appdemo.view.CustomSurfaceView
+            <SurfaceView
                 android:id="@+id/surfaceView_ai_face_rtsp"
                 android:layout_width="745dp"
                 android:layout_height="480dp"
                 >
 
-            </com.hankutech.ax.appdemo.view.CustomSurfaceView>
+            </SurfaceView>
+
+            <com.hankutech.ax.appdemo.view.FaceTopSurfaceView
+                android:id="@+id/face_top"
+                android:layout_width="745dp"
+                android:layout_height="480dp">
+
+            </com.hankutech.ax.appdemo.view.FaceTopSurfaceView>
 
             <FrameLayout
                 android:layout_width="wrap_content"
@@ -212,6 +219,39 @@
                 android:layout_weight="1"
                 android:padding="100dp"
                 android:src="@drawable/qrcode" />
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:id="@+id/layout_auth_error"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:visibility="visible">
+
+            <ImageView
+                android:id="@+id/error_auth_fail_img"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginTop="200dp"
+                android:layout_marginStart="340dp"
+                android:src="@drawable/error_auth_fail">
+
+            </ImageView>
+
+            <TextView
+                android:id="@+id/error_auth_fail_msg"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|center_horizontal"
+                android:layout_marginBottom="36dp"
+                android:fontFamily="@font/msyhbold"
+                android:text="@string/error_auth_fail"
+                android:textColor="#444444"
+                android:layout_marginStart="50dp"
+                android:textSize="63sp" />
+
         </LinearLayout>
 
     </LinearLayout>
