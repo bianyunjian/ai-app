@@ -140,6 +140,8 @@ public class HomeFragment extends Fragment implements IFragmentOperation {
         startProcessButton.setTextColor(getColor(garbageType));
 
 //        setIconList
+//        this.view.findViewById(R.id.frame_layout_icon_list).setVisibility(ifShow(garbageType) ? View.VISIBLE : View.GONE);
+
         LinearLayout layout_icon_list = (LinearLayout) (this.view.findViewById(R.id.layout_icon_list));
         layout_icon_list.removeAllViews();
         layout_icon_list.setBackgroundColor(getIconListBackgroundColor(garbageType));
@@ -175,6 +177,19 @@ public class HomeFragment extends Fragment implements IFragmentOperation {
 
     }
 
+    private boolean ifShow(AIGarbageResultType garbageType) {
+        switch (garbageType) {
+            case DRY:
+            case WET:
+            case RECYCLABLE:
+            case HAZARDOUS:
+                return true;
+            default:
+                break;
+        }
+        return false;
+    }
+
     private int getPersonIcon(AIGarbageResultType garbageType) {
         switch (garbageType) {
             case DRY:
@@ -185,6 +200,8 @@ public class HomeFragment extends Fragment implements IFragmentOperation {
                 return R.drawable.home_person_recyclable;
             case HAZARDOUS:
                 return R.drawable.home_person_hazardous;
+            case WHITE_QUILT:
+                return R.drawable.home_person_white_bf;
             case OTHERS:
                 return R.drawable.home_person_others;
             default:
@@ -222,6 +239,8 @@ public class HomeFragment extends Fragment implements IFragmentOperation {
                 return R.drawable.icon_recyclable;
             case HAZARDOUS:
                 return R.drawable.icon_hazardous;
+            case WHITE_QUILT:
+                return R.drawable.icon_white_mb;
             case OTHERS:
                 return R.drawable.icon_others;
             default:
@@ -236,13 +255,14 @@ public class HomeFragment extends Fragment implements IFragmentOperation {
             case DRY:
                 return R.drawable.home_garbagetype_dry_background;
             case WET:
-
                 return R.drawable.home_garbagetype_wet_background;
 
             case RECYCLABLE:
                 return R.drawable.home_garbagetype_recyclable_background;
             case HAZARDOUS:
                 return R.drawable.home_garbagetype_hazardous_background;
+            case WHITE_QUILT:
+                return R.drawable.home_garbagetype_mb_background;
             case OTHERS:
                 break;
             default:
@@ -289,6 +309,10 @@ public class HomeFragment extends Fragment implements IFragmentOperation {
                 list.add(new IconViewItem(R.string.icon_ha_yp, R.drawable.icon_ha_yp));
                 list.add(new IconViewItem(R.string.icon_ha_scj, R.drawable.icon_ha_scj));
                 list.add(new IconViewItem(R.string.icon_ha_dg, R.drawable.icon_ha_dg));
+                break;
+            case WHITE_QUILT:
+                list.add(new IconViewItem(R.string.icon_white_bf, R.drawable.icon_white_bf));
+
                 break;
             case OTHERS:
                 break;

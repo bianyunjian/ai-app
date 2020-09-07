@@ -26,9 +26,9 @@ public class MessageExchange {
 
     private static SocketClient getSocketClient() {
 
-        String key = SocketConst.SERVER_LISTENING_IP + ":" + SocketConst.SERVER_LISTENING_PORT;
-        return SocketClient.getClient(key);
-
+        String key = SocketConst.CENTRAL_SERVER_LISTENING_IP + ":" + SocketConst.CENTRAL_SERVER_LISTENING_PORT;
+        SocketClient client = SocketClient.getClient(key);
+        return client;
     }
 
     public static void sendHandShake() {

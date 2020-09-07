@@ -35,8 +35,13 @@
     <string name="icon_ha_yp">药品</string>
     <string name="icon_ha_scj">杀虫剂</string>
     <string name="icon_ha_dg">灯管</string>
+
+    <string name="icon_white_bf">被服</string>
+
+
     <string name="detect_garbage">正在检测垃圾中\n请稍等...</string>
 
     <string name="error_auth_fail">用户您好，您的\n身份验证没有通过\n请联系管理员</string>
+
 
 </resources>

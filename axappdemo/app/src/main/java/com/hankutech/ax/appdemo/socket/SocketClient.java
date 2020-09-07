@@ -10,6 +10,7 @@ import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
@@ -25,9 +26,12 @@ public class SocketClient {
 
     private static ConcurrentHashMap<String, SocketClient> SOCKET_CLIENT_MAP = new ConcurrentHashMap<>();
 
-
-    private final String host;
-    private final int port;
+    @Getter
+    @Setter
+    private String host;
+    @Getter
+    @Setter
+    private int port;
 
     private int timeoutMillis = 10000;
 
@@ -36,18 +40,20 @@ public class SocketClient {
     private final ChannelInitializer initializer;
     private long reconnectSleepSeconds = 5;
     private boolean retryConnectFlag = false;
+    private boolean disposed = false;
 
 
     public SocketClient(String host, int port, ChannelInitializer initializer) {
         this.host = host;
         this.port = port;
         this.initializer = initializer;
+
     }
 
     /**
      * @throws NettyClientException
      */
-    public void startConnect() throws NettyClientException {
+    public void startConnect() {
         EventLoopGroup clientGroup = new NioEventLoopGroup();
 
         Bootstrap bootstrap = new Bootstrap();
@@ -71,9 +77,12 @@ public class SocketClient {
                 this.addClient(getKey(), this);
             }
         } catch (Exception e) {
-            throw new NettyClientException(e, SocketError.START_INTERRUPTED);
-        } finally {
-            retryConnect();
+            this.retryConnectFlag = true;
+            if (disposed == false) {
+                retryConnect();
+            } else {
+                return;
+            }
         }
 
         // 监听连接关闭动作
@@ -90,7 +99,7 @@ public class SocketClient {
         if (this.retryConnectFlag == true) {
             try {
                 TimeUnit.SECONDS.sleep(reconnectSleepSeconds);
-                System.out.println("socket断线重连：" + getKey());
+                System.out.println("socket等待" + reconnectSleepSeconds + "s后断线重连：" + getKey());
                 startConnect(); // 断线重连
             } catch (Exception e) {
                 e.printStackTrace();
@@ -109,6 +118,8 @@ public class SocketClient {
         if (null != future) {
             this.future.channel().close();
         }
+        this.retryConnectFlag = false;
+        this.disposed = true;
     }
 
     /**

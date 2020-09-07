@@ -36,6 +36,7 @@ import com.hankutech.ax.appdemo.code.AudioScene;
 import com.hankutech.ax.appdemo.code.MessageCode;
 import com.hankutech.ax.appdemo.constant.Common;
 import com.hankutech.ax.appdemo.constant.RuntimeContext;
+import com.hankutech.ax.appdemo.constant.SocketConst;
 import com.hankutech.ax.appdemo.data.ConfigData;
 import com.hankutech.ax.appdemo.event.AuthChooseEvent;
 import com.hankutech.ax.appdemo.event.LogEvent;
@@ -47,6 +48,8 @@ import com.hankutech.ax.appdemo.fragment.HomeFragment;
 import com.hankutech.ax.appdemo.fragment.IFragmentOperation;
 import com.hankutech.ax.appdemo.fragment.VideoFragment;
 import com.hankutech.ax.appdemo.service.NettySocketService;
+import com.hankutech.ax.appdemo.socket.NettyClientException;
+import com.hankutech.ax.appdemo.socket.SocketClient;
 import com.hankutech.ax.appdemo.util.LogExt;
 import com.hankutech.ax.appdemo.util.NetworkUtil;
 import com.hankutech.ax.appdemo.util.TickTimer;
@@ -64,6 +67,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends AppCompatActivity {
     static {
@@ -192,6 +196,18 @@ public class MainActivity extends AppCompatActivity {
             Common.APP_NUMBER = configData.getAppNumber();
         }
 
+        if (configData.getServerIp() == null) {
+            configData.setServerIp(SocketConst.CENTRAL_SERVER_LISTENING_IP);
+        } else {
+            SocketConst.CENTRAL_SERVER_LISTENING_IP = configData.getServerIp();
+        }
+
+        if (configData.getServerPort() == null) {
+            configData.setServerPort(SocketConst.CENTRAL_SERVER_LISTENING_PORT);
+        } else {
+            SocketConst.CENTRAL_SERVER_LISTENING_PORT = configData.getServerPort();
+        }
+
         // 第一个参数为同时播放数据流的最大个数，第二数据流类型，第三为声音质量
         soundPool = new SoundPool(1, AudioManager.STREAM_MUSIC, 100);
 
@@ -306,6 +322,40 @@ public class MainActivity extends AppCompatActivity {
             configData.setAppNumber(newAppNumber);
             configData.update(mContext);
         });
+        EditText et_serverIp = view.findViewById(R.id.item_popup_edittext_server_ip);
+        EditText et_serverPort = view.findViewById(R.id.item_popup_edittext_server_port);
+        et_serverIp.setText(String.valueOf(configData.getServerIp()));
+        et_serverPort.setText(String.valueOf(configData.getServerPort()));
+        view.findViewById(R.id.item_popup_btn_change_server).setOnClickListener(v -> {
+
+            EditText et_serverIp_c = view.findViewById(R.id.item_popup_edittext_server_ip);
+            EditText et_serverPort_c = view.findViewById(R.id.item_popup_edittext_server_port);
+            String ip = et_serverIp_c.getText().toString();
+            int port = Integer.parseInt(et_serverPort_c.getText().toString());
+
+            //update socket client
+            String key = SocketConst.CENTRAL_SERVER_LISTENING_IP + ":" + SocketConst.CENTRAL_SERVER_LISTENING_PORT;
+            SocketClient.removeClient(key);
+
+            SocketConst.CENTRAL_SERVER_LISTENING_IP = ip;
+            SocketConst.CENTRAL_SERVER_LISTENING_PORT = port;
+            //重新启动NettySocketService
+            Intent intent = new Intent(this, NettySocketService.class);
+            intent.setAction("android.intent.action.RESPOND_VIA_MESSAGE");
+            MainActivity.this.stopService(intent);
+            try {
+                TimeUnit.SECONDS.sleep(1);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            MainActivity.this.startService(intent);
+
+
+            configData.setServerIp(ip);
+            configData.setServerPort(port);
+            configData.update(mContext);
+        });
+
 
         view.findViewById(R.id.item_popup_btn_choose_logo).setOnClickListener(v -> {
             Intent intent = new Intent(Intent.ACTION_PICK, null);

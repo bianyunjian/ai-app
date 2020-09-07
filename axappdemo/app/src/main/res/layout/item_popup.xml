@@ -4,6 +4,52 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/item_popup_textview_server_desc"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="中心服务器地址设置:"
+            android:textColor="@color/black"
+            android:textSize="20dp" />
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/item_popup_edittext_server_ip"
+                android:layout_width="200dp"
+                android:layout_height="wrap_content"
+                android:text="192.168.123.147"
+                android:textSize="18dp" />
+
+            <EditText
+                android:id="@+id/item_popup_edittext_server_port"
+                android:layout_width="80dp"
+                android:layout_height="wrap_content"
+                android:inputType="number"
+                android:text="5001"
+                android:textSize="18dp" />
+
+            <Button
+                android:id="@+id/item_popup_btn_change_server"
+                android:layout_width="200dp"
+                android:layout_height="wrap_content"
+                android:text="设置中心服务器" />
+
+
+        </LinearLayout>
+
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -18,6 +64,7 @@
             android:text="APP设置:"
             android:textColor="@color/black"
             android:textSize="20dp" />
+
 
         <LinearLayout
             android:layout_width="match_parent"

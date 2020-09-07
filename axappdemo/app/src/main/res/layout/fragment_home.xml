@@ -121,7 +121,7 @@
             </LinearLayout>
         </LinearLayout>
 
-        <FrameLayout
+        <FrameLayout android:id="@+id/frame_layout_icon_list"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginTop="20dp"

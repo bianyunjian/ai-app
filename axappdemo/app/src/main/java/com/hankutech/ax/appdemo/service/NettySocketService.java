@@ -12,6 +12,7 @@ import com.hankutech.ax.appdemo.socket.SocketClient;
 import com.hankutech.ax.appdemo.util.LogExt;
 
 public class NettySocketService extends Service {
+    private static NettySocketService instance;
     private static final String TAG = "SocketService";
     private SocketClient socketClient;
     private Thread clientThread;
@@ -45,20 +46,22 @@ public class NettySocketService extends Service {
 
     }
 
-    private void stopSocketServer() {
+    public void stopSocketServer() {
         LogExt.d(TAG, "stopSocketServer");
         if (socketClient != null) {
             socketClient.close();
+            socketClient=null;
             this.clientThread.interrupt();
         }
     }
 
-    private void startSocketServer() {
+    public void startSocketServer() {
         LogExt.d(TAG, "startSocketServer");
 
+
         this.clientThread = new Thread(() -> {
-            socketClient = new SocketClient(SocketConst.SERVER_LISTENING_IP,
-                    SocketConst.SERVER_LISTENING_PORT,
+            socketClient = new SocketClient(SocketConst.CENTRAL_SERVER_LISTENING_IP,
+                    SocketConst.CENTRAL_SERVER_LISTENING_PORT,
                     new ByteSocketClientInitializer(SocketConst.FIXED_LENGTH_FRAME));
             try {
                 socketClient.startConnect();

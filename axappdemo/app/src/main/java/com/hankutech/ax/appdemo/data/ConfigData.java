@@ -24,7 +24,8 @@ public class ConfigData {
     private Uri videoUri;
     private String aiFaceRTSPUrl;
     private Integer appNumber;
-
+    private String serverIp;
+    private Integer serverPort;
     private HashMap<AudioScene, Integer> audioMap = new HashMap<>();
 
     public void update(Context ctx) {
@@ -38,6 +39,8 @@ public class ConfigData {
         editor.putString("videoUri", videoUri == null ? "" : videoUri.toString());
         editor.putString("logoUri", logoUri == null ? "" : logoUri.toString());
         editor.putString("appNumber", appNumber == null ? "1" : String.valueOf(appNumber));
+        editor.putString("serverIp", serverIp == null ? "192.168.1.1" : serverIp);
+        editor.putString("serverPort", serverPort == null ? "5001" : String.valueOf(serverPort));
         editor.commit();
     }
 
@@ -59,6 +62,14 @@ public class ConfigData {
         String appNumberStr = sp.getString("appNumber", "1");
         if (appNumberStr.length() > 0) {
             this.appNumber = Integer.parseInt(appNumberStr);
+        }
+
+        this.serverIp = sp.getString("serverIp", "192.168.1.1");
+
+
+        String serverPortStr = sp.getString("serverPort", "5001");
+        if (serverPortStr.length() > 0) {
+            this.serverPort = Integer.parseInt(serverPortStr);
         }
     }
 }
