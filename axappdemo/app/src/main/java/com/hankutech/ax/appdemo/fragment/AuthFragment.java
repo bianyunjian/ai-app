@@ -361,7 +361,7 @@ public class AuthFragment extends Fragment implements IFragmentOperation {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void OnAuthChooseEvent(AuthChooseEvent authChooseEvent) {
-        authMessageLoopTimer.start(Common.TickMillis, Common.MessageLoopInterval, (t) -> {
+        authMessageLoopTimer.start(Common.TickMillis, Common.MessageRequestLoopInterval, (t) -> {
             MessageExchange.sendAuth(authChooseEvent.getAuthFlag());
         }, (f) -> {
             LogExt.d(TAG, "在限定时间内未等到身份验证的响应数据");

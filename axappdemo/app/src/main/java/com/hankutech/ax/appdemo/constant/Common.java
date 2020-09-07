@@ -69,7 +69,12 @@ public class Common {
     public static String LogoTitle = "垃圾分类投递显示系统";
 
     /**
-     * 轮询发送消息的时间间隔
+     * 轮询发送业务请求消息的时间间隔
      */
-    public static long MessageLoopInterval = 3 * 1000;
+    public static long MessageRequestLoopInterval = 2 * 1000;
+
+    /**
+     * 轮询发送握手消息的时间间隔
+     */
+    public static long MessageHandshakeRequestInterval = 5 * 1000;
 }

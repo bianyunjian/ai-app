@@ -83,4 +83,6 @@ dependencies {
     implementation files('src/main/jniLibs/ax-message-protocal-0.0.1-SNAPSHOT.jar')
 
 
+    implementation 'com.github.penfeizhou.android.animation:apng:2.4.2'
+
 }

@@ -51,10 +51,10 @@ public class ByteMessageHandler extends ChannelInboundHandlerAdapter {
 
             byte[] bytes = new byte[buf.readableBytes()];
             buf.getBytes(0, bytes);
-            LogExt.d(TAG, "接收的原始字节数据：" + formatString(bytes));
+            LogExt.d(TAG, "接收原始字节：" + formatString(bytes));
 
             int[] convertedData = ByteConverter.fromByte(bytes);
-            LogExt.d(TAG, "转换后的数据：" + formatString(convertedData));
+            LogExt.d(TAG, "转换后的字节：" + formatString(convertedData));
 
             AppMessage response = AppDataConverter.parse(convertedData);
             if (response.getMessageSource() != MessageSource.CENTRAL_SERVER) {

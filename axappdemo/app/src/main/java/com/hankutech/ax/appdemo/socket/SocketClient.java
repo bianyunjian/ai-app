@@ -12,6 +12,7 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import lombok.Getter;
 
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 /**
  * SOCKET 通用客户端
@@ -33,6 +34,8 @@ public class SocketClient {
     @Getter
     private ChannelFuture future;
     private final ChannelInitializer initializer;
+    private long reconnectSleepSeconds = 5;
+    private boolean retryConnectFlag = false;
 
 
     public SocketClient(String host, int port, ChannelInitializer initializer) {
@@ -63,19 +66,40 @@ public class SocketClient {
         try {
             this.future = bootstrap.connect(this.host, this.port).sync();
             if (this.future.isSuccess()) {
-                System.out.println("服务端：" + this.host + ":" + this.port + " 连接成功！");
-                this.addClient(this.host + ":" + this.port, this);
+                System.out.println("服务端：" + getKey() + " 连接成功！");
+                this.retryConnectFlag = false;
+                this.addClient(getKey(), this);
             }
-        } catch (InterruptedException e) {
+        } catch (Exception e) {
             throw new NettyClientException(e, SocketError.START_INTERRUPTED);
+        } finally {
+            retryConnect();
         }
 
         // 监听连接关闭动作
         this.future.channel().closeFuture().addListener((ChannelFutureListener) channelFuture -> {
+            this.removeClient(getKey());
             clientGroup.shutdownGracefully();
-//            log.info("socket连接：{}:{} 已关闭", host, port);
-            System.out.println("socket连接：" + this.host + ":" + this.port + " 已关闭！");
+            System.out.println("socket连接：" + getKey() + " 已关闭！");
+            this.retryConnectFlag = true;
+            retryConnect();
         });
+    }
+
+    private void retryConnect() {
+        if (this.retryConnectFlag == true) {
+            try {
+                TimeUnit.SECONDS.sleep(reconnectSleepSeconds);
+                System.out.println("socket断线重连：" + getKey());
+                startConnect(); // 断线重连
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private String getKey() {
+        return this.host + ":" + this.port;
     }
 
     /**
@@ -105,15 +129,13 @@ public class SocketClient {
         SOCKET_CLIENT_MAP.put(key, client);
     }
 
+    public static void removeClient(String key) {
+        SOCKET_CLIENT_MAP.remove(key);
+    }
 
     public static SocketClient getClient(String key) {
         return SOCKET_CLIENT_MAP.get(key);
     }
 
-
-    public SocketClient withTimeoutMillis(int millis) {
-        this.timeoutMillis = millis;
-        return this;
-    }
 
 }

@@ -23,7 +23,7 @@ public class ByteSocketClientInitializer extends ChannelInitializer<SocketChanne
     protected void initChannel(SocketChannel socketChannel) throws Exception {
         ChannelPipeline pipeline = socketChannel.pipeline();
         pipeline.addLast(new FixedLengthFrameDecoder(fixedLengthFrame));
- 
+
         pipeline.addLast(new ByteMessageHandler());
     }
 }

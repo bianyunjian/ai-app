@@ -132,7 +132,9 @@ public class MainActivity extends AppCompatActivity {
         setTimeView();
         showHomeView(R.drawable.bg_main_default);
 
-        handShakeTickTimer.start(Long.MAX_VALUE, 5000, (t) -> {
+        //发送一次握手请求， 在后续持续不断的发送握手请求
+        MessageExchange.sendHandShake();
+        handShakeTickTimer.start(Long.MAX_VALUE, Common.MessageHandshakeRequestInterval, (t) -> {
                     MessageExchange.sendHandShake();
                 },
                 (f) -> {

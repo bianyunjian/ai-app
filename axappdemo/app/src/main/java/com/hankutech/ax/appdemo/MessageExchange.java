@@ -62,6 +62,7 @@ public class MessageExchange {
         request.setAppNumber(Common.APP_NUMBER);
         request.setMessageType(AppMessageType.GARBAGE_DETECT_REQ);
         request.setPayload(garbageType.getValue());
+        request.setExtData(garbageType.getValue());
         LogExt.i(TAG, "发送垃圾检测请求：" + request.toString());
 
         send(request);

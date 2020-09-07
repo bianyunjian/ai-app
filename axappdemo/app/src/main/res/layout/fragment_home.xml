@@ -108,15 +108,15 @@
 
                 <Button
                     android:id="@+id/btn_start_process"
-                    android:layout_width="300dp"
-                    android:layout_height="70dp"
+                    android:layout_width="350dp"
+                    android:layout_height="100dp"
                     android:layout_gravity="center_horizontal"
                     android:layout_marginTop="30dp"
                     android:background="@drawable/btn_selector"
                     android:fontFamily="@font/msyhbold"
                     android:text="开始投递"
                     android:textColor="#61c974"
-                    android:textSize="30dp" />
+                    android:textSize="38dp" />
 
             </LinearLayout>
         </LinearLayout>

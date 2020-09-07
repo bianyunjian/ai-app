@@ -6,19 +6,18 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.github.penfeizhou.animation.apng.APNGDrawable;
+import com.github.penfeizhou.animation.loader.AssetStreamLoader;
 import com.hankutech.ax.appdemo.MessageExchange;
 import com.hankutech.ax.appdemo.R;
-import com.hankutech.ax.appdemo.constant.SocketConst;
 import com.hankutech.ax.appdemo.code.AudioScene;
 import com.hankutech.ax.appdemo.code.MessageCode;
 import com.hankutech.ax.appdemo.constant.Common;
 import com.hankutech.ax.appdemo.constant.RuntimeContext;
-import com.hankutech.ax.appdemo.event.AXDataEvent;
 import com.hankutech.ax.appdemo.event.MessageEvent;
-import com.hankutech.ax.appdemo.socket.ByteConverter;
-import com.hankutech.ax.appdemo.socket.SocketClient;
 import com.hankutech.ax.appdemo.util.LogExt;
 import com.hankutech.ax.appdemo.util.TickTimer;
 import com.hankutech.ax.message.code.AIGarbageTypeDetectResult;
@@ -29,14 +28,10 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
-
 public class GarbageFragment extends Fragment implements IFragmentOperation {
 
     private static final String TAG = "GarbageFragment";
     private static final String Desc_Default = AudioScene.GARBAGE_DETECT.getDescription();
-    private static final String Desc_Success = "现在是" + RuntimeContext.CurrentGarbageType.getDescription() + "投放时间.\n请按照垃圾分类要求进行投放.\n感谢您的配合!";
     private static final String Desc_Failure = AudioScene.GARBAGE_DETECT_FAILURE.getDescription();
     private View view;
     private TickTimer tickTimer = new TickTimer();
@@ -78,19 +73,13 @@ public class GarbageFragment extends Fragment implements IFragmentOperation {
 
         LogExt.d(TAG, "正在检测垃圾分类");
 
-        if (Common.DebugMode) {
-            this.view.findViewById(R.id.btnSendMessage2PLC).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    sendGarbageDetectMessage2CentralServer();
-                }
-            });
-        } else {
-            this.view.findViewById(R.id.btnSendMessage2PLC).setVisibility(View.GONE);
-        }
 
+        AssetStreamLoader assetLoader = new AssetStreamLoader(getContext(), "icon_garbage_detect.apng");
+        ImageView imageView = this.view.findViewById(R.id.img_garbageDetect_icon);
+        APNGDrawable apngDrawable = new APNGDrawable(assetLoader);
+        imageView.setImageDrawable(apngDrawable);
 
-        sendGarbageDetectMessageTickTimer.start(Common.GarbageWaitDetectMillis, Common.MessageLoopInterval, (t) -> {
+        sendGarbageDetectMessageTickTimer.start(Common.GarbageWaitDetectMillis, Common.MessageRequestLoopInterval, (t) -> {
             if (this.receiveGarbageResult == false) {
                 sendGarbageDetectMessage2CentralServer();
             } else {
@@ -145,10 +134,6 @@ public class GarbageFragment extends Fragment implements IFragmentOperation {
                 if (garbageDetectResult.getValue() == AIGarbageTypeDetectResult.SUCCESS.getValue()) {
                     LogExt.d(TAG, "垃圾分类检测结果成功");
 
-                    playAudio(AudioScene.GARBAGE_DETECT_SUCCESS);
-                    this.textViewGarbageDetectProcessDescription.setText(Desc_Success);
-                    this.textViewGarbageDetectProcessDescription.setTextColor(Color.BLACK);
-
                     this.tickTimer.cancel();
                     this.receiveGarbageResult = true;
                     this.sendGarbageDetectMessageTickTimer.cancel();
@@ -160,7 +145,7 @@ public class GarbageFragment extends Fragment implements IFragmentOperation {
                     LogExt.d(TAG, "垃圾分类检测结果失败");
                     playAudio(AudioScene.GARBAGE_DETECT_FAILURE);
                     this.textViewGarbageDetectProcessDescription.setText(Desc_Failure);
-                    this.textViewGarbageDetectProcessDescription.setTextColor(Color.RED);
+//                    this.textViewGarbageDetectProcessDescription.setTextColor(Color.RED);
                     this.tickTimer.cancel();
                     tickTimer.start(Common.GarbageDetectFailureMillis, Common.TickInterval, (t) -> {
                         TextView tv = this.view.findViewById(R.id.garbageDetectTiktokTimeDesc);
@@ -171,6 +156,12 @@ public class GarbageFragment extends Fragment implements IFragmentOperation {
                     });
                     this.receiveGarbageResult = true;
                     this.sendGarbageDetectMessageTickTimer.cancel();
+
+                    AssetStreamLoader assetLoader = new AssetStreamLoader(getContext(), "icon_garbage_detect_failure.apng");
+                    ImageView imageView = this.view.findViewById(R.id.img_garbageDetect_icon);
+                    APNGDrawable apngDrawable = new APNGDrawable(assetLoader);
+                    imageView.setImageDrawable(apngDrawable);
+
                 }
             }
         }

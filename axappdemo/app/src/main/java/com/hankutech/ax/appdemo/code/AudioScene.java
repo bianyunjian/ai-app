@@ -8,9 +8,9 @@ public enum AudioScene {
     AUTH_QRCODE(14, "请使用手机微信扫描屏幕下方的二维码"),
     AUTH_PASS(15, "欢迎您"),
 
-    GARBAGE_DETECT(21, "正在检测垃圾分类..."),
-    GARBAGE_DETECT_SUCCESS(22, "请按照垃圾分类要求进行投放,感谢您的配合"),
-    GARBAGE_DETECT_FAILURE(23, "本次投放的垃圾不符合垃圾分类要求.\r\n请按照垃圾分类要求进行投放,感谢您的配合"),
+    GARBAGE_DETECT(21, "正在检测垃圾分类中\n请稍等..."),
+    GARBAGE_DETECT_SUCCESS(22, "请按照垃圾分类，并打开垃圾袋投放。\n全程会视频录制和评分.\n感谢您的配合!"),
+    GARBAGE_DETECT_FAILURE(23, "当前投放的垃圾不符合要求.\r\n请按照垃圾分类要求进行投放!"),
 
     GATE_CLOSE(31, "本次投递结束,小艾在这里等待您的再次到来"),
     GATE_NOT_CLOSE(32, "亲,您可以开始垃圾投递了,投递后请关好门,感谢您的配合"),

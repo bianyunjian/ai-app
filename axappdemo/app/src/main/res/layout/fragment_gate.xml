@@ -12,39 +12,75 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <LinearLayout
+        <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:paddingLeft="10dp"
-            android:paddingTop="10dp"
-            android:paddingRight="10dp">
+            android:orientation="horizontal">
 
-            <TextView
-                android:id="@+id/gateStateTiktokTimeDesc"
 
-                android:layout_width="200dp"
-                android:layout_height="60dp"
-                android:layout_weight="9"
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right"
+                android:background="@drawable/bg_time_tick"
+                android:gravity="right"
 
-                android:text="倒计时30秒"
-                android:textAlignment="textEnd"
-                android:textColor="@color/red"
-                android:textSize="@dimen/tickTimeFont"
-                android:textStyle="bold" />
-        </LinearLayout>
+                android:orientation="horizontal"
+                android:paddingLeft="26dp"
+                android:paddingTop="10dp"
+                android:paddingRight="26dp"
+                android:paddingBottom="10dp">
 
-        <TextView
-            android:id="@+id/gateStateProcessDescription"
+                <ImageView
+                    android:id="@+id/imageView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/icon_time_tick" />
+
+                <TextView
+                    android:id="@+id/gateStateTiktokTimeDesc"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dp"
+                    android:fontFamily="@font/msyh"
+                    android:text="30秒后返回主页"
+                    android:textAlignment="textEnd"
+                    android:textColor="#FF3526"
+                    android:textSize="16sp" />
+
+            </LinearLayout>
+
+        </FrameLayout>
+
+
+        <LinearLayout
+            android:id="@+id/layout_gateState"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:paddingTop="50dp"
-            android:textAlignment="center"
-            android:textColor="@color/guideTextColor"
-            android:textSize="@dimen/guideText"
-            android:textStyle="bold"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:visibility="visible">
 
-            android:tooltipText="亲,投递完成后, 请关好门!" />
+            <ImageView
+                android:id="@+id/img_gateState_icon"
+                android:layout_width="360dp"
+                android:layout_height="345dp"
+                android:layout_gravity="center_vertical"
+                android:src="@drawable/icon_gate_1"></ImageView>
+
+            <TextView
+                android:id="@+id/gateStateProcessDescription"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+
+                android:fontFamily="@font/msyhbold"
+                android:paddingTop="50dp"
+                android:text="请按照垃圾分类，\n并打开垃圾袋投放\n全程会视频录制和评分"
+                android:textAlignment="textStart"
+                android:textColor="@color/guideTextColor"
+                android:textSize="48sp" />
+        </LinearLayout>
 
 
     </LinearLayout>

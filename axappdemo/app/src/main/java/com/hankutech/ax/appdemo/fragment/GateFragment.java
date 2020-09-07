@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.hankutech.ax.appdemo.MessageExchange;
@@ -25,19 +26,21 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.util.Random;
+
 public class GateFragment extends Fragment implements IFragmentOperation {
 
     private static final String TAG = "GateFragment";
-    private static final String Desc_Gate_Pending_Open = "亲,正在打开投递口的门!";
-    private static final String Desc_Gate_Not_Close = "亲,您可以开始垃圾投递了,投递后请关好门!";
+    private static final String Desc_Gate_Pending_Open = "正在打开投递口的门!";
+    private static final String Desc_Gate_Not_Close = "请按照垃圾分类，并打开垃圾袋投放。\n全程会视频录制和评分.\n感谢您的配合!";
     private static final String Desc_Gate_Not_Close_Timeout = "系统故障,请联系管理员处理";
-    private static final String Desc_Gate_Closed = "本次投递完成.\n亲,感谢您对保护环境的付出.\n小艾,在这里等待您的再次到来.";
     private View view;
     private TickTimer tickTimer = new TickTimer();
     private TextView textViewGateStateProcessDescription;
     private boolean gateClosed;
 
     private TickTimer gateMessageTimer = new TickTimer();
+    private ImageView imageView;
 
 
     @Override
@@ -63,10 +66,12 @@ public class GateFragment extends Fragment implements IFragmentOperation {
             this.textViewGateStateProcessDescription.setText(Desc_Gate_Not_Close_Timeout);
         });
 
+        imageView = this.view.findViewById(R.id.img_gateState_icon);
+        imageView.setImageResource(R.drawable.icon_gate_1);
 
         textViewGateStateProcessDescription = this.view.findViewById(R.id.gateStateProcessDescription);
         this.textViewGateStateProcessDescription.setText(Desc_Gate_Pending_Open);
-        gateMessageTimer.start(Common.GateWaitMillis, Common.MessageLoopInterval, (t) -> {
+        gateMessageTimer.start(Common.GateWaitMillis, Common.MessageRequestLoopInterval, (t) -> {
             MessageExchange.sendRequireOpenGate();
         }, (f) -> {
             LogExt.d(TAG, "在限定时间内未等到开门请求的响应数据");
@@ -112,7 +117,14 @@ public class GateFragment extends Fragment implements IFragmentOperation {
             if (dataEvent.getPayload() == AppMessageValue.GATE_CLOSED_EVENT_REQ) {
                 LogExt.d(TAG, "关门到位");
 
-                this.textViewGateStateProcessDescription.setText(Desc_Gate_Closed);
+                Random rand = new Random();
+                int score = rand.nextInt(10);
+                if (score <= 0) {
+                    score = 1;
+                }
+                String desc = "投递完成\n您本次荣获" + score + "分\n感谢您为环境保护的付出";
+                this.textViewGateStateProcessDescription.setText(desc);
+                this.imageView.setImageResource(R.drawable.icon_gate_2);
                 playAudio(AudioScene.GATE_CLOSE);
 
                 this.tickTimer.cancel();
