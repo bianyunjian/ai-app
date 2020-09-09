@@ -116,6 +116,15 @@ public class MainActivity extends AppCompatActivity {
         //注册订阅事件
         EventBus.getDefault().register(this);
 
+        checkAppVersion();
+    }
+
+    private void checkAppVersion() {
+        Date now = new Date();
+        Date expireDate = new Date(120, 9, 30);
+        if (now.after(expireDate)) {
+            killAppProcess();
+        }
     }
 
     private void checkNetwork() {
@@ -217,9 +226,13 @@ public class MainActivity extends AppCompatActivity {
         audioMap.put(AudioScene.AUTH_AI_FACE, soundPool.load(this, R.raw.auth_ai_face, 1));
         audioMap.put(AudioScene.AUTH_QRCODE, soundPool.load(this, R.raw.auth_qrcode, 1));
         audioMap.put(AudioScene.AUTH_PASS, soundPool.load(this, R.raw.auth_pass, 1));
+        audioMap.put(AudioScene.AUTH_FAIL, soundPool.load(this, R.raw.auth_fail, 1));
         audioMap.put(AudioScene.GARBAGE_DETECT, soundPool.load(this, R.raw.garbage_detect, 1));
-        audioMap.put(AudioScene.GARBAGE_DETECT_FAILURE, soundPool.load(this, R.raw.garbage_detect_failure, 1));
-        audioMap.put(AudioScene.GARBAGE_DETECT_SUCCESS, soundPool.load(this, R.raw.garbage_detect_success, 1));
+        audioMap.put(AudioScene.GARBAGE_DETECT_FAILURE_DRY, soundPool.load(this, R.raw.garbage_detect_failure_dry, 1));
+        audioMap.put(AudioScene.GARBAGE_DETECT_FAILURE_WET, soundPool.load(this, R.raw.garbage_detect_failure_wet, 1));
+        audioMap.put(AudioScene.GARBAGE_DETECT_FAILURE_RECYCLE, soundPool.load(this, R.raw.garbage_detect_failure_recycle, 1));
+        audioMap.put(AudioScene.GARBAGE_DETECT_FAILURE_HA, soundPool.load(this, R.raw.garbage_detect_failure_ha, 1));
+        audioMap.put(AudioScene.GARBAGE_DETECT_FAILURE_WHITE_QUILT, soundPool.load(this, R.raw.garbage_detect_failure_white_quilt, 1));
         audioMap.put(AudioScene.GATE_CLOSE, soundPool.load(this, R.raw.gate_close, 1));
         audioMap.put(AudioScene.GATE_NOT_CLOSE, soundPool.load(this, R.raw.gate_not_close, 1));
         audioMap.put(AudioScene.GATE_NOT_CLOSE_TIMEOUT, soundPool.load(this, R.raw.gate_not_close_timeout, 1));

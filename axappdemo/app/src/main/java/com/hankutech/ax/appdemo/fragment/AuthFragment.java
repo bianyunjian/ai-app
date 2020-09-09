@@ -80,7 +80,6 @@ public class AuthFragment extends Fragment implements IFragmentOperation, IVLCVo
         this.rtspUrl = rtspUrl;
     }
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -441,22 +440,22 @@ public class AuthFragment extends Fragment implements IFragmentOperation, IVLCVo
 
 
     private void handleAuthFail() {
-        tickTimer.start(3000, Common.TickInterval, (t2) -> {
+        this.layoutAiFace.setVisibility(View.GONE);
+        this.layoutRfid.setVisibility(View.GONE);
+        this.layoutQrCode.setVisibility(View.GONE);
+        this.layoutChooseAuthType.setVisibility(View.GONE);
+        this.backChooseButton.setVisibility(View.GONE);
+        this.textViewGuidDescription.setVisibility(View.GONE);
+
+        AssetStreamLoader assetLoader = new AssetStreamLoader(getContext(), "icon_auth_failure.apng");
+        APNGDrawable apngDrawable = new APNGDrawable(assetLoader);
+        ImageView imageView = this.view.findViewById(R.id.error_auth_fail_img);
+        imageView.setImageDrawable(apngDrawable);
+        this.layoutAuthError.setVisibility(View.VISIBLE);
+        playAudio(AudioScene.AUTH_FAIL);
+        tickTimer.start(5000, Common.TickInterval, (t2) -> {
             TextView tv = this.view.findViewById(R.id.authTiktokTimeDesc);
             tv.setText("倒计时" + t2 + "S");
-
-            this.layoutAiFace.setVisibility(View.GONE);
-            this.layoutRfid.setVisibility(View.GONE);
-            this.layoutQrCode.setVisibility(View.GONE);
-            this.layoutChooseAuthType.setVisibility(View.GONE);
-            this.backChooseButton.setVisibility(View.GONE);
-            this.textViewGuidDescription.setVisibility(View.GONE);
-
-            AssetStreamLoader assetLoader = new AssetStreamLoader(getContext(), "icon_auth_failure.apng");
-            APNGDrawable apngDrawable = new APNGDrawable(assetLoader);
-            ImageView imageView = this.view.findViewById(R.id.error_auth_fail_img);
-            imageView.setImageDrawable(apngDrawable);
-            this.layoutAuthError.setVisibility(View.VISIBLE);
         }, (t2) -> {
             backToHome();
         });
