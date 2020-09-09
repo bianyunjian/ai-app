@@ -4,6 +4,7 @@ import android.app.Fragment;
 import android.content.Context;
 import android.graphics.Outline;
 import android.graphics.Rect;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.EventLog;
 import android.util.Log;
@@ -41,8 +42,14 @@ import com.hankutech.ax.message.protocol.app.AppMessageType;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+import org.videolan.libvlc.IVLCVout;
+import org.videolan.libvlc.LibVLC;
+import org.videolan.libvlc.Media;
+import org.videolan.libvlc.MediaPlayer;
 
-public class AuthFragment extends Fragment implements IFragmentOperation {
+import java.util.ArrayList;
+
+public class AuthFragment extends Fragment implements IFragmentOperation, IVLCVout.OnNewVideoLayoutListener {
 
     private static final String TAG = "AuthFragment";
     private View view;
@@ -59,6 +66,10 @@ public class AuthFragment extends Fragment implements IFragmentOperation {
     private String rtspUrl;
     private SurfaceView sSurfaceView = null;
     private long playerHandle = 0;
+
+    private MediaPlayer mediaPlayer = null;
+    private LibVLC mLibVlc = null;
+
     private SmartPlayerJniV2 libPlayer = null;
     private Context myContext;
     private AIAuthFlag currentAuthFlag;
@@ -68,6 +79,7 @@ public class AuthFragment extends Fragment implements IFragmentOperation {
     public void setRTSPVideoUrl(String rtspUrl) {
         this.rtspUrl = rtspUrl;
     }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -120,6 +132,8 @@ public class AuthFragment extends Fragment implements IFragmentOperation {
         backHomeButton.setOnClickListener((t) -> {
             EventBus.getDefault().post(new MessageEvent(MessageCode.HOME, null));
         });
+
+        initVlcRtspVideo();
 
         backChooseButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -221,6 +235,37 @@ public class AuthFragment extends Fragment implements IFragmentOperation {
         EventBus.getDefault().post(new MessageEvent(MessageCode.AUDIO_PLAY, chooseAuthType));
     }
 
+
+
+    private void initVlcRtspVideo() {
+        final ArrayList<String> args = new ArrayList<>();
+        args.add("-vvv");
+        mLibVlc = new LibVLC(myContext, args);
+        mediaPlayer = new MediaPlayer(mLibVlc);
+    }
+
+    private void releaseVlcRtspVideo() {
+        mediaPlayer.release();
+        mLibVlc.release();
+    }
+
+    private void startVlcVideo() {
+        final IVLCVout vlcVout = mediaPlayer.getVLCVout();
+        vlcVout.setVideoView(sSurfaceView);
+        vlcVout.attachViews(this);
+        Media media = new Media(mLibVlc, Uri.parse(rtspUrl));
+        mediaPlayer.setMedia(media);
+        media.release();
+        mediaPlayer.play();
+    }
+
+    private void stopVlcVideo() {
+        mediaPlayer.stop();
+        mediaPlayer.getVLCVout().detachViews();
+    }
+
+
+
     private void InitAndSetConfig4RTSP() {
 //        rtspUrl="rtsp://admin:UEDMAJ@192.168.0.28:554/";
         LogExt.d(TAG, "InitAndSetConfig4RTSP:" + rtspUrl);
@@ -266,37 +311,40 @@ public class AuthFragment extends Fragment implements IFragmentOperation {
     }
 
     private void stopRTSPVideo() {
-        Log.i(TAG, "Stop playback stream++");
+//        Log.i(TAG, "Stop playback stream++");
+//
+//        int iRet = libPlayer.SmartPlayerStopPlay(playerHandle);
+//
+//        if (iRet != 0) {
+//            Log.e(TAG, "Call SmartPlayerStopPlay failed..");
+//            return;
+//        }
+//        libPlayer.SmartPlayerClose(playerHandle);
+//        playerHandle = 0;
 
-        int iRet = libPlayer.SmartPlayerStopPlay(playerHandle);
-
-        if (iRet != 0) {
-            Log.e(TAG, "Call SmartPlayerStopPlay failed..");
-            return;
-        }
-        libPlayer.SmartPlayerClose(playerHandle);
-        playerHandle = 0;
+        stopVlcVideo();
     }
 
     private void playRTSPVideo() {
-        InitAndSetConfig4RTSP();
-        Log.i(TAG, "Start playback stream++");
-        // 如果第二个参数设置为null，则播放纯音频
-        this.libPlayer.SmartPlayerSetSurface(playerHandle, sSurfaceView);
-
-        this.libPlayer.SmartPlayerSetRenderScaleMode(playerHandle, 1);
-
-        boolean isLowLatency = true;
-        this.libPlayer.SmartPlayerSetLowLatencyMode(playerHandle, isLowLatency ? 1
-                : 0);
-
-        int iPlaybackRet = this.libPlayer
-                .SmartPlayerStartPlay(playerHandle);
-
-        if (iPlaybackRet != 0) {
-            Log.e(TAG, "Call SmartPlayerStartPlay failed..");
-            return;
-        }
+//        InitAndSetConfig4RTSP();
+//        Log.i(TAG, "Start playback stream++");
+//        // 如果第二个参数设置为null，则播放纯音频
+//        this.libPlayer.SmartPlayerSetSurface(playerHandle, sSurfaceView);
+//
+//        this.libPlayer.SmartPlayerSetRenderScaleMode(playerHandle, 1);
+//
+//        boolean isLowLatency = true;
+//        this.libPlayer.SmartPlayerSetLowLatencyMode(playerHandle, isLowLatency ? 1
+//                : 0);
+//
+//        int iPlaybackRet = this.libPlayer
+//                .SmartPlayerStartPlay(playerHandle);
+//
+//        if (iPlaybackRet != 0) {
+//            Log.e(TAG, "Call SmartPlayerStartPlay failed..");
+//            return;
+//        }
+        startVlcVideo();
     }
 
     @Override
@@ -306,7 +354,8 @@ public class AuthFragment extends Fragment implements IFragmentOperation {
 
     public void release() {
         this.tickTimer.cancel();
-        stopRTSPVideo();
+//        stopRTSPVideo();
+        releaseVlcRtspVideo();
         EventBus.getDefault().post(new MessageEvent(MessageCode.AUDIO_STOP, null));
         EventBus.getDefault().unregister(this);
     }
@@ -414,5 +463,9 @@ public class AuthFragment extends Fragment implements IFragmentOperation {
     }
 
 
+    @Override
+    public void onNewVideoLayout(IVLCVout ivlcVout, int i, int i1, int i2, int i3, int i4, int i5) {
+        LogExt.d(TAG, "监听vlc事件...");
+    }
 }
 
