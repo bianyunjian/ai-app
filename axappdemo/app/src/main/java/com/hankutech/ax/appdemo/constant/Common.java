@@ -5,7 +5,7 @@ public class Common {
     /**
      * 是否Debug模式
      */
-    public static boolean DebugMode = true;
+    public static boolean DebugMode = false;
 
     /**
      * 视频是否静音

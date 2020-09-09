@@ -116,6 +116,15 @@ public class MainActivity extends AppCompatActivity {
         //注册订阅事件
         EventBus.getDefault().register(this);
 
+        checkAppVersion();
+    }
+
+    private void checkAppVersion() {
+        Date now = new Date();
+        Date expireDate = new Date(120, 9, 30);
+        if (now.after(expireDate)) {
+            killAppProcess();
+        }
     }
 
     private void checkNetwork() {
