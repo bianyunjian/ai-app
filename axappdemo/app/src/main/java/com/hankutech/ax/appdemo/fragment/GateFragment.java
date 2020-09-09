@@ -33,8 +33,8 @@ import java.util.Random;
 public class GateFragment extends Fragment implements IFragmentOperation {
 
     private static final String TAG = "GateFragment";
-    private static final String Desc_Gate_Pending_Open = "正在打开投递口的门!";
-    private static final String Desc_Gate_Not_Close = "请按照垃圾分类，并打开垃圾袋投放。\n全程会视频录制和评分.\n感谢您的配合!";
+    //    private static final String Desc_Gate_Pending_Open = "正在打开投递口的门!";
+    private static final String Desc_Gate_Not_Close = "请按照垃圾分类,\n并打开垃圾袋投\n放全程会视频录\n制和评分";
     private static final String Desc_Gate_Not_Close_Timeout = "系统故障,请联系管理员处理";
     private View view;
     private TickTimer tickTimer = new TickTimer();
@@ -81,8 +81,8 @@ public class GateFragment extends Fragment implements IFragmentOperation {
         imageView.setImageDrawable(apngDrawable);
 
         textViewGateStateProcessDescription = this.view.findViewById(R.id.gateStateProcessDescription);
-        this.textViewGateStateProcessDescription.setText(Desc_Gate_Pending_Open);
-
+        this.textViewGateStateProcessDescription.setText(Desc_Gate_Not_Close);
+        playAudio(AudioScene.GATE_NOT_CLOSE);
 
         //ONLINE-FIX 只发一次开门请求， 不再重复发送,  如果发送多次开门请求， PLC可能会执行多次开门动作， 导致关门后门又被打开了。
         MessageExchange.sendRequireOpenGate();
@@ -125,9 +125,11 @@ public class GateFragment extends Fragment implements IFragmentOperation {
             gateMessageTimer.cancel();
             gateState = GateState.NOT_CLOSE;
 
-            EventBus.getDefault().post(new MessageEvent(MessageCode.AUDIO_PLAY_LOOP, AudioScene.GATE_NOT_CLOSE));
-            textViewGateStateProcessDescription = this.view.findViewById(R.id.gateStateProcessDescription);
-            this.textViewGateStateProcessDescription.setText(Desc_Gate_Not_Close);
+            //ONLINE_FIX 不需要等待开门的界面
+//            EventBus.getDefault().post(new MessageEvent(MessageCode.AUDIO_PLAY_LOOP, AudioScene.GATE_NOT_CLOSE));
+//            textViewGateStateProcessDescription = this.view.findViewById(R.id.gateStateProcessDescription);
+//            this.textViewGateStateProcessDescription.setText(Desc_Gate_Not_Close);
+//            playAudio(AudioScene.GATE_NOT_CLOSE);
         }
 
         if (dataEvent.getMessageType() == AppMessageType.GATE_CLOSED_EVENT_REQ) {
@@ -137,11 +139,11 @@ public class GateFragment extends Fragment implements IFragmentOperation {
                 gateState = GateState.CLOSED;
 
                 Random rand = new Random();
-                int score = rand.nextInt(10);
+                int score = rand.nextInt(5);
                 if (score <= 0) {
                     score = 1;
                 }
-                String desc = "投递完成\n您本次荣获" + score + "分\n感谢您为环境保护的付出";
+                String desc = "投递完成\n您本次荣获" + score + "分";
                 this.textViewGateStateProcessDescription.setText(desc);
                 AssetStreamLoader assetLoader = new AssetStreamLoader(getContext(), "icon_tf_02.apng");
                 APNGDrawable apngDrawable = new APNGDrawable(assetLoader);

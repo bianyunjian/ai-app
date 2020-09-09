@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import com.github.penfeizhou.animation.apng.APNGDrawable;
@@ -32,7 +33,6 @@ public class GarbageFragment extends Fragment implements IFragmentOperation {
 
     private static final String TAG = "GarbageFragment";
     private static final String Desc_Default = AudioScene.GARBAGE_DETECT.getDescription();
-    private static final String Desc_Failure = AudioScene.GARBAGE_DETECT_FAILURE.getDescription();
     private View view;
     private TickTimer tickTimer = new TickTimer();
     private TickTimer sendGarbageDetectMessageTickTimer = new TickTimer();
@@ -143,8 +143,9 @@ public class GarbageFragment extends Fragment implements IFragmentOperation {
                     return;
                 } else if (garbageDetectResult.getValue() == AIGarbageTypeDetectResult.FAILURE.getValue()) {
                     LogExt.d(TAG, "垃圾分类检测结果失败");
-                    playAudio(AudioScene.GARBAGE_DETECT_FAILURE);
-                    this.textViewGarbageDetectProcessDescription.setText(Desc_Failure);
+
+                    playFailureAudio();
+
 //                    this.textViewGarbageDetectProcessDescription.setTextColor(Color.RED);
                     this.tickTimer.cancel();
                     tickTimer.start(Common.GarbageDetectFailureMillis, Common.TickInterval, (t) -> {
@@ -165,6 +166,30 @@ public class GarbageFragment extends Fragment implements IFragmentOperation {
                 }
             }
         }
+    }
+
+    private void playFailureAudio() {
+        AudioScene scene = AudioScene.GARBAGE_DETECT_FAILURE_DRY;
+        switch (RuntimeContext.CurrentGarbageType) {
+            case DRY:
+                scene = AudioScene.GARBAGE_DETECT_FAILURE_DRY;
+                break;
+            case WET:
+                scene = AudioScene.GARBAGE_DETECT_FAILURE_WET;
+                break;
+            case RECYCLABLE:
+                scene = AudioScene.GARBAGE_DETECT_FAILURE_RECYCLE;
+                break;
+            case HAZARDOUS:
+                scene = AudioScene.GARBAGE_DETECT_FAILURE_HA;
+                break;
+            case WHITE_QUILT:
+                scene = AudioScene.GARBAGE_DETECT_FAILURE_WHITE_QUILT;
+                break;
+        }
+
+        playAudio(scene);
+        this.textViewGarbageDetectProcessDescription.setText(scene.getDescription());
     }
 }
 

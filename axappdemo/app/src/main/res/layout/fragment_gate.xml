@@ -76,7 +76,7 @@
 
                 android:fontFamily="@font/msyhbold"
                 android:paddingTop="50dp"
-                android:text="请按照垃圾分类，\n并打开垃圾袋投放\n全程会视频录制和评分"
+                android:text="请按照垃圾分类，\n并打开垃圾袋投\n放全程会视频录\n制和评分"
                 android:textAlignment="textStart"
                 android:textColor="@color/guideTextColor"
                 android:textSize="48sp" />
