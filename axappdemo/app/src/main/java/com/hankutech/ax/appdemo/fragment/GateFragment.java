@@ -39,7 +39,8 @@ public class GateFragment extends Fragment implements IFragmentOperation {
     private View view;
     private TickTimer tickTimer = new TickTimer();
     private TextView textViewGateStateProcessDescription;
-    private boolean gateClosed;
+    private GateState gateState = GateState.CLOSED;
+
 
     private TickTimer gateMessageTimer = new TickTimer();
     private ImageView imageView;
@@ -58,14 +59,20 @@ public class GateFragment extends Fragment implements IFragmentOperation {
     public void onResume() {
         super.onResume();
 
-        EventBus.getDefault().post(new MessageEvent(MessageCode.AUDIO_PLAY_LOOP, AudioScene.GATE_NOT_CLOSE));
-
         tickTimer.start(Common.GateWaitMillis, Common.TickInterval, (t) -> {
             TextView tv = this.view.findViewById(R.id.gateStateTiktokTimeDesc);
             tv.setText(Common.getTimeTickDesc(t));
         }, (t) -> {
-            playAudio(AudioScene.GATE_NOT_CLOSE_TIMEOUT);
-            this.textViewGateStateProcessDescription.setText(Desc_Gate_Not_Close_Timeout);
+            if (this.gateState == GateState.NOT_CLOSE) {
+                //gate open, play error tips audio
+                playAudio(AudioScene.GATE_NOT_CLOSE_TIMEOUT);
+                this.textViewGateStateProcessDescription.setText(Desc_Gate_Not_Close_Timeout);
+
+            } else if (this.gateState == GateState.CLOSED) {
+                //gate not open , return to home
+                EventBus.getDefault().post(new MessageEvent(MessageCode.HOME, null));
+            }
+
         });
 
         imageView = this.view.findViewById(R.id.img_gateState_icon);
@@ -75,11 +82,16 @@ public class GateFragment extends Fragment implements IFragmentOperation {
 
         textViewGateStateProcessDescription = this.view.findViewById(R.id.gateStateProcessDescription);
         this.textViewGateStateProcessDescription.setText(Desc_Gate_Pending_Open);
-        gateMessageTimer.start(Common.GateWaitMillis, Common.MessageRequestLoopInterval, (t) -> {
-            MessageExchange.sendRequireOpenGate();
-        }, (f) -> {
-            LogExt.d(TAG, "在限定时间内未等到开门请求的响应数据");
-        });
+
+
+        //ONLINE-FIX 只发一次开门请求， 不再重复发送,  如果发送多次开门请求， PLC可能会执行多次开门动作， 导致关门后门又被打开了。
+        MessageExchange.sendRequireOpenGate();
+
+//        gateMessageTimer.start(Common.GateWaitMillis, Common.MessageRequestLoopInterval, (t) -> {
+//            MessageExchange.sendRequireOpenGate();
+//        }, (f) -> {
+//            LogExt.d(TAG, "在限定时间内未等到开门请求的响应数据");
+//        });
         LogExt.d(TAG, "等待开门");
     }
 
@@ -111,7 +123,9 @@ public class GateFragment extends Fragment implements IFragmentOperation {
         if (dataEvent.getMessageType() == AppMessageType.APP_REQUIRE_OPEN_GATE_RESP) {
             LogExt.d(TAG, "门已打开: " + dataEvent.toString());
             gateMessageTimer.cancel();
+            gateState = GateState.NOT_CLOSE;
 
+            EventBus.getDefault().post(new MessageEvent(MessageCode.AUDIO_PLAY_LOOP, AudioScene.GATE_NOT_CLOSE));
             textViewGateStateProcessDescription = this.view.findViewById(R.id.gateStateProcessDescription);
             this.textViewGateStateProcessDescription.setText(Desc_Gate_Not_Close);
         }
@@ -120,6 +134,7 @@ public class GateFragment extends Fragment implements IFragmentOperation {
 
             if (dataEvent.getPayload() == AppMessageValue.GATE_CLOSED_EVENT_REQ) {
                 LogExt.d(TAG, "关门到位");
+                gateState = GateState.CLOSED;
 
                 Random rand = new Random();
                 int score = rand.nextInt(10);
@@ -141,7 +156,7 @@ public class GateFragment extends Fragment implements IFragmentOperation {
                     //倒计时结束后,返回首页
                     EventBus.getDefault().post(new MessageEvent(MessageCode.HOME, null));
                 });
-                this.gateClosed = true;
+
             }
         }
 

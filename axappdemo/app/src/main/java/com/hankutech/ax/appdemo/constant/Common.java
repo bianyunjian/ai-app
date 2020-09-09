@@ -1,7 +1,7 @@
 package com.hankutech.ax.appdemo.constant;
 
 public class Common {
-    public static int APP_NUMBER = 2;
+    public static int APP_NUMBER = 1;
     /**
      * 是否Debug模式
      */
@@ -63,7 +63,7 @@ public class Common {
     /**
      * 人脸摄像头rtsp地址
      */
-    public static String AIFace_RTSP_URI = "rtsp://admin:1qaz1qaz@172.16.114.34:554/";
+    public static String AIFace_RTSP_URI = "rtsp://admin:UEDMAJ@192.168.0.28:554/";
 
 
     public static String LogoTitle = "垃圾分类投递显示系统";

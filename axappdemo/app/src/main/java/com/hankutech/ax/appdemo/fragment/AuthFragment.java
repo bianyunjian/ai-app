@@ -222,6 +222,7 @@ public class AuthFragment extends Fragment implements IFragmentOperation {
     }
 
     private void InitAndSetConfig4RTSP() {
+//        rtspUrl="rtsp://admin:UEDMAJ@192.168.0.28:554/";
         LogExt.d(TAG, "InitAndSetConfig4RTSP:" + rtspUrl);
         playerHandle = libPlayer.SmartPlayerOpen(myContext);
 
@@ -336,25 +337,42 @@ public class AuthFragment extends Fragment implements IFragmentOperation {
 
                 this.tickTimer.cancel();
 
-                //至少显示一下视频画面3秒， 避免消息接收快了后， 人脸视频画面一闪而过。
-                tickTimer.start(3000, Common.TickInterval, (t) -> {
-                }, (t) -> {
-                    stopRTSPVideo();
-                    this.layoutAiFace.setVisibility(View.GONE);
-                    this.layoutRfid.setVisibility(View.GONE);
-                    this.layoutQrCode.setVisibility(View.GONE);
-                    this.layoutChooseAuthType.setVisibility(View.GONE);
-                    this.backChooseButton.setVisibility(View.GONE);
-                    String personDesc = String.format("欢迎您, 尊敬的%s", "用户");
-                    this.textViewGuidDescription.setText(personDesc);
+                //ONLINE_FIX 跳过这个临时界面
+                stopRTSPVideo();
+                this.layoutAiFace.setVisibility(View.GONE);
+                this.layoutRfid.setVisibility(View.GONE);
+                this.layoutQrCode.setVisibility(View.GONE);
+                this.layoutChooseAuthType.setVisibility(View.GONE);
+                this.backChooseButton.setVisibility(View.GONE);
+                EventBus.getDefault().post(new MessageEvent(MessageCode.AUTH_PASS, "用户"));
 
-                    tickTimer.start(3000, Common.TickInterval, (t2) -> {
-                        TextView tv = this.view.findViewById(R.id.authTiktokTimeDesc);
-                        tv.setText("倒计时" + t2 + "S");
-                    }, (t2) -> {
-                        EventBus.getDefault().post(new MessageEvent(MessageCode.AUTH_PASS, "用户"));
-                    });
-                });
+//                int minTickMillis = 0;
+//                final int minWelcomeTickMills = 0;
+//                if (this.currentAuthFlag == AIAuthFlag.AI_FACE) {
+//                    //至少显示一下视频画面1秒， 避免消息接收快了后， 人脸视频画面一闪而过。
+//                    minTickMillis = 1000;
+//                } else {
+//                    minTickMillis = 0;
+//                }
+
+//                tickTimer.start(minTickMillis, Common.TickInterval, (t) -> {
+//                }, (t) -> {
+//                    stopRTSPVideo();
+//                    this.layoutAiFace.setVisibility(View.GONE);
+//                    this.layoutRfid.setVisibility(View.GONE);
+//                    this.layoutQrCode.setVisibility(View.GONE);
+//                    this.layoutChooseAuthType.setVisibility(View.GONE);
+//                    this.backChooseButton.setVisibility(View.GONE);
+//                    String personDesc = String.format("欢迎您, 尊敬的%s", "用户");
+//                    this.textViewGuidDescription.setText(personDesc);
+//
+//                    tickTimer.start(minWelcomeTickMills, Common.TickInterval, (t2) -> {
+//                        TextView tv = this.view.findViewById(R.id.authTiktokTimeDesc);
+//                        tv.setText("倒计时" + t2 + "S");
+//                    }, (t2) -> {
+//                        EventBus.getDefault().post(new MessageEvent(MessageCode.AUTH_PASS, "用户"));
+//                    });
+//                });
 
                 playAudio(AudioScene.AUTH_PASS);
                 this.authPassed = true;

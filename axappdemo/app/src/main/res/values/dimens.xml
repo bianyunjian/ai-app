@@ -4,7 +4,7 @@
     <dimen name="logoImageWidth">160dp</dimen>
     <dimen name="logoImageHeight">30dp</dimen>
     <dimen name="logoFont">34dp</dimen>
-    <dimen name="headerText">18sp</dimen>
+    <dimen name="mainTimeText">20sp</dimen>
     <dimen name="tipsText">24sp</dimen>
     <dimen name="garbageTypeTextSize">60dp</dimen>
     <dimen name="tickTimeFont">28sp</dimen>

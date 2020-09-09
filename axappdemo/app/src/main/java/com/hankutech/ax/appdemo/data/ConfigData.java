@@ -5,6 +5,8 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 
 import com.hankutech.ax.appdemo.code.AudioScene;
+import com.hankutech.ax.appdemo.constant.Common;
+import com.hankutech.ax.appdemo.constant.SocketConst;
 import com.hankutech.ax.appdemo.util.LogExt;
 
 import java.util.HashMap;
@@ -38,9 +40,9 @@ public class ConfigData {
         editor.putString("aiFaceRTSPUrl", aiFaceRTSPUrl == null ? "" : aiFaceRTSPUrl);
         editor.putString("videoUri", videoUri == null ? "" : videoUri.toString());
         editor.putString("logoUri", logoUri == null ? "" : logoUri.toString());
-        editor.putString("appNumber", appNumber == null ? "1" : String.valueOf(appNumber));
-        editor.putString("serverIp", serverIp == null ? "192.168.1.1" : serverIp);
-        editor.putString("serverPort", serverPort == null ? "5001" : String.valueOf(serverPort));
+        editor.putString("appNumber", appNumber == null ? String.valueOf(Common.APP_NUMBER) : String.valueOf(appNumber));
+        editor.putString("serverIp", serverIp == null ? SocketConst.CENTRAL_SERVER_LISTENING_IP : serverIp);
+        editor.putString("serverPort", serverPort == null ? String.valueOf(SocketConst.CENTRAL_SERVER_LISTENING_PORT) : String.valueOf(serverPort));
         editor.commit();
     }
 
@@ -59,15 +61,15 @@ public class ConfigData {
             this.logoUri = Uri.parse(logoUriStr);
         }
 
-        String appNumberStr = sp.getString("appNumber", "1");
+        String appNumberStr = sp.getString("appNumber", String.valueOf(Common.APP_NUMBER));
         if (appNumberStr.length() > 0) {
             this.appNumber = Integer.parseInt(appNumberStr);
         }
 
-        this.serverIp = sp.getString("serverIp", "192.168.1.1");
+        this.serverIp = sp.getString("serverIp", SocketConst.CENTRAL_SERVER_LISTENING_IP);
 
 
-        String serverPortStr = sp.getString("serverPort", "5001");
+        String serverPortStr = sp.getString("serverPort", String.valueOf(SocketConst.CENTRAL_SERVER_LISTENING_PORT));
         if (serverPortStr.length() > 0) {
             this.serverPort = Integer.parseInt(serverPortStr);
         }

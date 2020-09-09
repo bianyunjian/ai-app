@@ -30,13 +30,14 @@
             <TextView
                 android:id="@+id/nowTime"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="@dimen/logoImageHeight"
                 android:layout_gravity="center_horizontal|center_vertical"
+                android:gravity="center_vertical"
                 android:layout_weight="1"
                 android:text="2020-08-26 08:07AM"
                 android:textAlignment="textEnd"
                 android:textColor="#666666"
-                android:textSize="@dimen/headerText"
+                android:textSize="@dimen/mainTimeText"
                 android:textStyle="bold" />
         </LinearLayout>
 
