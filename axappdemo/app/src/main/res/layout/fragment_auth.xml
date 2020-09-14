@@ -203,6 +203,15 @@
                 android:background="@drawable/face_broad">
 
             </FrameLayout>
+
+            <!-- 仿微信扫描 -->
+            <!--<com.hankutech.ax.appdemo.view.FaceScannerView
+                android:id="@+id/face_scanner"
+                android:layout_width="745dp"
+                android:layout_height="480dp">
+
+            </com.hankutech.ax.appdemo.view.FaceScannerView>-->
+
         </FrameLayout>
 
         <LinearLayout
@@ -227,7 +236,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:visibility="visible">
+            android:visibility="gone">
 
             <ImageView
                 android:id="@+id/error_auth_fail_img"
@@ -255,4 +264,48 @@
         </LinearLayout>
 
     </LinearLayout>
+
+    <RelativeLayout
+        android:id="@+id/auth_covering"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="visible"
+        android:background="#b33C3F41">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <com.wang.avi.AVLoadingIndicatorView
+                android:id="@+id/auth_loading"
+                android:layout_width="200dp"
+                android:layout_height="200dp"
+                style="@style/AVLoadingIndicatorView"
+                android:layout_gravity="center_vertical|center_horizontal"
+                android:layout_margin="300dp"
+                android:visibility="visible"
+                app:indicatorName="BallClipRotatePulseIndicator"
+                app:indicatorColor="@color/aixinGreen">
+
+            </com.wang.avi.AVLoadingIndicatorView>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="200dp"
+                android:fontFamily="@font/msyhbold"
+                android:textSize="50dp"
+                android:textColor="@color/aixinGreen"
+                android:text="@string/loading_auth_face"
+                >
+
+            </TextView>
+
+        </FrameLayout>
+
+    </RelativeLayout>
+
+
+
 </FrameLayout>

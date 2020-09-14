@@ -6,6 +6,7 @@ import android.graphics.Outline;
 import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.HandlerThread;
 import android.util.EventLog;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -38,6 +39,7 @@ import com.daniulive.smartplayer.SmartPlayerJniV2;
 import com.hankutech.ax.message.code.AIAuthFlag;
 import com.hankutech.ax.message.protocol.app.AppMessage;
 import com.hankutech.ax.message.protocol.app.AppMessageType;
+import com.wang.avi.AVLoadingIndicatorView;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -48,6 +50,7 @@ import org.videolan.libvlc.Media;
 import org.videolan.libvlc.MediaPlayer;
 
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
 public class AuthFragment extends Fragment implements IFragmentOperation, IVLCVout.OnNewVideoLayoutListener {
 
@@ -62,6 +65,9 @@ public class AuthFragment extends Fragment implements IFragmentOperation, IVLCVo
     private TextView textViewGuidDescription;
     private View backChooseButton;
     private View layoutAuthError;
+
+    private View covering;
+    private AVLoadingIndicatorView loading;
 
     private String rtspUrl;
     private SurfaceView sSurfaceView = null;
@@ -104,8 +110,6 @@ public class AuthFragment extends Fragment implements IFragmentOperation, IVLCVo
             if (!authPassed) {
                 handleAuthFail();
             }
-
-//            backToHome();
         });
 
         this.libPlayer = new SmartPlayerJniV2();
@@ -125,6 +129,12 @@ public class AuthFragment extends Fragment implements IFragmentOperation, IVLCVo
 
         layoutAuthError = this.view.findViewById(R.id.layout_auth_error);
         layoutAuthError.setVisibility(View.INVISIBLE);
+
+        // 设置loading遮罩层
+        covering = this.view.findViewById(R.id.auth_covering);
+        covering.setVisibility(View.INVISIBLE);
+        loading = this.view.findViewById(R.id.auth_loading);
+        loading.setVisibility(View.INVISIBLE);
 
         backHomeButton = this.view.findViewById(R.id.button_back_choose_auth_type_back_home);
         backHomeButton.setVisibility(View.VISIBLE);
@@ -382,17 +392,29 @@ public class AuthFragment extends Fragment implements IFragmentOperation, IVLCVo
                 if (this.authMessageLoopTimer != null) {
                     this.authMessageLoopTimer.cancel();
                 }
-
                 this.tickTimer.cancel();
 
-                //ONLINE_FIX 跳过这个临时界面
-                stopRTSPVideo();
-                this.layoutAiFace.setVisibility(View.GONE);
-                this.layoutRfid.setVisibility(View.GONE);
-                this.layoutQrCode.setVisibility(View.GONE);
-                this.layoutChooseAuthType.setVisibility(View.GONE);
-                this.backChooseButton.setVisibility(View.GONE);
-                EventBus.getDefault().post(new MessageEvent(MessageCode.AUTH_PASS, "用户"));
+                //执行loading5秒后继续操作
+                showLoading();
+
+                tickTimer.start(5000, Common.TickInterval, (t) -> {
+                }, (t) -> {
+                    //ONLINE_FIX 跳过这个临时界面
+                    stopRTSPVideo();
+                    layoutAiFace.setVisibility(View.GONE);
+                    layoutRfid.setVisibility(View.GONE);
+                    layoutQrCode.setVisibility(View.GONE);
+                    layoutChooseAuthType.setVisibility(View.GONE);
+                    backChooseButton.setVisibility(View.GONE);
+
+                    closeLoading();
+
+                    EventBus.getDefault().post(new MessageEvent(MessageCode.AUTH_PASS, "用户"));
+
+                    playAudio(AudioScene.AUTH_PASS);
+                    authPassed = true;
+                });
+
 
 //                int minTickMillis = 0;
 //                final int minWelcomeTickMills = 0;
@@ -422,8 +444,7 @@ public class AuthFragment extends Fragment implements IFragmentOperation, IVLCVo
 //                    });
 //                });
 
-                playAudio(AudioScene.AUTH_PASS);
-                this.authPassed = true;
+
             }
         }
     }
@@ -466,5 +487,20 @@ public class AuthFragment extends Fragment implements IFragmentOperation, IVLCVo
     public void onNewVideoLayout(IVLCVout ivlcVout, int i, int i1, int i2, int i3, int i4, int i5) {
         LogExt.d(TAG, "监听vlc事件...");
     }
+
+
+    private void showLoading() {
+        covering.setVisibility(View.VISIBLE);
+        loading.setVisibility(View.VISIBLE);
+        loading.show();
+    }
+
+    private void closeLoading() {
+        covering.setVisibility(View.INVISIBLE);
+        loading.hide();
+        loading.setVisibility(View.INVISIBLE);
+    }
+
+
 }
 

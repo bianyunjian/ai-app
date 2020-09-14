@@ -63,7 +63,7 @@ public class Common {
     /**
      * 人脸摄像头rtsp地址
      */
-    public static String AIFace_RTSP_URI = "rtsp://admin:UEDMAJ@192.168.0.28:554/";
+    public static String AIFace_RTSP_URI = "rtsp://admin:1qaz1qaz@192.168.1.124:554/";
 
 
     public static String LogoTitle = "垃圾分类投递显示系统";

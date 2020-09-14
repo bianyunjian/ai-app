@@ -54,8 +54,6 @@ android {
 
 }
 
-
-
 dependencies {
 
     implementation 'androidx.cardview:cardview:1.0.0'
@@ -91,5 +89,8 @@ dependencies {
 
 //    compile 'com.android.support:appcompat-v7:25.1.1'
     compile(name: 'libvlc-3.0.0', ext: 'aar')
+
+    // AVLoading https://github.com/81813780/AVLoadingIndicatorView
+    implementation 'com.wang.avi:library:2.1.3'
 
 }

@@ -43,5 +43,7 @@
 
     <string name="error_auth_fail">用户您好，您的\n身份验证没有通过\n请联系管理员</string>
 
+    <string name="loading_auth_face">人脸识别计算中，请稍后...</string>
+
 
 </resources>
