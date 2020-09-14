@@ -91,12 +91,12 @@
                     android:id="@+id/textView_current_garbagetype"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="30dp"
+                    android:layout_marginTop="18dp"
                     android:fontFamily="@font/msyhbold"
                     android:text="当前可投递垃圾种类 — 湿垃圾"
                     android:textAlignment="center"
                     android:textColor="#FFFFFF"
-                    android:textSize="32dp" />
+                    android:textSize="40dp" />
 
                 <ImageView
                     android:id="@+id/imageView_current_garbagetype"
