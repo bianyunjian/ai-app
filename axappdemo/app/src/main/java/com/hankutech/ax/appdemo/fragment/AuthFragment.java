@@ -394,10 +394,10 @@ public class AuthFragment extends Fragment implements IFragmentOperation, IVLCVo
                 }
                 this.tickTimer.cancel();
 
-                //执行loading5秒后继续操作
+                //执行loading 3秒后继续操作
                 showLoading();
 
-                tickTimer.start(5000, Common.TickInterval, (t) -> {
+                tickTimer.start(3000, Common.TickInterval, (t) -> {
                 }, (t) -> {
                     //ONLINE_FIX 跳过这个临时界面
                     stopRTSPVideo();
