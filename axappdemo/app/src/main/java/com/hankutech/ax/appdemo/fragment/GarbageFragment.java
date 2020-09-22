@@ -139,8 +139,11 @@ public class GarbageFragment extends Fragment implements IFragmentOperation {
                     this.sendGarbageDetectMessageTickTimer.cancel();
 
                     //垃圾分类检测完成， 进入开门流程
-                    EventBus.getDefault().post(new MessageEvent(MessageCode.GARBAGE_PASS, null));
-                    return;
+                    this.tickTimer.start(2000, Common.TickInterval, (t) -> {}, (t) -> {
+                        EventBus.getDefault().post(new MessageEvent(MessageCode.GARBAGE_PASS, null));
+                    });
+
+//                    return;
                 } else if (garbageDetectResult.getValue() == AIGarbageTypeDetectResult.FAILURE.getValue()) {
                     LogExt.d(TAG, "垃圾分类检测结果失败");
 

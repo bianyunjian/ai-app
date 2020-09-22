@@ -69,6 +69,7 @@ public class AuthFragment extends Fragment implements IFragmentOperation, IVLCVo
     private View covering;
     private AVLoadingIndicatorView loading;
 
+
     private String rtspUrl;
     private SurfaceView sSurfaceView = null;
     private long playerHandle = 0;
@@ -394,11 +395,28 @@ public class AuthFragment extends Fragment implements IFragmentOperation, IVLCVo
                 }
                 this.tickTimer.cancel();
 
-                //执行loading 3秒后继续操作
-                showLoading();
+                if (currentAuthFlag == AIAuthFlag.AI_FACE) {
+                    //执行loading 3秒后继续操作
+                    showLoading();
 
-                tickTimer.start(3000, Common.TickInterval, (t) -> {
-                }, (t) -> {
+                    tickTimer.start(3000, Common.TickInterval, (t) -> {
+                    }, (t) -> {
+                        //ONLINE_FIX 跳过这个临时界面
+                        stopRTSPVideo();
+                        layoutAiFace.setVisibility(View.GONE);
+                        layoutRfid.setVisibility(View.GONE);
+                        layoutQrCode.setVisibility(View.GONE);
+                        layoutChooseAuthType.setVisibility(View.GONE);
+                        backChooseButton.setVisibility(View.GONE);
+
+                        closeLoading();
+
+                        EventBus.getDefault().post(new MessageEvent(MessageCode.AUTH_PASS, "用户"));
+
+                        playAudio(AudioScene.AUTH_PASS);
+                        authPassed = true;
+                    });
+                } else {
                     //ONLINE_FIX 跳过这个临时界面
                     stopRTSPVideo();
                     layoutAiFace.setVisibility(View.GONE);
@@ -407,13 +425,11 @@ public class AuthFragment extends Fragment implements IFragmentOperation, IVLCVo
                     layoutChooseAuthType.setVisibility(View.GONE);
                     backChooseButton.setVisibility(View.GONE);
 
-                    closeLoading();
-
                     EventBus.getDefault().post(new MessageEvent(MessageCode.AUTH_PASS, "用户"));
 
                     playAudio(AudioScene.AUTH_PASS);
                     authPassed = true;
-                });
+                }
 
 
 //                int minTickMillis = 0;
