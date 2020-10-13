@@ -29,10 +29,10 @@ public class ConfigData {
     private String serverIp;
     private Integer serverPort;
     private HashMap<AudioScene, Integer> audioMap = new HashMap<>();
+    private String qrcodeUrl;
 
     public void update(Context ctx) {
         LogExt.d(TAG, "update:" + this.toString());
-
 
         SharedPreferences sp = ctx.getSharedPreferences("AXAPP", MODE_PRIVATE);
         SharedPreferences.Editor editor = sp.edit();
@@ -43,6 +43,8 @@ public class ConfigData {
         editor.putString("appNumber", appNumber == null ? String.valueOf(Common.APP_NUMBER) : String.valueOf(appNumber));
         editor.putString("serverIp", serverIp == null ? SocketConst.CENTRAL_SERVER_LISTENING_IP : serverIp);
         editor.putString("serverPort", serverPort == null ? String.valueOf(SocketConst.CENTRAL_SERVER_LISTENING_PORT) : String.valueOf(serverPort));
+        // 保存二维码地址
+        editor.putString("qrcodeUrl", qrcodeUrl == null ? Common.DEFAULT_QRCODE_URL : qrcodeUrl);
         editor.commit();
     }
 
@@ -73,5 +75,9 @@ public class ConfigData {
         if (serverPortStr.length() > 0) {
             this.serverPort = Integer.parseInt(serverPortStr);
         }
+
+        // 设置默认二维码url地址
+        this.qrcodeUrl = sp.getString("qrcodeUrl", Common.DEFAULT_QRCODE_URL);
+
     }
 }

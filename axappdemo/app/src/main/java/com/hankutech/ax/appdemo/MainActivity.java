@@ -7,6 +7,7 @@ import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.media.AudioManager;
@@ -52,6 +53,7 @@ import com.hankutech.ax.appdemo.socket.NettyClientException;
 import com.hankutech.ax.appdemo.socket.SocketClient;
 import com.hankutech.ax.appdemo.util.LogExt;
 import com.hankutech.ax.appdemo.util.NetworkUtil;
+import com.hankutech.ax.appdemo.util.QRCodeUtil;
 import com.hankutech.ax.appdemo.util.TickTimer;
 import com.hankutech.ax.message.code.AIAuthFlag;
 import com.hankutech.ax.message.code.AIGarbageResultType;
@@ -407,6 +409,15 @@ public class MainActivity extends AppCompatActivity {
             intent.setDataAndType(MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
                     "video/*");
             startActivityForResult(intent, 0x2);
+        });
+
+        // 二维码地址设置
+        TextView qrcodeUrlText = view.findViewById(R.id.item_popup_text_qrcode_url);
+        qrcodeUrlText.setText(configData.getQrcodeUrl());
+        view.findViewById(R.id.item_popup_btn_qrcode_url).setOnClickListener(v -> {
+            String urlStr = qrcodeUrlText.getText().toString();
+            configData.setQrcodeUrl(urlStr);
+            configData.update(mContext);
         });
 
     }

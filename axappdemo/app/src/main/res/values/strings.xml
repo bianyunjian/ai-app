@@ -45,5 +45,7 @@
 
     <string name="loading_auth_face">人脸识别计算中，请稍后...</string>
 
+    <string name="btn_set_qrcode_url">设置二维码url地址</string>
+
 
 </resources>

@@ -2,6 +2,8 @@ package com.hankutech.ax.appdemo.fragment;
 
 import android.app.Fragment;
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.graphics.Outline;
 import android.graphics.Rect;
 import android.net.Uri;
@@ -33,6 +35,7 @@ import com.hankutech.ax.appdemo.code.AudioScene;
 import com.hankutech.ax.appdemo.code.MessageCode;
 import com.hankutech.ax.appdemo.constant.Common;
 import com.hankutech.ax.appdemo.util.LogExt;
+import com.hankutech.ax.appdemo.util.QRCodeUtil;
 import com.hankutech.ax.appdemo.util.TickTimer;
 import com.daniulive.smartplayer.EventHandeV2;
 import com.daniulive.smartplayer.SmartPlayerJniV2;
@@ -51,6 +54,8 @@ import org.videolan.libvlc.MediaPlayer;
 
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
+
+import static android.content.Context.MODE_PRIVATE;
 
 public class AuthFragment extends Fragment implements IFragmentOperation, IVLCVout.OnNewVideoLayoutListener {
 
@@ -212,30 +217,37 @@ public class AuthFragment extends Fragment implements IFragmentOperation, IVLCVo
             }
         });
 
-        this.view.findViewById(R.id.button_qrcode).setOnClickListener((t) -> {
-            Toast.makeText(view.getContext(), "正在开发中，敬请期待", Toast.LENGTH_LONG).show();
-        });
-//        this.view.findViewById(R.id.button_qrcode).setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                stopRTSPVideo();
-//
-//                currentAuthFlag = AIAuthFlag.QRCODE;
-//                RuntimeContext.CurrentAuthFlag = currentAuthFlag;
-//                layoutChooseAuthType.setVisibility(View.GONE);
-//                layoutRfid.setVisibility(View.GONE);
-//                layoutAiFace.setVisibility(View.GONE);
-//                layoutQrCode.setVisibility(View.VISIBLE);
-//                backChooseButton.setVisibility(View.VISIBLE);
-//                backHomeButton.setVisibility(View.INVISIBLE);
-//
-//                playAudio(AudioScene.AUTH_QRCODE);
-//                textViewGuidDescription.setText(AudioScene.AUTH_QRCODE.getDescription());
-//                tickTimer.reset();
-//                LogExt.d(TAG, "身份验证方式==QRCODE");
-//                EventBus.getDefault().post(new AuthChooseEvent(AIAuthFlag.QRCODE));
-//            }
+//        this.view.findViewById(R.id.button_qrcode).setOnClickListener((t) -> {
+//            Toast.makeText(view.getContext(), "正在开发中，敬请期待", Toast.LENGTH_LONG).show();
 //        });
+        this.view.findViewById(R.id.button_qrcode).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                stopRTSPVideo();
+
+                // 刷新二维码图片
+                SharedPreferences sp = myContext.getSharedPreferences("AXAPP", MODE_PRIVATE);
+                String qrcodeUrl = sp.getString("qrcodeUrl", Common.DEFAULT_QRCODE_URL);
+                Bitmap bitmap = QRCodeUtil.encodeBitmap(qrcodeUrl, 200, 200);
+                ImageView imageView = layoutQrCode.findViewById(R.id.imageView_qrcode);
+                imageView.setImageBitmap(bitmap);
+
+                currentAuthFlag = AIAuthFlag.QRCODE;
+                RuntimeContext.CurrentAuthFlag = currentAuthFlag;
+                layoutChooseAuthType.setVisibility(View.GONE);
+                layoutRfid.setVisibility(View.GONE);
+                layoutAiFace.setVisibility(View.GONE);
+                layoutQrCode.setVisibility(View.VISIBLE);
+                backChooseButton.setVisibility(View.VISIBLE);
+                backHomeButton.setVisibility(View.INVISIBLE);
+
+                playAudio(AudioScene.AUTH_QRCODE);
+                textViewGuidDescription.setText(AudioScene.AUTH_QRCODE.getDescription());
+                tickTimer.reset();
+                LogExt.d(TAG, "身份验证方式==QRCODE");
+                EventBus.getDefault().post(new AuthChooseEvent(AIAuthFlag.QRCODE));
+            }
+        });
 
         LogExt.d(TAG, "等待选择身份验证方式");
     }

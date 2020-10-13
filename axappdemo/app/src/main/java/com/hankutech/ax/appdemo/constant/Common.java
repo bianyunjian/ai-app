@@ -77,4 +77,10 @@ public class Common {
      * 轮询发送握手消息的时间间隔
      */
     public static long MessageHandshakeRequestInterval = 5 * 1000;
+
+    /**
+     * 默认二维码url地址
+     */
+    public static String DEFAULT_QRCODE_URL = "http://192.168.123.16:19010/";
+
 }
